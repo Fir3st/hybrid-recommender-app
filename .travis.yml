@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "8"
+  - "9"
+services:
+  - mysql
+cache: yarn
+before_install:
+  - mysql -e 'CREATE DATABASE recommender;'
+  - mysql -e 'CREATE DATABASE recommender_test;'
+install:
+  - yarn
+before_script:
+  - yarn server:lint
+  - yarn client:lint
+  - yarn typeorm migration:run
+  - yarn client:build
+script:
+  - yarn test

@@ -1,0 +1,14 @@
+{
+    "host": "HOST",
+    "port": "PORT",
+    "dbConfig": {
+        "dialect": "DB_DIALECT",
+        "host": "DB_HOST",
+        "port": "DB_PORT",
+        "name": "DB_NAME",
+        "user": "DB_USER",
+        "password": "DB_PASSWORD",
+        "synchronize": "DB_SYNCHRONIZE"
+    },
+    "jwtSecret": "JWT_SECRET"
+}

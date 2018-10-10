@@ -1,0 +1,6 @@
+{
+    "dbConfig": {
+        "name": "recommender_test",
+        "synchronize": true
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "host": "localhost",
+    "port": 3001,
+    "dbConfig": {
+        "dialect": "mysql",
+        "host": "localhost",
+        "port": 3306,
+        "name": "recommender",
+        "user": "root",
+        "password": "",
+        "synchronize": false
+    },
+    "jwtSecret": "mySuperSecret"
+}

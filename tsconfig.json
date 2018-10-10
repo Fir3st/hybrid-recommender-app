@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "outDir": "server/dist",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "@server/*": ["server/src/*"]
+        }
+    },
+    "include": [
+        "server/src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
