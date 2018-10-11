@@ -15,9 +15,15 @@ server/dist
 package-lock.json
 yarn.lock
 
-#editors config
+# editors config
 /.vscode
 /.idea
 
 #config file
 config/local-development.json
+
+# python
+*.pyc
+__pycache__/
+*.db
+venv/
