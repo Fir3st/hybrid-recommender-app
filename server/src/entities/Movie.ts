@@ -107,6 +107,8 @@ export class Movie {
     @Column({ length: 100 })
     production: string;
 
-    @OneToMany(type => Rating, rating => rating.movie)
+    @OneToMany(type => Rating, rating => rating.movie, {
+        cascade: true
+    })
     ratings: Rating[];
 }
