@@ -1,11 +1,13 @@
 import { Application, Request, Response } from 'express';
 import usersController from './usersController';
 import authenticationController from './authenticationController';
+import moviesController from './moviesController';
 import { authenticate, admin } from '../middleware/auth';
 
 export default (app: Application) => {
     app.use('/auth', authenticationController);
     app.use('/users', usersController);
+    app.use('/movies', moviesController);
     app.get('/protected', authenticate, (req: Request, res: Response) => {
         console.log('Inside protected');
         return res.sendStatus(200);

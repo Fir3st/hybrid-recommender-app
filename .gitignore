@@ -27,3 +27,6 @@ config/local-development.json
 __pycache__/
 *.db
 venv/
+
+# error files
+yarn-error.log

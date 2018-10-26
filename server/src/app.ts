@@ -2,6 +2,8 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as config from 'config';
 import * as cors from 'cors';
+import * as morgan from 'morgan';
+import * as boom from 'express-boom';
 import router from './controllers';
 import { initializePassport } from './middleware/auth';
 
@@ -13,6 +15,8 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(cors());
+app.use(boom());
+app.use(morgan('combined'));
 app.use(initializePassport());
 
 router(app);
