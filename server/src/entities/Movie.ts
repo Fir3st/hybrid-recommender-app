@@ -95,7 +95,7 @@ export class Movie {
     })
     languages: Language[];
 
-    @Column({ length: 5 })
+    @Column({ length: 50 })
     country: string;
 
     @Column({ length: 100 })
