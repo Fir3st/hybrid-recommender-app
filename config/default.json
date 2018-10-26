@@ -10,5 +10,6 @@
         "password": "",
         "synchronize": false
     },
-    "jwtSecret": "mySuperSecret"
+    "jwtSecret": "mySuperSecret",
+    "omdbApiKey": "secret"
 }
