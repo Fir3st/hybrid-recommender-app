@@ -1,0 +1,112 @@
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Genre } from './Genre';
+import { Actor } from './Actor';
+import { Language } from './Language';
+import { Rating } from './Rating';
+
+enum movieTypes {
+    movie,
+    episode
+}
+
+@Entity({ name: 'movies' })
+export class Movie {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ length: 20 })
+    imdbId: string;
+
+    @Column({ length: 100 })
+    title: string;
+
+    @Column({ width: 4 })
+    year: number;
+
+    @Column({ length: 5 })
+    rating: string;
+
+    @Column('date')
+    releaseDate: string;
+
+    @ManyToMany(type => Genre, {
+        cascade: true
+    })
+    @JoinTable({
+        name: 'movies_genres',
+        joinColumns: [
+            {
+                name: 'moviesId',
+                referencedColumnName: 'id'
+            }
+        ],
+        inverseJoinColumns: [
+            {
+                name: 'genresId',
+                referencedColumnName: 'id'
+            }
+        ]
+    })
+    genres: Genre[];
+
+    @Column({ length: 100 })
+    director: string;
+
+    @ManyToMany(type => Actor, {
+        cascade: true
+    })
+    @JoinTable({
+        name: 'movies_actors',
+        joinColumns: [
+            {
+                name: 'moviesId',
+                referencedColumnName: 'id'
+            }
+        ],
+        inverseJoinColumns: [
+            {
+                name: 'actorsId',
+                referencedColumnName: 'id'
+            }
+        ]
+    })
+    actors: Actor[];
+
+    @Column('text')
+    plot: string;
+
+    @ManyToMany(type => Language, {
+        cascade: true
+    })
+    @JoinTable({
+        name: 'movies_languages',
+        joinColumns: [
+            {
+                name: 'moviesId',
+                referencedColumnName: 'id'
+            }
+        ],
+        inverseJoinColumns: [
+            {
+                name: 'languagesId',
+                referencedColumnName: 'id'
+            }
+        ]
+    })
+    languages: Language[];
+
+    @Column({ length: 5 })
+    country: string;
+
+    @Column({ length: 100 })
+    poster: string;
+
+    @Column('enum', { enum: movieTypes })
+    type: string;
+
+    @Column({ length: 100 })
+    production: string;
+
+    @OneToMany(type => Rating, rating => rating.movie)
+    ratings: Rating[];
+}
