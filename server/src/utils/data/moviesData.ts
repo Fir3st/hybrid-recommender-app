@@ -8,6 +8,7 @@ import { Genre } from './../../entities/Genre';
 import { Actor } from './../../entities/Actor';
 import { Language } from './../../entities/Language';
 import { Rating } from './../../entities/Rating';
+import { Country } from './../../entities/Country';
 
 const movies: Movie[] = [];
 
@@ -74,7 +75,19 @@ createConnection().then(async (connection) => {
                         }
                     }
 
-                    movie.country = response.data.Country;
+                    const countries = response.data.Country.split(',').map(item => item.trim());
+                    movie.countries = [];
+                    for (const item of countries) {
+                        let country = await connection.manager.findOne(Country, { name: item });
+                        if (country) {
+                            movie.countries.push(country);
+                        } else {
+                            country = new Country();
+                            country.name = item;
+                            movie.countries.push(country);
+                        }
+                    }
+
                     movie.poster = response.data.Poster;
                     movie.type = response.data.Type;
                     movie.production = response.data.Production;

@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMan
 import { Genre } from './Genre';
 import { Actor } from './Actor';
 import { Language } from './Language';
+import { Country } from './Country';
 import { Rating } from './Rating';
 
 enum movieTypes {
@@ -95,8 +96,25 @@ export class Movie {
     })
     languages: Language[];
 
-    @Column({ length: 50 })
-    country: string;
+    @ManyToMany(type => Country, {
+        cascade: true
+    })
+    @JoinTable({
+        name: 'movies_countries',
+        joinColumns: [
+            {
+                name: 'moviesId',
+                referencedColumnName: 'id'
+            }
+        ],
+        inverseJoinColumns: [
+            {
+                name: 'countriesId',
+                referencedColumnName: 'id'
+            }
+        ]
+    })
+    countries: Country[];
 
     @Column({ length: 100 })
     poster: string;
