@@ -11,7 +11,7 @@ class UserModel(db.Model):
     password = db.Column(db.String())
     admin = db.Column(db.Boolean())
 
-    def __init__(self, username, password):
+    def __init__(self, name, surname, email, password, admin = 0):
         self.name = name
         self.surname = surname
         self.email = email
