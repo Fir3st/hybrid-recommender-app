@@ -1,6 +1,5 @@
 from db import db
 
-
 class UserModel(db.Model):
     __tablename__ = 'users'
 
@@ -17,17 +16,3 @@ class UserModel(db.Model):
         self.email = email
         self.password = password
         self.admin = admin
-
-
-    def json(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'surname': self.surname,
-            'email': self.email,
-            'admin': self.admin
-        }
-
-    @classmethod
-    def find_by_id(cls, _id):
-        return cls.query.filter_by(id=_id).first()
