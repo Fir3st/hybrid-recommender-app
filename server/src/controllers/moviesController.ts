@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { getRepository } from 'typeorm';
 import * as winston from 'winston';
+import axios from 'axios';
+import * as config from 'config';
 import { Movie } from '../entities/Movie';
 const router = Router();
 
@@ -26,6 +28,24 @@ router.get('/', async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest('No movies found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/:id/recommendations', async (req: Request, res: any) => {
+    const id = req.params.id;
+    const recommender = config.get('recommender');
+
+    try {
+        const recommendations = await axios.get(`http://${recommender.host}:${recommender.port}/recommendations/${id}`);
+
+        if (recommendations) {
+            return res.send(recommendations.data);
+        }
+
+        return res.boom.badRequest(`No recommendations for ${id}`);
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

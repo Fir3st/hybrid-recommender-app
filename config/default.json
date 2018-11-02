@@ -11,5 +11,9 @@
         "synchronize": false
     },
     "jwtSecret": "mySuperSecret",
-    "omdbApiKey": "secret"
+    "omdbApiKey": "secret",
+    "recommender": {
+        "host": "localhost",
+        "port": 3002
+    }
 }
