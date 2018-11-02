@@ -7,10 +7,17 @@ genres_fields = {
     'name': fields.String
 }
 
+ratings_fields = {
+    'source': fields.String,
+    'value': fields.String
+}
+
 movies_fields = {
     'id': fields.Integer,
     'title': fields.String,
-    'genres': fields.List(fields.Nested(genres_fields))
+    'type': fields.String,
+    'genres': fields.List(fields.Nested(genres_fields)),
+    'ratings': fields.List(fields.Nested(ratings_fields))
 }
 
 class Movie(Resource):
