@@ -46,7 +46,7 @@ router.get('/:id', async (req: Request, res: any) => {
             .leftJoinAndSelect('movie.languages', 'languages')
             .leftJoinAndSelect('movie.countries', 'countries')
             .leftJoinAndSelect('movie.ratings', 'ratings')
-            .where('movie.idd = :id', { id })
+            .where('movie.id = :id', { id })
             .getOne();
 
         if (movie) {
