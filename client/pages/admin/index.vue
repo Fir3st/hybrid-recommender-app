@@ -1,8 +1,9 @@
 <template>
     <div>
+        <app-breadcrumb :items="breadcrumbs" />
         <b-row>
             <b-col>
-                <h1>Main page</h1>
+                <h1>Welcome, user</h1>
             </b-col>
         </b-row>
     </div>
@@ -15,10 +16,13 @@
                 title: this.pageTitle
             };
         },
-        auth: false,
+        layout: 'admin',
         data() {
             return {
-                pageTitle: 'Main page'
+                pageTitle: 'Dashboard',
+                breadcrumbs: [
+                    { index: 0, name: 'dashboard', path: null }
+                ]
             };
         }
     };

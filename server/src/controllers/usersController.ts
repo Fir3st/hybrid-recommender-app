@@ -61,7 +61,7 @@ router.get('/me', authenticate, async (req: Request, res: any) => {
         const user = await userRepository.findOne({ id: req.user.id });
 
         if (user) {
-            return { user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) };
+            return res.send({ user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
         }
 
         return res.boom.badRequest('Authentication failed');
