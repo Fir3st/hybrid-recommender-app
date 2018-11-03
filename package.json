@@ -21,6 +21,7 @@
     "dependencies": {
         "@nuxtjs/auth": "^4.5.1",
         "@nuxtjs/axios": "^5.3.1",
+        "app-root-path": "^2.1.0",
         "axios": "^0.18.0",
         "bcrypt": "3.0.0",
         "bootstrap-vue": "^2.0.0-rc.11",

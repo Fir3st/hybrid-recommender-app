@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { getRepository } from 'typeorm';
-import * as winston from 'winston';
 import axios from 'axios';
 import * as config from 'config';
+import winston from '../../../config/winston';
 import { Movie } from '../entities/Movie';
 const router = Router();
 
@@ -46,7 +46,7 @@ router.get('/:id', async (req: Request, res: any) => {
             .leftJoinAndSelect('movie.languages', 'languages')
             .leftJoinAndSelect('movie.countries', 'countries')
             .leftJoinAndSelect('movie.ratings', 'ratings')
-            .where('movie.id = :id', { id })
+            .where('movie.idd = :id', { id })
             .getOne();
 
         if (movie) {
