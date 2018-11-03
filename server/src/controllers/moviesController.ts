@@ -34,6 +34,32 @@ router.get('/', async (req: Request, res: any) => {
     }
 });
 
+router.get('/:id', async (req: Request, res: any) => {
+    const id = req.params.id;
+    const repository = getRepository(Movie);
+
+    try {
+        const movie = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.genres', 'genres')
+            .leftJoinAndSelect('movie.actors', 'actors')
+            .leftJoinAndSelect('movie.languages', 'languages')
+            .leftJoinAndSelect('movie.countries', 'countries')
+            .leftJoinAndSelect('movie.ratings', 'ratings')
+            .where('movie.id = :id', { id })
+            .getOne();
+
+        if (movie) {
+            return res.send(movie);
+        }
+
+        return res.boom.badRequest(`Movie with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/:id/recommendations', async (req: Request, res: any) => {
     const id = req.params.id;
     const recommender = config.get('recommender');
