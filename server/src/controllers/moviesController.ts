@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { getRepository } from 'typeorm';
 import axios from 'axios';
 import * as config from 'config';
-import winston from '../../../config/winston';
+import winston from '../utils/winston';
 import { Movie } from '../entities/Movie';
 const router = Router();
 

@@ -4,7 +4,7 @@ import * as config from 'config';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 import * as boom from 'express-boom';
-import winston from '../../config/winston';
+import winston from './utils/winston';
 import router from './controllers';
 import { initializePassport } from './middleware/auth';
 

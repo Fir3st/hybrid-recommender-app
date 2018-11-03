@@ -2,49 +2,73 @@ import { Request, Response, Router } from 'express';
 import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
+import winston from '../utils/winston';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validations/user';
 import { authenticate } from '../middleware/auth';
 const router = Router();
 
-router.get('/', authenticate, async (req: Request, res: Response) => {
+router.get('/', authenticate, async (req: Request, res: any) => {
     const repository = getRepository(User);
-    const all = await repository.find();
-    const users = all.map(user => _.pick(user, ['id', 'name', 'surname', 'email', 'admin']));
-    res.status(200).send({ users });
-});
 
-router.post('/', async (req: Request, res: Response) => {
-    const { error, value: validated } = validateRegister(req.body);
-    if (error) {
-        return res.status(400).send({ message: 'Name, surname, email and password must be supplied' });
-    }
-    const userRepository = getRepository(User);
-    const existing = await userRepository.findOne({ email: validated.email });
-    if (existing) {
-        return res.status(400).send({ message: 'User with given email already exists' });
-    }
-    const user = new User();
-    user.name = validated.name;
-    user.surname = validated.surname;
-    user.email = validated.email;
-    user.admin = (validated.admin !== undefined) ? validated.admin : true;
     try {
-        user.password = await bcrypt.hash(validated.password, 10);
-        const createdUser = await userRepository.save(user);
-        return res.status(200).send(_.pick(createdUser, ['id', 'name', 'surname', 'email', 'admin']));
+        const users = await repository.find();
+
+        if (users && users.length > 0) {
+            return users.map(user => _.pick(user, ['id', 'name', 'surname', 'email', 'admin']));
+        }
+
+        return res.boom.badRequest('No users found');
     } catch (error) {
-        return res.status(500).send({ error });
+        winston.error(error.message);
+        return res.boom.internal();
     }
 });
 
-router.get('/me', authenticate, async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: any) => {
+    const { error, value: validated } = validateRegister(req.body);
     const userRepository = getRepository(User);
-    const user = await userRepository.findOne({ id: req.user.id });
-    if (!user) {
-        return res.status(400).send({ message: 'Authentication failed' });
+
+    if (error) {
+        return res.boom.badRequest('Name, surname, email and password must be supplied');
     }
-    return res.status(200).send({ user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
+
+    try {
+        const existing = await userRepository.findOne({ email: validated.email });
+        if (existing) {
+            return res.boom.badRequest('User with given email already exists.');
+        }
+
+        const user = new User();
+        user.name = validated.name;
+        user.surname = validated.surname;
+        user.email = validated.email;
+        user.admin = (validated.admin !== undefined) ? validated.admin : true;
+        user.password = await bcrypt.hash(validated.password, 10);
+
+        const createdUser = await userRepository.save(user);
+        return res.send(_.pick(createdUser, ['id', 'name', 'surname', 'email', 'admin']));
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/me', authenticate, async (req: Request, res: any) => {
+    const userRepository = getRepository(User);
+
+    try {
+        const user = await userRepository.findOne({ id: req.user.id });
+
+        if (user) {
+            return { user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) };
+        }
+
+        return res.boom.badRequest('Authentication failed');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
 });
 
 export default router;
