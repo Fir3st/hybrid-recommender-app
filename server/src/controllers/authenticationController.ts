@@ -4,31 +4,41 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
 import * as config from 'config';
+import winston from '../utils/winston';
 import { User } from '../entities/User';
 import { validateLogin } from '../utils/validations/user';
 
 const router = Router();
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: any) => {
     const { error, value: validated } = validateLogin(req.body);
-    if (error) {
-        return res.status(400).send({ message: 'Validation error' });
-    }
     const repository = getRepository(User);
-    const user = await repository.findOne({ email: validated.email });
-    if (!user) {
-        return res.status(400).send({ message: 'Invalid email or password' });
+
+    if (error) {
+        return res.boom.badRequest('Validation error.');
     }
-    const valid = await bcrypt.compare(validated.password, user.password);
-    if (!valid) {
-        return res.status(400).send({ message: 'Invalid email or password' });
+
+    try {
+        const user = await repository.findOne({ email: validated.email });
+        if (!user) {
+            return res.boom.badRequest('Invalid email or password');
+        }
+
+        const valid = await bcrypt.compare(validated.password, user.password);
+        if (!valid) {
+            return res.boom.badRequest('Invalid email or password');
+        }
+
+        const token = jwt.sign(_.pick(user, ['id', 'admin']), config.get('jwtSecret'));
+        res.send({ token });
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
     }
-    const token = jwt.sign(_.pick(user, ['id', 'admin']), config.get('jwtSecret'));
-    res.status(200).send({ token });
 });
 
-router.post('/logout', async (req: Request, res: Response) => {
-    res.status(501).send({ message: 'Not implemented yet' });
+router.post('/logout', async (req: Request, res: any) => {
+    res.boom.notImplemented();
 });
 
 export default router;
