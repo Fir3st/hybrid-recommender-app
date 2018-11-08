@@ -20,7 +20,7 @@
     .container-fluid
         min-height: 100%
         display: flex
-        background: #2d3a4b
+        background: #3e4247
     .row
         width: 100%
 </style>
