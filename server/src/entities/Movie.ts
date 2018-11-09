@@ -4,6 +4,7 @@ import { Actor } from './Actor';
 import { Language } from './Language';
 import { Country } from './Country';
 import { Rating } from './Rating';
+import { UserRating } from './UserRating';
 
 enum movieTypes {
     movie,
@@ -129,4 +130,9 @@ export class Movie {
         cascade: true
     })
     ratings: Rating[];
+
+    @OneToMany(type => UserRating, rating => rating.movie, {
+        cascade: true
+    })
+    usersRatings: UserRating[];
 }

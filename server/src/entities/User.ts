@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { UserRating } from './UserRating';
 
 @Entity({ name: 'users' })
 export class User {
-
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -26,4 +26,9 @@ export class User {
 
     @Column({ default: false })
     admin: boolean;
+
+    @OneToMany(type => UserRating, rating => rating.user, {
+        cascade: true
+    })
+    ratings: UserRating[];
 }
