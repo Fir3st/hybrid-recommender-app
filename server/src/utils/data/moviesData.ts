@@ -10,8 +10,6 @@ import { Language } from './../../entities/Language';
 import { Rating } from './../../entities/Rating';
 import { Country } from './../../entities/Country';
 
-const movies: Movie[] = [];
-
 createConnection().then(async (connection) => {
     csv()
         .fromFile('server/src/utils/data/links.csv')
