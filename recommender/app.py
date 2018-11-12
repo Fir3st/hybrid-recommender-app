@@ -10,7 +10,7 @@ from resources.collector import Collector
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/recommender'
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 api = Api(app)
 
 api.add_resource(Movie, '/movies')
