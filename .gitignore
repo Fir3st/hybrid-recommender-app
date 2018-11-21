@@ -23,11 +23,5 @@ yarn.lock
 #config file
 config/local-development.json
 
-# python
-*.pyc
-__pycache__/
-*.db
-venv/
-
 # error files
 yarn-error.log
