@@ -65,7 +65,7 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
     const recommender = config.get('recommender');
 
     try {
-        const recommendations = await axios.get(`http://${recommender.host}:${recommender.port}/recommendations/${id}`);
+        const recommendations = await axios.get(`${recommender}/recommendations/${id}`);
 
         if (recommendations) {
             return res.send(recommendations.data);

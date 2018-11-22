@@ -8,6 +8,7 @@
         "client:dev": "nuxt",
         "client:build": "nuxt build",
         "client:start": "nuxt start",
+        "preclient:start": "npm run client:generate",
         "client:generate": "nuxt generate",
         "client:lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
         "server:dev": "node_modules/.bin/nodemon",

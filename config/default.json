@@ -1,6 +1,7 @@
 {
     "host": "localhost",
     "port": 3001,
+    "baseUrl": "http://localhost:3001",
     "dbConfig": {
         "dialect": "mysql",
         "host": "localhost",
@@ -12,8 +13,5 @@
     },
     "jwtSecret": "mySuperSecret",
     "omdbApiKey": "secret",
-    "recommender": {
-        "host": "localhost",
-        "port": 3002
-    }
+    "recommenderUrl": "http://localhost:3002"
 }

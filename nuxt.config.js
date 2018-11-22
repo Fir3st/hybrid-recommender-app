@@ -76,7 +76,7 @@ module.exports = {
     ** axios configuration
      */
     axios: {
-        baseURL: `http://${config.get('host')}:${config.get('port')}`
+        baseURL: `${config.get('baseUrl')}`
     },
 
     /*

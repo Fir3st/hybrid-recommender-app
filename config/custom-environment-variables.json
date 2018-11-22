@@ -1,6 +1,7 @@
 {
     "host": "HOST",
-    "port": "PORT",
+    "port": "HOST_PORT",
+    "baseUrl": "BASE_URL",
     "dbConfig": {
         "dialect": "DB_DIALECT",
         "host": "DB_HOST",
@@ -10,5 +11,7 @@
         "password": "DB_PASSWORD",
         "synchronize": "DB_SYNCHRONIZE"
     },
-    "jwtSecret": "JWT_SECRET"
+    "jwtSecret": "JWT_SECRET",
+    "omdbApiKey": "OMDB_KEY",
+    "recommenderUrl": "RECOMMENDER_URL"
 }

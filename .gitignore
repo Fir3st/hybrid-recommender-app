@@ -22,6 +22,7 @@ yarn.lock
 
 #config file
 config/local-development.json
+config/local-production.json
 
 # error files
 yarn-error.log
