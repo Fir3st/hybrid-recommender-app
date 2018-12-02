@@ -1,4 +1,4 @@
-import { Request, Response, Router } from 'express';
+import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
 import axios from 'axios';
 import * as config from 'config';
@@ -62,12 +62,24 @@ router.get('/:id', async (req: Request, res: any) => {
 
 router.get('/:id/recommendations', async (req: Request, res: any) => {
     const id = req.params.id;
-    const recommender = config.get('recommender');
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(Movie);
 
     try {
-        const recommendations = await axios.get(`${recommender}/recommendations/${id}`);
+        const recommendations = await axios.get(`${recommender}/movies/${id}/recommendations`);
 
-        if (recommendations) {
+        if (recommendations && recommendations.data.recommendations && recommendations.data.recommendations.length > 0) {
+            const moviesIds = recommendations.data.recommendations.map(item => item.id);
+            const movies = await repository
+                .createQueryBuilder('movies')
+                .where('movies.id IN (:ids)', { ids: moviesIds })
+                .select(['movies.id', 'movies.title', 'movies.poster', 'movies.type'])
+                .getMany();
+
+            if (movies && movies.length > 0) {
+                return res.send(movies);
+            }
+
             return res.send(recommendations.data);
         }
 
