@@ -1,11 +1,15 @@
-import { Request, Response, Router } from 'express';
-import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
+import * as config from 'config';
+import axios from 'axios';
+import { Request, Router } from 'express';
+import { getRepository } from 'typeorm';
 import winston from '../utils/winston';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validations/user';
 import { authenticate } from '../middleware/auth';
+import { Movie } from '../entities/Movie';
+
 const router = Router();
 
 router.get('/', authenticate, async (req: Request, res: any) => {
@@ -65,6 +69,36 @@ router.get('/me', authenticate, async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest('Authentication failed');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/:id/recommendations', authenticate, async (req: Request, res: any) => {
+    const id = req.params.id;
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(Movie);
+
+    try {
+        const recommendations = await axios.get(`${recommender}/users/${id}/recommendations`);
+
+        if (recommendations && recommendations.data.recommendations && recommendations.data.recommendations.length > 0) {
+            const moviesIds = recommendations.data.recommendations.map(item => item.id);
+            const movies = await repository
+                .createQueryBuilder('movies')
+                .where('movies.id IN (:ids)', { ids: moviesIds })
+                .select(['movies.id', 'movies.title', 'movies.poster', 'movies.type'])
+                .getMany();
+
+            if (movies && movies.length > 0) {
+                return res.send(movies);
+            }
+
+            return res.send(recommendations.data);
+        }
+
+        return res.boom.badRequest(`No recommendations for ${id}`);
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();
