@@ -30,7 +30,8 @@
         },
         computed: {
             ...mapGetters({
-                movies: 'movies/movies'
+                movies: 'movies/movies',
+                moviesCount: 'movies/count'
             })
         },
         async fetch ({ app, store }) {
@@ -39,6 +40,12 @@
 
                 if (movies && movies.length > 0) {
                      store.commit('movies/setMovies', movies);
+                }
+
+                const moviesCount = await app.$axios.$get(`/movies/count`);
+
+                if (moviesCount) {
+                    store.commit('movies/setCount', moviesCount.count);
                 }
             } catch (error) {
                 console.log(error);
