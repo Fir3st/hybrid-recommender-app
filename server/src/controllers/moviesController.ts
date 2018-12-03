@@ -34,6 +34,25 @@ router.get('/', async (req: Request, res: any) => {
     }
 });
 
+router.get('/count', async (req: Request, res: any) => {
+    const repository = getRepository(Movie);
+
+    try {
+        const moviesCount = await repository
+            .createQueryBuilder('movies')
+            .getCount();
+
+        if (moviesCount) {
+            return res.send({ count: moviesCount });
+        }
+
+        return res.boom.badRequest('No movies found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/:id', async (req: Request, res: any) => {
     const id = req.params.id;
     const repository = getRepository(Movie);
