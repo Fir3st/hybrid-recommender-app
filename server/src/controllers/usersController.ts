@@ -76,9 +76,14 @@ router.get('/me', authenticate, async (req: Request, res: any) => {
 });
 
 router.get('/:id/recommendations', authenticate, async (req: Request, res: any) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
+    const userId = parseInt(req.user.id, 10);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
+
+    if ((id !== userId) && !req.user.admin) {
+        return res.boom.badRequest('You have no permissions to perform this action.');
+    }
 
     try {
         const recommendations = await axios.get(`${recommender}/users/${id}/recommendations`);
