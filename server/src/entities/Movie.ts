@@ -117,7 +117,7 @@ export class Movie {
     })
     countries: Country[];
 
-    @Column({ length: 100 })
+    @Column({ length: 255 })
     poster: string;
 
     @Column('enum', { enum: movieTypes })

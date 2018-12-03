@@ -2,20 +2,21 @@
     <div>
         <b-row>
             <b-col>
-                <h1>Main page</h1>
+                <h1>Movies</h1>
             </b-col>
         </b-row>
-        <b-row>
-            <b-col sm="6">ddd</b-col>
-            <b-col sm="6">ddd</b-col>
-        </b-row>
+        <movie-list :movies="movies" />
     </div>
 </template>
 
 <script>
     import { mapGetters } from 'vuex';
+    import MovieList from '../components/default/MovieList';
 
     export default {
+        components: {
+            MovieList
+        },
         head() {
             return {
                 title: this.pageTitle
@@ -32,7 +33,7 @@
                 movies: 'movies/movies'
             })
         },
-        async fetch ({ app, store, params }) {
+        async fetch ({ app, store }) {
             try {
                 const movies = await app.$axios.$get(`/movies`);
 
