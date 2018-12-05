@@ -103,7 +103,7 @@ router.get('/:id/recommendations', authenticate, async (req: Request, res: any) 
             return res.send(recommendations.data);
         }
 
-        return res.boom.badRequest(`No recommendations for ${id}`);
+        return res.boom.badRequest(`No recommendations for user ${id}.`);
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

@@ -12,7 +12,7 @@
                 <movie-list :movies="similarMovies" />
             </b-col>
         </b-row>
-        <b-row v-if="isLogged">
+        <b-row v-if="isLogged && recommendedMovies.length > 0">
             <b-col>
                 <h2>Recommended for you</h2>
                 <movie-list :movies="recommendedMovies" />
@@ -97,3 +97,8 @@
         }
     };
 </script>
+
+<style lang="sass" scoped>
+    h2
+        padding: 20px 0
+</style>
