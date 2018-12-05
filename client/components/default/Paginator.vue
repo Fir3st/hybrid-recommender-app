@@ -1,12 +1,18 @@
 <template>
-    <div>
-        <button
-            :disabled="skip <= 0"
-            @click="prevMovies">Prev</button>
-        <button
-            :disabled="(skip + take) > count"
-            @click="nextMovies">Next</button>
-    </div>
+    <b-row
+        id="pagination"
+        class="text-center">
+        <b-col>
+            <b-button-group>
+                <b-button
+                    :disabled="skip <= 0"
+                    @click="prevMovies">Prev</b-button>
+                <b-button
+                    :disabled="(skip + take) > count"
+                    @click="nextMovies">Next</b-button>
+            </b-button-group>
+        </b-col>
+    </b-row>
 </template>
 
 <script>
@@ -37,3 +43,8 @@
         }
     };
 </script>
+
+<style lang="sass" scoped>
+    #pagination
+        padding: 20px 0
+</style>
