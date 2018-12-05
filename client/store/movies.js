@@ -1,7 +1,9 @@
 export const state = () => ({
     movies: [],
     count: 0,
-    activeMovie: null
+    activeMovie: null,
+    take: 10,
+    skip: 0,
 });
 
 export const getters = {
@@ -13,6 +15,12 @@ export const getters = {
     },
     activeMovie (state) {
         return state.activeMovie;
+    },
+    take (state) {
+        return state.take;
+    },
+    skip (state) {
+        return state.skip;
     }
 };
 
@@ -25,17 +33,40 @@ export const mutations = {
     },
     setActiveMovie(state, activeMovie) {
         state.activeMovie = activeMovie;
-    }
+    },
+    setPagination(state, skip) {
+        state.skip = skip;
+    },
 };
 
 export const actions = {
-    setMovies({ commit }, movies) {
-        commit('setMovies', movies);
+    async setMovies({ commit, state }) {
+        try {
+            const movies = await this.$axios.$get(`/movies?take=${state.take}&skip=${state.skip}`);
+
+            if (movies && movies.length > 0) {
+                commit('setMovies', movies);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     },
-    setCount({ commit }, count) {
-        commit('setCount', count);
+    async setCount({ commit }) {
+        try {
+            const moviesCount = await this.$axios.$get(`/movies/count`);
+
+            if (moviesCount) {
+                commit('setCount', moviesCount.count);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     },
     setActiveMovie({ commit }, activeMovie) {
         commit('setActiveMovie', activeMovie);
+    },
+    setPagination({ commit, dispatch }, skip) {
+        commit('setPagination', skip);
+        dispatch('setMovies');
     },
 };
