@@ -2,20 +2,16 @@
     <b-col
         sm="2"
     >
-        <b-card
-            :title="movie.title"
-            :img-src="movie.poster"
-            :img-alt="movie.title"
-            img-top
-            style="max-width: 20rem;"
-            class="mb-2">
-            <p class="card-text">
-                {{ movie.plot | truncate(100) }}
-            </p>
-            <nuxt-link
-                :to="`/movies/${movie.id}`"
-                class="class-link">More</nuxt-link>
-        </b-card>
+        <nuxt-link :to="`/movies/${movie.id}`">
+            <div class="crop">
+                <b-img-lazy
+                    :src="movie.poster"
+                    :alt="movie.title"
+                    blank-color="#bbb"
+                    fluid />
+                <div class="caption">{{ movie.title }}</div>
+            </div>
+        </nuxt-link>
     </b-col>
 </template>
 
@@ -32,6 +28,19 @@
 </script>
 
 <style lang="sass" scoped>
-    .card-img-top
-        max-height: 260px
+    .crop
+        height: 260px
+        position: relative
+        overflow: hidden
+        margin-bottom: 20px
+    .caption
+        position: absolute
+        left: 0
+        bottom: 0
+        right: 0
+        background: rgba(0,0,0,0.6)
+        color: #ffffff
+        font-weight: bold
+        padding: 10px
+        text-align: center
 </style>

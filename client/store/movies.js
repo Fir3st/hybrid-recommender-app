@@ -2,7 +2,7 @@ export const state = () => ({
     movies: [],
     count: 0,
     activeMovie: null,
-    take: 10,
+    take: 20,
     skip: 0,
 });
 
