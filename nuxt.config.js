@@ -95,7 +95,7 @@ module.exports = {
         redirect: {
             login: '/login',
             logout: '/login',
-            home: '/admin'
+            home: '/'
         },
         watchLoggedIn: true,
         rewriteRedirects: false,
