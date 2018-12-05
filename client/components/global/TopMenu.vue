@@ -5,7 +5,7 @@
                 return !!this.$auth.user;
             },
             isAdmin() {
-                return this.$auth.user.admin;
+                return this.isLogged ? this.$auth.user.admin : false;
             },
             userFullName() {
                 const user = this.$auth.user;
