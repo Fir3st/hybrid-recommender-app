@@ -1,7 +1,6 @@
 export const state = () => ({
     movies: [],
     count: 0,
-    activeMovie: null,
     take: 20,
     skip: 0,
 });
@@ -12,9 +11,6 @@ export const getters = {
     },
     count (state) {
         return state.count;
-    },
-    activeMovie (state) {
-        return state.activeMovie;
     },
     take (state) {
         return state.take;
@@ -30,9 +26,6 @@ export const mutations = {
     },
     setCount (state, count) {
         state.count = count;
-    },
-    setActiveMovie(state, activeMovie) {
-        state.activeMovie = activeMovie;
     },
     setPagination(state, skip) {
         state.skip = skip;
@@ -61,9 +54,6 @@ export const actions = {
         } catch (error) {
             console.log(error);
         }
-    },
-    setActiveMovie({ commit }, activeMovie) {
-        commit('setActiveMovie', activeMovie);
     },
     setPagination({ commit, dispatch }, skip) {
         commit('setPagination', skip);

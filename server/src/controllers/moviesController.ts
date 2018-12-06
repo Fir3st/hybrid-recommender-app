@@ -3,7 +3,10 @@ import { getRepository } from 'typeorm';
 import axios from 'axios';
 import * as config from 'config';
 import winston from '../utils/winston';
+import * as moment from 'moment';
 import { Movie } from '../entities/Movie';
+import { authenticate } from '../middleware/auth';
+import { UserRating } from '../entities/UserRating';
 const router = Router();
 
 router.get('/', async (req: Request, res: any) => {
@@ -103,6 +106,61 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest(`No recommendations for ${id}`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/:id/rating', authenticate, async (req: Request, res: any) => {
+    const id = req.params.id;
+    const userId = parseInt(req.user.id, 10);
+    const repository = getRepository(UserRating);
+
+    try {
+        const rating = await repository
+            .createQueryBuilder('userRating')
+            .where('userRating.userId = :userId', { userId })
+            .andWhere('userRating.movieId = :id', { id })
+            .getOne();
+
+        if (rating) {
+            return res.send({ value: rating.rating, createdAt: rating.createdAt });
+        }
+
+        return res.boom.badRequest(`No user rating found for movie ${id} and user ${userId}`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.post('/:id/rating', authenticate, async (req: Request, res: any) => {
+    const id = req.params.id;
+    const userId = parseInt(req.user.id, 10);
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(UserRating);
+
+    try {
+        let rating = await repository
+            .createQueryBuilder('userRating')
+            .where('userRating.userId = :userId', { userId })
+            .andWhere('userRating.movieId = :id', { id })
+            .getOne();
+
+        if (rating) {
+            rating.rating = req.body.rating;
+        } else {
+            rating = new UserRating();
+            rating.movieId = id;
+            rating.userId = userId;
+            rating.rating = req.body.rating;
+            rating.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+        }
+        await repository.save(rating);
+        await axios.put(`${recommender}/users/re-train`);
+
+        return res.send({ message: 'Rating added successfully.' });
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();
