@@ -15,6 +15,16 @@
             :model="form">
             <el-form-item>
                 <el-input
+                    v-model="form.name"
+                    placeholder="First name"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input
+                    v-model="form.surname"
+                    placeholder="Last name"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input
                     v-model="form.email"
                     placeholder="E-mail address"></el-input>
             </el-form-item>
@@ -28,7 +38,7 @@
                 <el-button
                     type="primary"
                     class="btn"
-                    @click="onSubmit">Log in</el-button>
+                    @click="onSubmit">Register</el-button>
             </el-form-item>
         </el-form>
         <b-row class="text-center">
@@ -47,13 +57,16 @@
             };
         },
         layout: 'auth',
+        auth: false,
         data() {
             return {
                 form: {
+                    name: '',
+                    surname: '',
                     email: '',
                     password: ''
                 },
-                title: 'Sign in',
+                title: 'Sign up',
                 error: null,
                 closableAlert: false
             };
@@ -61,22 +74,16 @@
         methods: {
             async onSubmit() {
                 try {
-                    await this.$auth.loginWith('local', {
-                        data: {
-                            email: this.form.email,
-                            password: this.form.password
-                        }
-                    });
+                    await this.$axios.$post(`/users`, this.form);
                     this.$notify({
                         title: 'Success',
-                        message: 'You have been successfully logged into system.',
+                        message: 'Your account has been successfully created.',
                         type: 'success',
                         position: 'bottom-right'
                     });
+                    this.$router.push('/login');
                 } catch (error) {
                     this.error = error.response.data.message;
-                    this.form.email = '';
-                    this.form.password = '';
                 }
             }
         }
@@ -91,12 +98,12 @@
         -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
         -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
         box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
-    .title-container
-        width: 100%
-        text-align: center
-        margin-bottom: 20px
-    .el-alert
-        margin-bottom: 20px
-    .btn
-        width: 100%
+        .title-container
+            width: 100%
+            text-align: center
+            margin-bottom: 20px
+        .el-alert
+            margin-bottom: 20px
+        .btn
+            width: 100%
 </style>

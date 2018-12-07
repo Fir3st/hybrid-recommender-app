@@ -12,7 +12,11 @@
                 <b-dropdown-item @click="handleLogout">Log out</b-dropdown-item>
             </b-nav-item-dropdown>
         </template>
-        <b-nav-text v-else><nuxt-link to="/login">Log in</nuxt-link></b-nav-text>
+        <b-nav-text v-else>
+            <nuxt-link to="/login">Log in</nuxt-link>
+            |
+            <nuxt-link to="/register">Register</nuxt-link>
+        </b-nav-text>
     </b-navbar-nav>
 </template>
 
