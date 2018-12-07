@@ -22,6 +22,7 @@ router.get('/', async (req: Request, res: any) => {
             .leftJoinAndSelect('movies.languages', 'languages')
             .leftJoinAndSelect('movies.countries', 'countries')
             .leftJoinAndSelect('movies.ratings', 'ratings')
+            .orderBy('movies.releaseDate', 'DESC')
             .take(take)
             .skip(skip)
             .getMany();
