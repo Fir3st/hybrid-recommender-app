@@ -141,6 +141,7 @@
                         type: 'success',
                         position: 'bottom-right'
                     });
+                    await this.getUserRecommendedMovies();
                 } catch (error) {
                     console.log(error.message);
                     this.$notify({
