@@ -120,6 +120,9 @@ export class Movie {
     @Column({ length: 255 })
     poster: string;
 
+    @Column({ length: 255 })
+    image: string;
+
     @Column('enum', { enum: movieTypes })
     type: string;
 
