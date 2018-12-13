@@ -8,6 +8,7 @@ import { UserRating } from './UserRating';
 
 enum movieTypes {
     movie,
+    series,
     episode
 }
 
