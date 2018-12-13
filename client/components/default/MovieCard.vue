@@ -8,7 +8,7 @@
         <nuxt-link :to="`/movies/${movie.id}`">
             <div class="crop">
                 <b-img
-                    :src="movie.poster"
+                    :src="image"
                     :alt="movie.title"
                     fluid></b-img>
             </div>
@@ -27,6 +27,12 @@
                 type: Object,
                 required: true,
                 default: null
+            }
+        },
+        computed: {
+            image() {
+                const hasImage = this.movie.poster !== null && this.movie.poster !== '' && this.movie.poster !== 'N/A';
+                return hasImage ? this.movie.poster : 'https://via.placeholder.com/160x200';
             }
         },
         methods: {

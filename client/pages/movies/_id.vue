@@ -2,25 +2,22 @@
     <div>
         <b-row v-if="movie">
             <b-col>
+                <media-player />
                 <b-row>
                     <b-col>
                         <h1>{{ movieTitle }}</h1>
-                        <p>{{ movie.plot || '' }}</p>
                     </b-col>
                 </b-row>
-                <b-row v-if="isLogged">
+                <movie-info :movie="movie" />
+                <b-row>
                     <b-col>
-                        <h2>Rate this movie</h2>
-                        <b-button-group>
-                            <b-button
-                                v-for="i in getRatingValues()"
-                                :key="i"
-                                :variant="(userRating !== null && userRating === i) ? 'info' : 'default'"
-                                :data-rating="i"
-                                v-on="userRating !== i ? { click: rateMovie } : {}">{{ i }}</b-button>
-                        </b-button-group>
+                        <p>{{ movie.plot }}</p>
                     </b-col>
                 </b-row>
+                <rating
+                    :is-logged="isLogged"
+                    :user-rating="userRating"
+                    :rate-movie="rateMovie"/>
                 <b-row v-if="similarMovies.length > 0">
                     <b-col>
                         <h2>You may also like</h2>
@@ -44,11 +41,17 @@
 </template>
 
 <script>
-    import MovieList from '../../components/default/MovieList';
+    import MovieList from '~/components/default/MovieList';
+    import MediaPlayer from '~/components/default/MediaPlayer';
+    import Rating from '~/components/default/Rating';
+    import MovieInfo from '~/components/default/MovieInfo';
 
     export default {
         components: {
-            MovieList
+            MovieList,
+            MediaPlayer,
+            Rating,
+            MovieInfo
         },
         head() {
             return {
@@ -130,8 +133,7 @@
                 }
             },
             async rateMovie(e) {
-                const rating = parseFloat(e.target.attributes['data-rating'].value);
-                this.userRating = rating;
+                this.userRating = parseFloat(e.target.attributes['data-rating'].value);
                 try {
                     const movieId = this.$route.params.id;
                     await this.$axios.$post(`/movies/${movieId}/rating`, { rating: this.userRating });
@@ -151,14 +153,6 @@
                         position: 'bottom-right'
                     });
                 }
-            },
-            getRatingValues() {
-                const ratings = [];
-                for (let i = 1; i <= 5; i += 0.5) {
-                    ratings.push(i);
-                }
-
-                return ratings;
             }
         }
     };

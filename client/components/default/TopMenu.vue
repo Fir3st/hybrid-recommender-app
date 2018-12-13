@@ -36,7 +36,7 @@
 
 <style lang="sass" scoped>
     .bg-dark
-        background-color: #000000 !important
+        background-color: #232323 !important
     .nav-link
         text-transform: uppercase
 </style>
