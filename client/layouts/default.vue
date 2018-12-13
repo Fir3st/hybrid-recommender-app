@@ -22,7 +22,7 @@
 <style lang="sass" scoped>
     .container-fluid
         min-height: 100%
-        background: #090909
+        background: #121212
         color: #ffffff
         padding: 0
     .top-menu

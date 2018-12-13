@@ -9,11 +9,7 @@
                     </b-col>
                 </b-row>
                 <movie-info :movie="movie" />
-                <b-row>
-                    <b-col>
-                        <p>{{ movie.plot }}</p>
-                    </b-col>
-                </b-row>
+                <movie-description :movie="movie" />
                 <rating
                     :is-logged="isLogged"
                     :user-rating="userRating"
@@ -45,13 +41,15 @@
     import MediaPlayer from '~/components/default/MediaPlayer';
     import Rating from '~/components/default/Rating';
     import MovieInfo from '~/components/default/MovieInfo';
+    import MovieDescription from '~/components/default/MovieDescription';
 
     export default {
         components: {
             MovieList,
             MediaPlayer,
             Rating,
-            MovieInfo
+            MovieInfo,
+            MovieDescription
         },
         head() {
             return {
