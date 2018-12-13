@@ -1,12 +1,11 @@
 <template>
-    <b-container
-        fluid>
-        <b-row xs="12">
-            <b-col class="top-menu">
-                <top-menu />
-            </b-col>
-        </b-row>
-        <nuxt />
+    <b-container fluid>
+        <b-container fluid>
+            <top-menu />
+        </b-container>
+        <b-container>
+            <nuxt />
+        </b-container>
     </b-container>
 </template>
 
@@ -23,8 +22,9 @@
 <style lang="sass" scoped>
     .container-fluid
         min-height: 100%
-        background: #3e4247
+        background: #1e1e1e
         color: #ffffff
+        padding: 0
     .top-menu
         padding: 0
 </style>

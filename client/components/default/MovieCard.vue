@@ -1,15 +1,20 @@
 <template>
     <b-col
+        v-b-tooltip.hover
+        :title="`${truncate(movie.plot, 300)}`"
         sm="2"
+        class="movie-card"
     >
         <nuxt-link :to="`/movies/${movie.id}`">
             <div class="crop">
-                <b-img-lazy
+                <b-img
                     :src="movie.poster"
                     :alt="movie.title"
-                    blank-color="#bbb"
-                    fluid />
-                <div class="caption">{{ movie.title }}</div>
+                    fluid></b-img>
+            </div>
+            <div class="caption">
+                <p>{{ truncate(movie.title, 20) }}</p>
+                <p class="additional-info">{{ movie.year }}</p>
             </div>
         </nuxt-link>
     </b-col>
@@ -23,24 +28,32 @@
                 required: true,
                 default: null
             }
+        },
+        methods: {
+            truncate(text, length = 30) {
+                return text && text.length > length ? text.substring(0, length) + '...' : text;
+            }
         }
     };
 </script>
 
 <style lang="sass" scoped>
+    .movie-card
+        margin-bottom: 10px
     .crop
-        height: 260px
+        height: 200px
         position: relative
         overflow: hidden
-        margin-bottom: 20px
+        margin-bottom: 10px
+        border: 1px solid #7f828b
     .caption
-        position: absolute
-        left: 0
-        bottom: 0
-        right: 0
-        background: rgba(0,0,0,0.6)
         color: #ffffff
-        font-weight: bold
-        padding: 10px
-        text-align: center
+        padding: 5px
+        font-size: 12px
+    .caption > p
+        margin-bottom: 5px
+    .caption .additional-info
+        color: #7f828b
+    a
+        text-decoration: none
 </style>

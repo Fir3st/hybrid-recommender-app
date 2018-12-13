@@ -8,6 +8,7 @@
                 right>
                 <b-dropdown-item
                     v-if="showAdminLink"
+                    class="admin-link"
                     to="/admin">Admin dashboard</b-dropdown-item>
                 <b-dropdown-item @click="handleLogout">Log out</b-dropdown-item>
             </b-nav-item-dropdown>
@@ -50,7 +51,6 @@
 </script>
 
 <style lang="sass" scoped>
-    a .admin-link
+    .admin-link
        color: red
-       text-decoration: underline
 </style>

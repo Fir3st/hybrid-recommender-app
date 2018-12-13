@@ -38,10 +38,11 @@
                 take: 'movies/take',
                 skip: 'movies/skip'
             })
-        },
-        async fetch ({ store }) {
-            // await store.dispatch('movies/setMovies');
-            // await store.dispatch('movies/setCount');
         }
     };
 </script>
+
+<style lang="sass" scoped>
+    h1
+        margin-bottom: 40px !important
+</style>

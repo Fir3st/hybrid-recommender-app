@@ -21,7 +21,7 @@
                         </b-button-group>
                     </b-col>
                 </b-row>
-                <b-row>
+                <b-row v-if="similarMovies.length > 0">
                     <b-col>
                         <h2>You may also like</h2>
                         <movie-list :movies="similarMovies" />

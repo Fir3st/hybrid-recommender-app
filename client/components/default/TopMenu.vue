@@ -1,23 +1,24 @@
 <template>
     <b-navbar
-        sticky
         toggleable="md"
         type="dark"
         variant="dark">
-        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-        <b-navbar-brand to="/">Recommender app</b-navbar-brand>
-        <b-collapse
-            id="nav_collapse"
-            is-nav>
-            <b-navbar-nav>
-                <b-nav-item to="/">Home</b-nav-item>
-            </b-navbar-nav>
-            <menu-user
-                :user-full-name="userFullName"
-                :is-logged="isLogged"
-                :is-admin="isAdmin"
-                :handle-logout="handleLogout" />
-        </b-collapse>
+        <b-container>
+            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+            <b-navbar-brand to="/">Recommender app</b-navbar-brand>
+            <b-collapse
+                id="nav_collapse"
+                is-nav>
+                <b-navbar-nav>
+                    <b-nav-item to="/">Home</b-nav-item>
+                </b-navbar-nav>
+                <menu-user
+                    :user-full-name="userFullName"
+                    :is-logged="isLogged"
+                    :is-admin="isAdmin"
+                    :handle-logout="handleLogout" />
+            </b-collapse>
+        </b-container>
     </b-navbar>
 </template>
 
@@ -34,4 +35,8 @@
 </script>
 
 <style lang="sass" scoped>
+    .bg-dark
+        background-color: #000000 !important
+    .nav-link
+        text-transform: uppercase
 </style>

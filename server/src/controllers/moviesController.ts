@@ -125,8 +125,8 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
             const moviesIds = recommendations.data.recommendations.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
+                .leftJoinAndSelect('movies.genres', 'genres')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .select(['movies.id', 'movies.title', 'movies.poster', 'movies.type', 'movies.plot'])
                 .getMany();
 
             if (movies && movies.length > 0) {
