@@ -22,7 +22,7 @@
                 required: true
             },
             userRating: {
-                type: Number,
+                type: Number | null,
                 required: true
             },
             rateMovie: {
