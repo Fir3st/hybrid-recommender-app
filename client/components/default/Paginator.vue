@@ -28,16 +28,16 @@
         },
         methods: {
             ...mapActions({
-                setPagination: 'movies/setPagination',
+                setSkip: 'movies/setSkip',
             }),
             prevMovies() {
                 if ((this.skip - this.take) >= 0) {
-                    this.setPagination(this.skip - this.take);
+                    this.setSkip(this.skip - this.take);
                 }
             },
             nextMovies() {
                 if ((this.skip + this.take) < this.count) {
-                    this.setPagination(this.skip + this.take);
+                    this.setSkip(this.skip + this.take);
                 }
             }
         }

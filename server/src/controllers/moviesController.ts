@@ -13,10 +13,11 @@ const router = Router();
 router.get('/', async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
+    const type = req.query.type || 'all';
     const repository = getRepository(Movie);
 
     try {
-        const movies = await repository
+        const query = repository
             .createQueryBuilder('movies')
             .leftJoinAndSelect('movies.genres', 'genres')
             .leftJoinAndSelect('movies.actors', 'actors')
@@ -25,8 +26,13 @@ router.get('/', async (req: Request, res: any) => {
             .leftJoinAndSelect('movies.ratings', 'ratings')
             .orderBy('movies.releaseDate', 'DESC')
             .take(take)
-            .skip(skip)
-            .getMany();
+            .skip(skip);
+
+        if (type !== 'all') {
+            query.where('movies.type = :type', { type });
+        }
+
+        const movies = await query.getMany();
 
         if (movies) {
             return res.send(movies);
@@ -39,13 +45,19 @@ router.get('/', async (req: Request, res: any) => {
     }
 });
 
-router.get('/count', async (req: Request, res: any) => {
+router.get('/count/:type', async (req: Request, res: any) => {
+    const type = req.params.type || 'all';
     const repository = getRepository(Movie);
 
     try {
-        const moviesCount = await repository
-            .createQueryBuilder('movies')
-            .getCount();
+        const query = repository
+            .createQueryBuilder('movies');
+
+        if (type !== 'all') {
+            query.where('movies.type = :type', { type });
+        }
+
+        const moviesCount = await query.getCount();
 
         if (moviesCount) {
             return res.send({ count: moviesCount });

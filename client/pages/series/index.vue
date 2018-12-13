@@ -5,11 +5,11 @@
         extends: MoviesPage,
         data() {
             return {
-                pageTitle: 'Newest feed'
+                pageTitle: 'Series'
             };
         },
         async fetch ({ store }) {
-            await store.dispatch('movies/setType', 'all');
+            await store.dispatch('movies/setType', 'series');
             await store.dispatch('movies/setMovies');
             await store.dispatch('movies/setCount');
         }

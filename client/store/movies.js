@@ -3,6 +3,7 @@ export const state = () => ({
     count: 0,
     take: 50,
     skip: 0,
+    type: 'all'
 });
 
 export const getters = {
@@ -17,6 +18,9 @@ export const getters = {
     },
     skip (state) {
         return state.skip;
+    },
+    type (state) {
+        return state.type;
     }
 };
 
@@ -27,36 +31,42 @@ export const mutations = {
     setCount (state, count) {
         state.count = count;
     },
-    setPagination(state, skip) {
+    setSkip(state, skip) {
         state.skip = skip;
     },
+    setType(state, type) {
+        state.type = type;
+    }
 };
 
 export const actions = {
     async setMovies({ commit, state }) {
         try {
-            const movies = await this.$axios.$get(`/movies?take=${state.take}&skip=${state.skip}`);
+            const movies = await this.$axios.$get(`/movies?take=${state.take}&skip=${state.skip}&type=${state.type}`);
 
             if (movies && movies.length > 0) {
                 commit('setMovies', movies);
             }
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
         }
     },
-    async setCount({ commit }) {
+    async setCount({ commit, state }) {
         try {
-            const moviesCount = await this.$axios.$get(`/movies/count`);
+            const moviesCount = await this.$axios.$get(`/movies/count/${state.type}`);
 
             if (moviesCount) {
                 commit('setCount', moviesCount.count);
             }
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
         }
     },
-    setPagination({ commit, dispatch }, skip) {
-        commit('setPagination', skip);
+    setSkip({ commit, dispatch }, skip) {
+        commit('setSkip', skip);
         dispatch('setMovies');
     },
+    setType({ commit }, type) {
+        commit('setType', type);
+    }
 };
