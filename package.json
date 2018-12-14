@@ -48,7 +48,7 @@
         "reflect-metadata": "^0.1.12",
         "supertest": "^3.1.0",
         "ts-jest": "^23.1.2",
-        "typeorm": "^0.2.7",
+        "typeorm": "^0.3.0-alpha.22",
         "vue": "^2.5.17",
         "vue-truncate-filter": "^1.1.7",
         "winston": "^3.1.0"

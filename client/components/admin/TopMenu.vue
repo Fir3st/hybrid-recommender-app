@@ -5,12 +5,12 @@
         type="dark"
         variant="info">
         <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-        <b-navbar-brand to="/">Recommender app</b-navbar-brand>
+        <b-navbar-brand to="/admin">Recommender</b-navbar-brand>
         <b-collapse
             id="nav_collapse"
             is-nav>
             <b-navbar-nav>
-                <b-nav-item to="/admin">Dashboard</b-nav-item>
+                <b-nav-item to="/admin/users">Users</b-nav-item>
             </b-navbar-nav>
             <menu-user
                 :user-full-name="userFullName"

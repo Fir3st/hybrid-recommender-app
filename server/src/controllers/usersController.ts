@@ -7,22 +7,47 @@ import { getRepository } from 'typeorm';
 import winston from '../utils/winston';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validations/user';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
 import { Movie } from '../entities/Movie';
 
 const router = Router();
 
-router.get('/', authenticate, async (req: Request, res: any) => {
+router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
+    const take = req.query.take || 10;
+    const skip = req.query.skip || 0;
     const repository = getRepository(User);
 
     try {
-        const users = await repository.find();
+        const users = await repository
+            .createQueryBuilder('users')
+            .take(take)
+            .skip(skip)
+            .getMany();
 
         if (users && users.length > 0) {
-            return users.map(user => _.pick(user, ['id', 'name', 'surname', 'email', 'admin']));
+            return res.send(users.map(user => _.pick(user, ['id', 'name', 'surname', 'email', 'admin'])));
         }
 
-        return res.boom.badRequest('No users found');
+        return res.boom.badRequest('No users found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/count', [authenticate, authorize], async (req: Request, res: any) => {
+    const repository = getRepository(User);
+
+    try {
+        const usersCount = await repository
+            .createQueryBuilder('users')
+            .getCount();
+
+        if (usersCount) {
+            return res.send({ count: usersCount });
+        }
+
+        return res.boom.badRequest('No users found.');
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

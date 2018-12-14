@@ -20,7 +20,8 @@
     export default {
         components: {
             TopMenu
-        }
+        },
+        middleware: ['admin']
     };
 </script>
 

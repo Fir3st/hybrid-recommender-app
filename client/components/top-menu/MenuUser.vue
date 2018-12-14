@@ -9,7 +9,13 @@
                 <b-dropdown-item
                     v-if="showAdminLink"
                     class="admin-link"
-                    to="/admin">Admin dashboard</b-dropdown-item>
+                    to="/admin"
+                    exact>Admin dashboard</b-dropdown-item>
+                <b-dropdown-item
+                    v-if="showFrontpageLink"
+                    class="admin-link"
+                    to="/"
+                    exact>Return to front page</b-dropdown-item>
                 <b-dropdown-item @click="handleLogout">Log out</b-dropdown-item>
             </b-nav-item-dropdown>
         </template>
@@ -45,6 +51,9 @@
         computed: {
             showAdminLink() {
                 return this.isAdmin && !this.$route.path.includes('admin');
+            },
+            showFrontpageLink() {
+                return this.$route.path.includes('admin');
             }
         }
     };
@@ -52,5 +61,5 @@
 
 <style lang="sass" scoped>
     .admin-link
-       color: red
+        font-weight: bold
 </style>
