@@ -8,8 +8,8 @@
                 :page-size="take"
                 background
                 layout="prev, pager, next"
-                @prev-click="handlePrevMovies"
-                @next-click="handleNextMovies"
+                @prev-click="handlePrev"
+                @next-click="handleNext"
                 @current-change="handleChangePage">
             </el-pagination>
         </b-col>
@@ -31,12 +31,12 @@
             ...mapActions({
                 setSkip: 'movies/setSkip',
             }),
-            handlePrevMovies() {
+            handlePrev() {
                 if ((this.skip - this.take) >= 0) {
                     this.setSkip(this.skip - this.take);
                 }
             },
-            handleNextMovies() {
+            handleNext() {
                 if ((this.skip + this.take) < this.count) {
                     this.setSkip(this.skip + this.take);
                 }

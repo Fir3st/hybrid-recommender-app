@@ -28,8 +28,8 @@
 </template>
 
 <script>
-    import TopMenu from '../global/TopMenu';
-    import MenuUser from '../top-menu/MenuUser';
+    import TopMenu from '~/components/global/TopMenu';
+    import MenuUser from '~/components/global/MenuUser';
 
     export default {
         components: {
