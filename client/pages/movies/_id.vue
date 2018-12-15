@@ -130,8 +130,8 @@
                     console.log(error.message);
                 }
             },
-            async rateMovie(e) {
-                this.userRating = parseFloat(e.target.attributes['data-rating'].value);
+            async rateMovie(value) {
+                this.userRating = value;
                 try {
                     const movieId = this.$route.params.id;
                     await this.$axios.$post(`/movies/${movieId}/rating`, { rating: this.userRating });

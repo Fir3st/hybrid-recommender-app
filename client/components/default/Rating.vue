@@ -2,14 +2,14 @@
     <b-row v-if="isLogged">
         <b-col>
             <h2>Rate this movie</h2>
-            <b-button-group>
-                <b-button
-                    v-for="i in getRatingValues()"
-                    :key="i"
-                    :variant="(userRating !== null && userRating === i) ? 'info' : 'default'"
-                    :data-rating="i"
-                    v-on="userRating !== i ? { click: rateMovie } : {}">{{ i }}</b-button>
-            </b-button-group>
+            <el-rate
+                :value="rating"
+                :allow-half="true"
+                show-score
+                text-color="#ff9900"
+                score-template="{value} points"
+                @change="rateMovie">
+            </el-rate>
         </b-col>
     </b-row>
 </template>
@@ -30,14 +30,9 @@
                 required: true
             }
         },
-        methods: {
-            getRatingValues() {
-                const ratings = [];
-                for (let i = 1; i <= 5; i += 0.5) {
-                    ratings.push(i);
-                }
-
-                return ratings;
+        computed: {
+            rating() {
+                return this.userRating;
             }
         }
     };
