@@ -1,16 +1,17 @@
 <template>
     <b-row
-        id="pagination"
+        id="front-pagination"
         class="text-center">
         <b-col>
-            <b-button-group>
-                <b-button
-                    :disabled="skip <= 0"
-                    @click="prevMovies">Prev</b-button>
-                <b-button
-                    :disabled="(skip + take) > count"
-                    @click="nextMovies">Next</b-button>
-            </b-button-group>
+            <el-pagination
+                :total="count"
+                :page-size="take"
+                background
+                layout="prev, pager, next"
+                @prev-click="handlePrevMovies"
+                @next-click="handleNextMovies"
+                @current-change="handleChangePage">
+            </el-pagination>
         </b-col>
     </b-row>
 </template>
@@ -30,21 +31,28 @@
             ...mapActions({
                 setSkip: 'movies/setSkip',
             }),
-            prevMovies() {
+            handlePrevMovies() {
                 if ((this.skip - this.take) >= 0) {
                     this.setSkip(this.skip - this.take);
                 }
             },
-            nextMovies() {
+            handleNextMovies() {
                 if ((this.skip + this.take) < this.count) {
                     this.setSkip(this.skip + this.take);
                 }
+            },
+            handleChangePage(pageNum) {
+                this.setSkip(this.take * (pageNum - 1));
             }
         }
     };
 </script>
 
-<style lang="sass" scoped>
-    #pagination
+<style lang="sass">
+    #front-pagination
         padding: 20px 0
+        & .el-pagination > .btn-next, & .el-pagination > .btn-prev, & .el-pagination > .el-pager li
+            background-color: #232323 !important
+        & .el-pagination.is-background .el-pager li:not(.disabled).active
+            background-color: #17a2b8 !important
 </style>

@@ -10,8 +10,12 @@
                 id="nav_collapse"
                 is-nav>
                 <b-navbar-nav>
-                    <b-nav-item to="/movies">Movies</b-nav-item>
-                    <b-nav-item to="/series">Series</b-nav-item>
+                    <b-nav-item
+                        to="/movies"
+                        exact>Movies</b-nav-item>
+                    <b-nav-item
+                        to="/series"
+                        exact>Series</b-nav-item>
                 </b-navbar-nav>
                 <menu-user
                     :user-full-name="userFullName"
