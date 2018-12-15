@@ -31,6 +31,16 @@
                             {{ formatDate(scope.row.releaseDate) }}
                         </template>
                     </el-table-column>
+                    <el-table-column
+                        label="Actions">
+                        <template slot-scope="scope">
+                            <nuxt-link :to="`/admin/movies/${scope.row.id}`">
+                                <el-button
+                                    icon="el-icon-search"
+                                    circle />
+                            </nuxt-link>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </b-col>
         </b-row>
