@@ -60,7 +60,7 @@
         data() {
             return {
                 movie: null,
-                userRating: null,
+                userRating: 0,
                 similarMovies: [],
                 recommendedMovies: [],
             };
