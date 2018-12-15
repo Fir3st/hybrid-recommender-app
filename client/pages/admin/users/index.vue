@@ -43,14 +43,24 @@
                 </el-table>
             </b-col>
         </b-row>
+        <paginator
+            :count="count"
+            :take="take"
+            :handle-prev="handlePrev"
+            :handle-next="handleNext"
+            :handle-change-page="handleChangePage" />
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
+    import Paginator from '~/components/admin/Paginator';
 
     export default {
+        components: {
+            Paginator
+        },
         extends: AdminPage,
         data() {
             return {
@@ -63,10 +73,28 @@
         computed: {
             ...mapGetters({
                 users: 'users/users',
-                usersCount: 'users/count',
+                count: 'users/count',
                 take: 'users/take',
                 skip: 'users/skip'
             })
+        },
+        methods: {
+            ...mapActions({
+                setSkip: 'users/setSkip',
+            }),
+            handlePrev() {
+                if ((this.skip - this.take) >= 0) {
+                    this.setSkip(this.skip - this.take);
+                }
+            },
+            handleNext() {
+                if ((this.skip + this.take) < this.count) {
+                    this.setSkip(this.skip + this.take);
+                }
+            },
+            handleChangePage(pageNum) {
+                this.setSkip(this.take * (pageNum - 1));
+            }
         },
         async fetch({ store }) {
             await store.dispatch('users/setUsers');
