@@ -14,6 +14,8 @@ router.get('/', async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const type = req.query.type || 'all';
+    const orderBy = req.query.orderBy || 'id';
+    const order = req.query.order || 'ASC';
     const repository = getRepository(Movie);
 
     try {
@@ -24,7 +26,7 @@ router.get('/', async (req: Request, res: any) => {
             .leftJoinAndSelect('movies.languages', 'languages')
             .leftJoinAndSelect('movies.countries', 'countries')
             .leftJoinAndSelect('movies.ratings', 'ratings')
-            .orderBy('movies.releaseDate', 'DESC')
+            .orderBy(`movies.${orderBy}`, order)
             .take(take)
             .skip(skip);
 

@@ -3,7 +3,9 @@ export const state = () => ({
     count: 0,
     take: 50,
     skip: 0,
-    type: 'all'
+    type: 'all',
+    orderBy: 'id',
+    order: 'ASC'
 });
 
 export const getters = {
@@ -21,6 +23,12 @@ export const getters = {
     },
     type (state) {
         return state.type;
+    },
+    orderBy(state) {
+        return state.orderBy;
+    },
+    order(state) {
+        return state.order;
     }
 };
 
@@ -36,13 +44,20 @@ export const mutations = {
     },
     setType(state, type) {
         state.type = type;
+    },
+    setOrderBy(state, orderBy) {
+        state.orderBy = orderBy;
+    },
+    setOrder(state, order) {
+        state.order = order;
     }
 };
 
 export const actions = {
     async setMovies({ commit, state }) {
         try {
-            const movies = await this.$axios.$get(`/movies?take=${state.take}&skip=${state.skip}&type=${state.type}`);
+            const url = `/movies?take=${state.take}&skip=${state.skip}&type=${state.type}&orderBy=${state.orderBy}&order=${state.order}`;
+            const movies = await this.$axios.$get(url);
 
             if (movies && movies.length > 0) {
                 commit('setMovies', movies);
@@ -68,5 +83,11 @@ export const actions = {
     },
     setType({ commit }, type) {
         commit('setType', type);
+    },
+    setOrderBy({ commit }, orderBy) {
+        commit('setOrderBy', orderBy);
+    },
+    setOrder({ commit }, order) {
+        commit('setOrder', order);
     }
 };

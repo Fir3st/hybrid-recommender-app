@@ -2,7 +2,9 @@ export const state = () => ({
     users: [],
     count: 0,
     take: 50,
-    skip: 0
+    skip: 0,
+    orderBy: 'id',
+    order: 'ASC'
 });
 
 export const getters = {
@@ -17,6 +19,12 @@ export const getters = {
     },
     skip (state) {
         return state.skip;
+    },
+    orderBy(state) {
+        return state.orderBy;
+    },
+    order(state) {
+        return state.order;
     }
 };
 
@@ -29,13 +37,20 @@ export const mutations = {
     },
     setSkip(state, skip) {
         state.skip = skip;
+    },
+    setOrderBy(state, orderBy) {
+        state.orderBy = orderBy;
+    },
+    setOrder(state, order) {
+        state.order = order;
     }
 };
 
 export const actions = {
     async setUsers({ commit, state }) {
         try {
-            const users = await this.$axios.$get(`/users?take=${state.take}&skip=${state.skip}`);
+            const url = `/users?take=${state.take}&skip=${state.skip}&orderBy=${state.orderBy}&order=${state.order}`;
+            const users = await this.$axios.$get(url);
 
             if (users && users.length > 0) {
                 commit('setUsers', users);
@@ -58,5 +73,11 @@ export const actions = {
     setSkip({ commit, dispatch }, skip) {
         commit('setSkip', skip);
         dispatch('setUsers');
+    },
+    setOrderBy({ commit }, orderBy) {
+        commit('setOrderBy', orderBy);
+    },
+    setOrder({ commit }, order) {
+        commit('setOrder', order);
     }
 };

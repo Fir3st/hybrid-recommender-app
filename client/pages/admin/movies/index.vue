@@ -102,6 +102,9 @@
             }
         },
         async fetch({ store }) {
+            await store.dispatch('movies/setType', 'all');
+            await store.dispatch('movies/setOrderBy', 'id');
+            await store.dispatch('movies/setOrder', 'ASC');
             await store.dispatch('movies/setMovies');
             await store.dispatch('movies/setCount');
         }

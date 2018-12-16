@@ -15,11 +15,14 @@ const router = Router();
 router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
+    const orderBy = req.query.orderBy || 'id';
+    const order = req.query.order || 'ASC';
     const repository = getRepository(User);
 
     try {
         const users = await repository
             .createQueryBuilder('users')
+            .orderBy(`users.${orderBy}`, order)
             .take(take)
             .skip(skip)
             .getMany();
