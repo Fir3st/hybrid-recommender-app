@@ -157,6 +157,24 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
     }
 });
 
+router.get('/:id/topics', async (req: Request, res: any) => {
+    const id = req.params.id;
+    const recommender = config.get('recommenderUrl');
+
+    try {
+        const recommendations = await axios.get(`${recommender}/movies/${id}/topics`);
+
+        if (recommendations && recommendations.data.topics && recommendations.data.topics.length > 0) {
+            return res.send({ topics: recommendations.data.topics[0] });
+        }
+
+        return res.boom.badRequest(`No recommendations for ${id}`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/:id/ratings', [authenticate, authorize], async (req: Request, res: any) => {
     const id = req.params.id;
     const repository = getRepository(UserRating);

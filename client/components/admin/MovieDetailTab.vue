@@ -11,7 +11,9 @@
         </b-tab>
         <b-tab
             title="Analysis">
-            <movie-analysis />
+            <movie-analysis
+                :topics="topics"
+                :recommendations="recommendations" />
         </b-tab>
     </b-tabs>
 </template>
@@ -33,6 +35,14 @@
                 required: true
             },
             ratings: {
+                type: Array,
+                required: true
+            },
+            topics: {
+                type: Array,
+                required: true
+            },
+            recommendations: {
                 type: Array,
                 required: true
             }

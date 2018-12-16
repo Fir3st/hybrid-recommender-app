@@ -10,7 +10,9 @@
             <b-col>
                 <movie-detail-tab
                     :movie="movie"
-                    :ratings="ratings" />
+                    :ratings="ratings"
+                    :topics="topics"
+                    :recommendations="recommendations" />
             </b-col>
         </b-row>
     </div>
@@ -41,12 +43,16 @@
         async asyncData ({ app, params }) {
             try {
                 const movie = await app.$axios.$get(`/movies/${params.id}`);
-                let ratings = await app.$axios.$get(`/movies/${params.id}/ratings`);
 
                 if (movie) {
+                    const ratings = await app.$axios.$get(`/movies/${params.id}/ratings`);
+                    const topics = await app.$axios.$get(`/movies/${params.id}/topics`);
+                    const recommendations = await app.$axios.$get(`/movies/${params.id}/recommendations`);
                     return {
                         movie,
-                        ratings
+                        ratings,
+                        topics: topics.topics,
+                        recommendations
                     };
                 }
             } catch (error) {
