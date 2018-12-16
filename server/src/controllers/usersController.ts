@@ -84,10 +84,14 @@ router.get('/:id', authenticate, async (req: Request, res: any) => {
     }
 
     try {
-        const user = await repository.findOne({ id });
+        const user = await repository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.ratings', 'ratings')
+            .leftJoinAndSelect('ratings.movie', 'movie')
+            .getOne();
 
         if (user) {
-            return res.send({ ..._.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
+            return res.send({ ..._.omit(user, ['password']) });
         }
 
         return res.boom.badRequest(`User with id ${id} not found.`);

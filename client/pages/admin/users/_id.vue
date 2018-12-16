@@ -1,9 +1,23 @@
 <template>
     <div class="admin-page">
         <app-breadcrumb :items="breadcrumbs" />
-        <b-row>
+        <b-row v-if="user">
             <b-col>
-                <h1>{{ pageTitle }}</h1>
+                <b-row>
+                    <b-col>
+                        <h1>{{ pageTitle }}</h1>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <user-detail-tab :user="user" />
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
+        <b-row v-else>
+            <b-col>
+                <h1>User not found</h1>
             </b-col>
         </b-row>
     </div>
@@ -11,8 +25,12 @@
 
 <script>
     import AdminPage from '~/components/admin/AdminPage';
+    import UserDetailTab from '~/components/admin/UserDetailTab';
 
     export default {
+        components: {
+            UserDetailTab
+        },
         extends: AdminPage,
         data() {
             return {
