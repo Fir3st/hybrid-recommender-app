@@ -6,7 +6,7 @@ import winston from '../utils/winston';
 import * as moment from 'moment';
 import MoviesUtil from '../utils/movies/MoviesUtil';
 import { Movie } from '../entities/Movie';
-import { authenticate } from '../middleware/auth';
+import {authenticate, authorize} from '../middleware/auth';
 import { UserRating } from '../entities/UserRating';
 const router = Router();
 
@@ -151,6 +151,28 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest(`No recommendations for ${id}`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/:id/ratings', [authenticate, authorize], async (req: Request, res: any) => {
+    const id = req.params.id;
+    const repository = getRepository(UserRating);
+
+    try {
+        const ratings = await repository
+            .createQueryBuilder('userRating')
+            .leftJoinAndSelect('userRating.user', 'user')
+            .andWhere('userRating.movieId = :id', { id })
+            .getMany();
+
+        if (ratings) {
+            return res.send(ratings);
+        }
+
+        return res.boom.badRequest(`No user ratings found for movie ${id}.`);
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();
