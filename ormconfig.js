@@ -14,5 +14,6 @@ module.exports = {
     "cli": {
         "entitiesDir": "server/src/entities",
         "migrationsDir": "server/src/migrations"
-    }
+    },
+    "logging": false
 };

@@ -57,6 +57,46 @@ router.get('/count', [authenticate, authorize], async (req: Request, res: any) =
     }
 });
 
+router.get('/me', authenticate, async (req: Request, res: any) => {
+    const userRepository = getRepository(User);
+
+    try {
+        const user = await userRepository.findOne({ id: req.user.id });
+
+        if (user) {
+            return res.send({ user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
+        }
+
+        return res.boom.badRequest('Authentication failed');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/:id', authenticate, async (req: Request, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const userId = parseInt(req.user.id, 10);
+    const repository = getRepository(User);
+
+    if ((id !== userId) && !req.user.admin) {
+        return res.boom.badRequest('You have no permissions to perform this action.');
+    }
+
+    try {
+        const user = await repository.findOne({ id });
+
+        if (user) {
+            return res.send({ ..._.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
+        }
+
+        return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.post('/', async (req: Request, res: any) => {
     const { error, value: validated } = validateRegister(req.body);
     const userRepository = getRepository(User);
@@ -80,23 +120,6 @@ router.post('/', async (req: Request, res: any) => {
 
         const createdUser = await userRepository.save(user);
         return res.send(_.pick(createdUser, ['id', 'name', 'surname', 'email', 'admin']));
-    } catch (error) {
-        winston.error(error.message);
-        return res.boom.internal();
-    }
-});
-
-router.get('/me', authenticate, async (req: Request, res: any) => {
-    const userRepository = getRepository(User);
-
-    try {
-        const user = await userRepository.findOne({ id: req.user.id });
-
-        if (user) {
-            return res.send({ user: _.pick(user, ['id', 'name', 'surname', 'email', 'admin']) });
-        }
-
-        return res.boom.badRequest('Authentication failed');
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

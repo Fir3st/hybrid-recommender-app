@@ -26,18 +26,20 @@
                         prop="email"
                         label="E-mail" />
                     <el-table-column
-                        label="Admin">
+                        label="Role">
                         <template slot-scope="scope">
-                            <span
-                                v-if="scope.row.admin"
-                                class="admin">
-                                <span class="el-icon-success"></span> True
-                            </span>
-                            <span
-                                v-else
-                                class="notAdmin">
-                                <span class="el-icon-error"></span> False
-                            </span>
+                            <span v-if="scope.row.admin">Admin</span>
+                            <span v-else>User</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        label="Actions">
+                        <template slot-scope="scope">
+                            <nuxt-link :to="`/admin/users/${scope.row.id}`">
+                                <el-button
+                                    icon="el-icon-search"
+                                    circle />
+                            </nuxt-link>
                         </template>
                     </el-table-column>
                 </el-table>
