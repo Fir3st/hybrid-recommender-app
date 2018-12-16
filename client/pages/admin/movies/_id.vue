@@ -6,13 +6,22 @@
                 <h1>{{ pageTitle }}</h1>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <movie-detail-tab :movie="movie" />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
 <script>
     import AdminPage from '~/components/admin/AdminPage';
+    import MovieDetailTab from '~/components/admin/MovieDetailTab';
 
     export default {
+        components: {
+            MovieDetailTab
+        },
         extends: AdminPage,
         data() {
             return {
