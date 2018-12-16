@@ -88,6 +88,7 @@ router.get('/:id', authenticate, async (req: Request, res: any) => {
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.ratings', 'ratings')
             .leftJoinAndSelect('ratings.movie', 'movie')
+            .where('user.id = :id', { id })
             .getOne();
 
         if (user) {
