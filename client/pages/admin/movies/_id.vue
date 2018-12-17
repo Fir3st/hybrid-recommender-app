@@ -1,18 +1,27 @@
 <template>
     <div class="admin-page">
         <app-breadcrumb :items="breadcrumbs" />
-        <b-row>
+        <b-row v-if="movie">
             <b-col>
-                <h1>{{ pageTitle }}</h1>
+                <b-row>
+                    <b-col>
+                        <h1>{{ pageTitle }}</h1>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <movie-detail-tab
+                            :movie="movie"
+                            :ratings="ratings"
+                            :topics="topics"
+                            :recommendations="recommendations" />
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
-        <b-row>
+        <b-row v-else>
             <b-col>
-                <movie-detail-tab
-                    :movie="movie"
-                    :ratings="ratings"
-                    :topics="topics"
-                    :recommendations="recommendations" />
+                <h1>Movie not found</h1>
             </b-col>
         </b-row>
     </div>
