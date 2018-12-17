@@ -1,6 +1,6 @@
 <template>
     <div>
-        <my-pie
+        <vue-chart
             v-if="show"
             :chart-data="chartData"
             :styles="style"
@@ -23,17 +23,20 @@
                 show: false,
                 options: {
                     maintainAspectRatio: false,
-                    responsive: true
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
                 },
                 style: {
-                    height: '300px'
+                    height: '400px'
                 }
             };
         },
         computed: {
             chartData() {
                 const labels = [];
-                const colors = palette('tol-sq', this.topics.length);
+                const colors = palette('tol-rainbow', this.topics.length);
                 for (let i = 0; i < this.topics.length; i += 1) {
                     labels.push(`Topic ${i}`);
                 }
