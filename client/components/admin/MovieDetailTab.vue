@@ -13,7 +13,8 @@
             title="Analysis">
             <movie-analysis
                 :topics="topics"
-                :recommendations="recommendations" />
+                :recommendations="recommendations"
+                :ratings="ratings" />
         </b-tab>
     </b-tabs>
 </template>
