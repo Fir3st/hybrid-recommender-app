@@ -165,7 +165,7 @@ router.get('/:id/topics', async (req: Request, res: any) => {
         const recommendations = await axios.get(`${recommender}/movies/${id}/topics`);
 
         if (recommendations && recommendations.data.topics && recommendations.data.topics.length > 0) {
-            return res.send({ topics: recommendations.data.topics[0] });
+            return res.send({ topics: recommendations.data.topics });
         }
 
         return res.boom.badRequest(`No recommendations for ${id}`);
