@@ -6,7 +6,7 @@ import winston from '../utils/winston';
 import * as moment from 'moment';
 import MoviesUtil from '../utils/movies/MoviesUtil';
 import { Movie } from '../entities/Movie';
-import {authenticate, authorize} from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
 import { UserRating } from '../entities/UserRating';
 const router = Router();
 
