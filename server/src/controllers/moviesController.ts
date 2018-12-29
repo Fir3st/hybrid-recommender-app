@@ -1,5 +1,6 @@
 import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
+import * as _ from 'lodash';
 import axios from 'axios';
 import * as config from 'config';
 import winston from '../utils/winston';
@@ -136,7 +137,8 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
         const recommendations = await axios.get(`${recommender}/movies/${id}/recommendations`);
 
         if (recommendations && recommendations.data.recommendations && recommendations.data.recommendations.length > 0) {
-            const moviesIds = recommendations.data.recommendations.map(item => item.id);
+            const recommendedMovies = recommendations.data.recommendations;
+            const moviesIds = recommendedMovies.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
@@ -144,7 +146,14 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
                 .getMany();
 
             if (movies && movies.length > 0) {
-                return res.send(movies);
+                const moviesForRes = movies.map((item) => {
+                    const recommendedMovie = recommendedMovies.find(movie => movie.id === item.id);
+                    return {
+                        ...item,
+                        similarity: recommendedMovie ? parseFloat(recommendedMovie.similarity).toFixed(3) : null
+                    };
+                });
+                return res.send(_.orderBy(moviesForRes, ['similarity'], ['desc']));
             }
 
             return res.send(recommendations.data);

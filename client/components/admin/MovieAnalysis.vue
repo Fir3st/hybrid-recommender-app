@@ -40,6 +40,9 @@
                             prop="title"
                             label="Title" />
                         <el-table-column
+                            prop="similarity"
+                            label="Similarity" />
+                        <el-table-column
                             label="Actions">
                             <template slot-scope="scope">
                                 <nuxt-link :to="`/admin/movies/${scope.row.id}`">
