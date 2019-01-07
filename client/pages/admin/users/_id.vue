@@ -10,7 +10,9 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <user-detail-tab :user="user" />
+                        <user-detail-tab
+                            :user="user"
+                            :recommendations="recommendations" />
                     </b-col>
                 </b-row>
             </b-col>
@@ -50,8 +52,11 @@
                 const user = await app.$axios.$get(`/users/${params.id}`);
 
                 if (user) {
+                    const recommendations = await app.$axios.$get(`/users/${user.id}/recommendations`);
+
                     return {
-                        user
+                        user,
+                        recommendations
                     };
                 }
             } catch (error) {

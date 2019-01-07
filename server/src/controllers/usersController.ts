@@ -153,7 +153,14 @@ router.get('/:id/recommendations', authenticate, async (req: Request, res: any) 
                 .getMany();
 
             if (movies && movies.length > 0) {
-                return res.send(movies);
+                const moviesForRes = movies.map((item) => {
+                    const recommendedMovie = recommendations.data.recommendations.find(movie => movie.id === item.id);
+                    return {
+                        ...item,
+                        rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null
+                    };
+                });
+                return res.send(_.orderBy(moviesForRes, ['rating'], ['desc']));
             }
 
             return res.send(recommendations.data);

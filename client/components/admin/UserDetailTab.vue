@@ -9,7 +9,9 @@
             <user-rated-movies :ratings="user.ratings" />
         </b-tab>
         <b-tab title="Analysis">
-            <user-analysis />
+            <user-analysis
+                :ratings="user.ratings"
+                :recommendations="recommendations" />
         </b-tab>
     </b-tabs>
 </template>
@@ -28,6 +30,10 @@
         props: {
             user: {
                 type: Object,
+                required: true
+            },
+            recommendations: {
+                type: Array,
                 required: true
             }
         }
