@@ -13,7 +13,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <h2>Recommended movies</h2>
+                    <h2>Recommended movies (user-based)</h2>
                 </b-col>
             </b-row>
             <b-row>
@@ -42,6 +42,16 @@
                             </template>
                         </el-table-column>
                     </el-table>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h2>Recommended movies (hybrid)</h2>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <p>Will be added later.</p>
                 </b-col>
             </b-row>
         </b-col>
