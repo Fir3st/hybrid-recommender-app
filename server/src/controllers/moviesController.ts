@@ -23,11 +23,7 @@ router.get('/', async (req: Request, res: any) => {
     try {
         const query = repository
             .createQueryBuilder('movies')
-            .leftJoinAndSelect('movies.genres', 'genres')
-            .leftJoinAndSelect('movies.actors', 'actors')
-            .leftJoinAndSelect('movies.languages', 'languages')
-            .leftJoinAndSelect('movies.countries', 'countries')
-            .leftJoinAndSelect('movies.ratings', 'ratings')
+            .leftJoin('movies.genres', 'genres')
             .orderBy(`movies.${orderBy}`, order)
             .take(take)
             .skip(skip);
@@ -37,7 +33,7 @@ router.get('/', async (req: Request, res: any) => {
         }
 
         if (genre) {
-            query.andWhere('genres.id = :genre', { genre });
+            query.andWhere('LOWER(genres.name) = LOWER(:genre)', { genre });
         }
 
         const movies = await query.getMany();
@@ -81,7 +77,7 @@ router.get('/top', async (req: Request, res: any) => {
         }
 
         if (genre) {
-            query.andWhere('genres.id = :genre', { genre });
+            query.andWhere('LOWER(genres.name) = LOWER(:genre)', { genre });
         }
 
         const movies = await query.getMany();
@@ -112,7 +108,7 @@ router.get('/count/:type', async (req: Request, res: any) => {
         }
 
         if (genre) {
-            query.andWhere('genres.id = :genre', { genre });
+            query.andWhere('LOWER(genres.name) = LOWER(:genre)', { genre });
         }
 
         const moviesCount = await query.getCount();
@@ -162,11 +158,6 @@ router.put('/:id', async (req: Request, res: any) => {
     try {
         const movie = await repository
             .createQueryBuilder('movie')
-            .leftJoinAndSelect('movie.genres', 'genres')
-            .leftJoinAndSelect('movie.actors', 'actors')
-            .leftJoinAndSelect('movie.languages', 'languages')
-            .leftJoinAndSelect('movie.countries', 'countries')
-            .leftJoinAndSelect('movie.ratings', 'ratings')
             .where('movie.id = :id', { id })
             .getOne();
 
