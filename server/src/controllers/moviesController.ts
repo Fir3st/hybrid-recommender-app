@@ -38,7 +38,7 @@ router.get('/', async (req: Request, res: any) => {
 
         const movies = await query.getMany();
 
-        if (movies) {
+        if (movies && movies.length > 0) {
             return res.send(movies);
         }
 
@@ -82,7 +82,7 @@ router.get('/top', async (req: Request, res: any) => {
 
         const movies = await query.getMany();
 
-        if (movies) {
+        if (movies && movies.length > 0) {
             return res.send(movies);
         }
 
@@ -241,7 +241,7 @@ router.get('/:id/ratings', [authenticate, authorize], async (req: Request, res: 
             .andWhere('userRating.movieId = :id', { id })
             .getMany();
 
-        if (ratings) {
+        if (ratings && ratings.length > 0) {
             return res.send(ratings);
         }
 
