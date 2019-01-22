@@ -53,16 +53,66 @@ router.get('/', async (req: Request, res: any) => {
     }
 });
 
-router.get('/count/:type', async (req: Request, res: any) => {
-    const type = req.params.type || 'all';
+router.get('/top', async (req: Request, res: any) => {
+    const limit = req.query.limit || 10;
+    const type = req.query.type || 'all';
+    const genre = req.query.genre || null;
     const repository = getRepository(Movie);
 
     try {
         const query = repository
-            .createQueryBuilder('movies');
+            .createQueryBuilder('movies')
+            .leftJoinAndSelect('movies.genres', 'genres')
+            .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+            .select([
+                'AVG(usersRatings.rating) * COUNT(usersRatings.rating) AS movie_score',
+                'movies.id',
+                'movies.title',
+                'movies.poster',
+                'movies.year',
+                'movies.plot'
+            ])
+            .groupBy('movies.id')
+            .orderBy('movie_score', 'DESC')
+            .limit(limit);
 
         if (type !== 'all') {
             query.where('movies.type = :type', { type });
+        }
+
+        if (genre) {
+            query.andWhere('genres.id = :genre', { genre });
+        }
+
+        const movies = await query.getMany();
+
+        if (movies) {
+            return res.send(movies);
+        }
+
+        return res.boom.badRequest('No top movies found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/count/:type', async (req: Request, res: any) => {
+    const type = req.params.type || 'all';
+    const genre = req.query.genre || null;
+    const repository = getRepository(Movie);
+
+    try {
+        const query = repository
+            .createQueryBuilder('movies')
+            .leftJoin('movies.genres', 'genres');
+
+        if (type !== 'all') {
+            query.where('movies.type = :type', { type });
+        }
+
+        if (genre) {
+            query.andWhere('genres.id = :genre', { genre });
         }
 
         const moviesCount = await query.getCount();
