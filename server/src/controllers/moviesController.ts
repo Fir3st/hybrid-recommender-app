@@ -15,6 +15,7 @@ router.get('/', async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const type = req.query.type || 'all';
+    const genre = req.query.genre || null;
     const orderBy = req.query.orderBy || 'id';
     const order = req.query.order || 'ASC';
     const repository = getRepository(Movie);
@@ -33,6 +34,10 @@ router.get('/', async (req: Request, res: any) => {
 
         if (type !== 'all') {
             query.where('movies.type = :type', { type });
+        }
+
+        if (genre) {
+            query.andWhere('genres.id = :genre', { genre });
         }
 
         const movies = await query.getMany();
