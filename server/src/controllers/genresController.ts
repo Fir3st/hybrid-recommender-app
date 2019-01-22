@@ -6,10 +6,16 @@ const router = Router();
 
 router.get('/', async (req: Request, res: any) => {
     const repository = getRepository(Genre);
+    const type = req.query.type || null;
 
     try {
         const query = repository
             .createQueryBuilder('genres');
+
+        if (type) {
+            query.innerJoin('genres.movies', 'movies')
+                .where('movies.type = :type', { type });
+        }
 
         const genres = await query.getMany();
 
