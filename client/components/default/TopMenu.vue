@@ -10,12 +10,30 @@
                 id="nav_collapse"
                 is-nav>
                 <b-navbar-nav>
-                    <b-nav-item
-                        to="/movies"
-                        exact>Movies</b-nav-item>
-                    <b-nav-item
-                        to="/series"
-                        exact>Series</b-nav-item>
+                    <b-nav-item-dropdown
+                        text="Movies"
+                        right>
+                        <b-dropdown-item
+                            to="/movies"
+                            exact>All movies</b-dropdown-item>
+                        <b-dropdown-item
+                            v-for="item in moviesItems"
+                            :key="item.id"
+                            :to="`/movies/genre/${item.name}`"
+                            exact>{{ item.name }}</b-dropdown-item>
+                    </b-nav-item-dropdown>
+                    <b-nav-item-dropdown
+                        text="Series"
+                        right>
+                        <b-dropdown-item
+                            to="/series"
+                            exact>All series</b-dropdown-item>
+                        <b-dropdown-item
+                            v-for="item in seriesItems"
+                            :key="item.id"
+                            :to="`/series/genre/${item.name}`"
+                            exact>{{ item.name }}</b-dropdown-item>
+                    </b-nav-item-dropdown>
                 </b-navbar-nav>
                 <menu-user
                     :user-full-name="userFullName"
@@ -35,7 +53,17 @@
         components: {
             MenuUser
         },
-        extends: TopMenu
+        extends: TopMenu,
+        props: {
+            moviesItems: {
+                type: Array | null,
+                required: true
+            },
+            seriesItems: {
+                type: Array | null,
+                required: true
+            }
+        }
     };
 </script>
 

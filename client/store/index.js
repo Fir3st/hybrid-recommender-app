@@ -1,6 +1,6 @@
 export const actions = {
     async nuxtServerInit ({ dispatch }) {
-        // await dispatch('movies/setMovies');
-        // await dispatch('movies/setCount');
+        await dispatch('genres/setMoviesGenres');
+        await dispatch('genres/setSeriesGenres');
     }
 };

@@ -5,12 +5,17 @@
         extends: MoviesPage,
         data() {
             return {
-                pageTitle: 'Newest feed'
+                pageTitle: 'Movies'
+            };
+        },
+        asyncData({ params }) {
+            return {
+                pageTitle: `Movies - ${params.slug}`
             };
         },
         async fetch ({ store, params }) {
             await store.dispatch('movies/setGenre', params.slug);
-            await store.dispatch('movies/setType', 'all');
+            await store.dispatch('movies/setType', 'movie');
             await store.dispatch('movies/setOrderBy', 'year');
             await store.dispatch('movies/setOrder', 'DESC');
             await store.dispatch('movies/setMovies');

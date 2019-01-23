@@ -102,6 +102,7 @@
             }
         },
         async fetch({ store }) {
+            await store.dispatch('movies/setGenre', null);
             await store.dispatch('movies/setType', 'all');
             await store.dispatch('movies/setOrderBy', 'id');
             await store.dispatch('movies/setOrder', 'ASC');

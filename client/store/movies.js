@@ -4,6 +4,7 @@ export const state = () => ({
     take: 50,
     skip: 0,
     type: 'all',
+    genre: null,
     orderBy: 'id',
     order: 'ASC'
 });
@@ -23,6 +24,9 @@ export const getters = {
     },
     type (state) {
         return state.type;
+    },
+    genre (state) {
+        return state.genre;
     },
     orderBy(state) {
         return state.orderBy;
@@ -45,6 +49,9 @@ export const mutations = {
     setType(state, type) {
         state.type = type;
     },
+    setGenre(state, genre) {
+        state.genre = genre;
+    },
     setOrderBy(state, orderBy) {
         state.orderBy = orderBy;
     },
@@ -56,7 +63,10 @@ export const mutations = {
 export const actions = {
     async setMovies({ commit, state }) {
         try {
-            const url = `/movies?take=${state.take}&skip=${state.skip}&type=${state.type}&orderBy=${state.orderBy}&order=${state.order}`;
+            let url = `/movies?take=${state.take}&skip=${state.skip}&type=${state.type}&orderBy=${state.orderBy}&order=${state.order}`;
+            if (state.genre) {
+                url = `${url}&genre=${state.genre}`;
+            }
             const movies = await this.$axios.$get(url);
 
             if (movies && movies.length > 0) {
@@ -68,7 +78,11 @@ export const actions = {
     },
     async setCount({ commit, state }) {
         try {
-            const moviesCount = await this.$axios.$get(`/movies/count/${state.type}`);
+            let url = `/movies/count/${state.type}`;
+            if (state.genre) {
+                url = `${url}?genre=${state.genre}`;
+            }
+            const moviesCount = await this.$axios.$get(url);
 
             if (moviesCount) {
                 commit('setCount', moviesCount.count);
@@ -83,6 +97,9 @@ export const actions = {
     },
     setType({ commit }, type) {
         commit('setType', type);
+    },
+    setGenre({ commit }, genre) {
+        commit('setGenre', genre);
     },
     setOrderBy({ commit }, orderBy) {
         commit('setOrderBy', orderBy);
