@@ -1,5 +1,6 @@
 export const state = () => ({
     movies: [],
+    topMovies: [],
     count: 0,
     take: 50,
     skip: 0,
@@ -12,6 +13,9 @@ export const state = () => ({
 export const getters = {
     movies (state) {
         return state.movies;
+    },
+    topMovies (state) {
+        return state.topMovies;
     },
     count (state) {
         return state.count;
@@ -39,6 +43,9 @@ export const getters = {
 export const mutations = {
     setMovies (state, movies) {
         state.movies = movies;
+    },
+    setTopMovies (state, movies) {
+        state.topMovies = movies;
     },
     setCount (state, count) {
         state.count = count;
@@ -71,6 +78,18 @@ export const actions = {
 
             if (movies && movies.length > 0) {
                 commit('setMovies', movies);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    },
+    async setTopMovies({ commit, state }) {
+        try {
+            const url = `/movies/top?limit=5&type=${state.type}`;
+            const movies = await this.$axios.$get(url);
+
+            if (movies && movies.length > 0) {
+                commit('setTopMovies', movies);
             }
         } catch (error) {
             console.log(error.message);

@@ -5,7 +5,7 @@
         extends: MoviesPage,
         data() {
             return {
-                pageTitle: 'Newest feed'
+                pageTitle: 'Main page'
             };
         },
         async fetch ({ store, params }) {
@@ -14,6 +14,7 @@
             await store.dispatch('movies/setOrderBy', 'year');
             await store.dispatch('movies/setOrder', 'DESC');
             await store.dispatch('movies/setMovies');
+            await store.dispatch('movies/setTopMovies');
             await store.dispatch('movies/setCount');
         }
     };
