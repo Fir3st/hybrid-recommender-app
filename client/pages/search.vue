@@ -16,13 +16,20 @@
             </b-col>
         </b-row>
         <b-row v-if="search">
-            <b-col>
+            <b-col v-if="movies.length > 1">
                 <b-row>
                     <b-col>
                         <h2>{{ movies.length }} results for '{{ searchTerm }}':</h2>
                     </b-col>
                 </b-row>
                 <movie-list :movies="movies" />
+            </b-col>
+            <b-col v-else>
+                <b-row>
+                    <b-col>
+                        <h2>No results found for '{{ searchTerm }}'.</h2>
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
 
@@ -53,13 +60,17 @@
         },
         methods: {
             async onChange() {
+                this.search = false;
                 if (this.searchTerm.length >= this.minLength) {
-                    this.search = false;
                     this.movies = [];
 
-                    const results = await this.$axios.$get(`/movies/search/${this.searchTerm}`);
-                    if (results) {
-                        this.movies = results;
+                    try {
+                        const results = await this.$axios.$get(`/movies/search/${this.searchTerm}`);
+                        if (results) {
+                            this.movies = results;
+                        }
+                    } catch (error) {
+                        console.log(error.message);
                     }
 
                     this.search = true;
