@@ -49,6 +49,28 @@ router.get('/', async (req: Request, res: any) => {
     }
 });
 
+router.get('/search/:title', async (req: Request, res: any) => {
+    const repository = getRepository(Movie);
+    const title = req.params.title || '';
+
+    try {
+        const query = repository
+            .createQueryBuilder('movies')
+            .where('LOWER(movies.title) LIKE :title', { title: `%${title.toLowerCase()}%` });
+
+        const movies = await query.getMany();
+
+        if (movies && movies.length > 0) {
+            return res.send(movies);
+        }
+
+        return res.boom.badRequest('No movies found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/top', async (req: Request, res: any) => {
     const limit = req.query.limit || 10;
     const type = req.query.type || 'all';

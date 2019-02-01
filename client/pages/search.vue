@@ -1,0 +1,77 @@
+<template>
+    <div>
+        <b-row>
+            <b-col>
+                <h1>{{ pageTitle }}</h1>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <input
+                    v-model="searchTerm"
+                    class="form-control"
+                    type="text"
+                    placeholder="Type to search"
+                    @input="onChange">
+            </b-col>
+        </b-row>
+        <b-row v-if="search">
+            <b-col>
+                <b-row>
+                    <b-col>
+                        <h2>{{ movies.length }} results for '{{ searchTerm }}':</h2>
+                    </b-col>
+                </b-row>
+                <movie-list :movies="movies" />
+            </b-col>
+        </b-row>
+
+    </div>
+</template>
+
+<script>
+    import MovieList from '~/components/default/MovieList';
+
+    export default {
+        components: {
+            MovieList
+        },
+        auth: false,
+        data() {
+            return {
+                pageTitle: 'Search',
+                minLength: 3,
+                movies: [],
+                searchTerm: '',
+                search: false
+            };
+        },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
+        methods: {
+            async onChange() {
+                if (this.searchTerm.length >= this.minLength) {
+                    this.search = false;
+                    this.movies = [];
+
+                    const results = await this.$axios.$get(`/movies/search/${this.searchTerm}`);
+                    if (results) {
+                        this.movies = results;
+                    }
+
+                    this.search = true;
+                }
+            }
+        }
+    };
+</script>
+
+<style lang="sass" scoped>
+    h1
+        margin-bottom: 40px !important
+    h2
+        margin: 20px 0
+</style>

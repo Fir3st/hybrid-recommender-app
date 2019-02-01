@@ -35,8 +35,8 @@
                             :to="`/series/genre/${item.name}`"
                             exact>{{ item.name }}</b-dropdown-item>
                     </b-nav-item-dropdown>
+                    <b-nav-item to="/search">Search</b-nav-item>
                 </b-navbar-nav>
-                <top-menu-search />
                 <menu-user
                     :user-full-name="userFullName"
                     :is-logged="isLogged"
@@ -50,12 +50,10 @@
 <script>
     import TopMenu from '~/components/shared/TopMenu';
     import MenuUser from '~/components/shared/MenuUser';
-    import TopMenuSearch from './TopMenuSearch';
 
     export default {
         components: {
-            MenuUser,
-            TopMenuSearch
+            MenuUser
         },
         extends: TopMenu,
         props: {
