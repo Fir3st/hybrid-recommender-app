@@ -56,7 +56,8 @@ router.get('/search/:title', async (req: Request, res: any) => {
     try {
         const query = repository
             .createQueryBuilder('movies')
-            .where('LOWER(movies.title) LIKE :title', { title: `%${title.toLowerCase()}%` });
+            .where('LOWER(movies.title) LIKE :title', { title: `%${title.toLowerCase()}%` })
+            .orderBy('movies.year', 'DESC');
 
         const movies = await query.getMany();
 
