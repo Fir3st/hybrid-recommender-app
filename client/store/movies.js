@@ -125,5 +125,14 @@ export const actions = {
     },
     setOrder({ commit }, order) {
         commit('setOrder', order);
+    },
+    async loadMovies({ dispatch }, params = { genre: null, type: 'all', orderBy: 'year', order: 'DESC' }) {
+        await dispatch('setGenre', params.genre);
+        await dispatch('setType', params.type);
+        await dispatch('setOrderBy', params.orderBy);
+        await dispatch('setOrder', params.order);
+        await dispatch('setMovies');
+        await dispatch('setTopMovies');
+        await dispatch('setCount');
     }
 };

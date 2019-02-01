@@ -5,7 +5,7 @@
                 <h1>{{ pageTitle }}</h1>
             </b-col>
         </b-row>
-        <b-row v-if="isMainCategory">
+        <b-row v-if="isMainCategory && skip === 0">
             <b-col>
                 <b-row>
                     <b-col>

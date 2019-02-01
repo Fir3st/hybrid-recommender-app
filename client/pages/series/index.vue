@@ -9,13 +9,7 @@
             };
         },
         async fetch ({ store }) {
-            await store.dispatch('movies/setGenre', null);
-            await store.dispatch('movies/setType', 'series');
-            await store.dispatch('movies/setOrderBy', 'year');
-            await store.dispatch('movies/setOrder', 'DESC');
-            await store.dispatch('movies/setMovies');
-            await store.dispatch('movies/setTopMovies');
-            await store.dispatch('movies/setCount');
+            await store.dispatch('movies/loadMovies', { genre: null, type: 'series', orderBy: 'year', order: 'DESC' });
         }
     };
 </script>

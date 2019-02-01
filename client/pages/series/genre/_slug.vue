@@ -14,12 +14,7 @@
             };
         },
         async fetch ({ store, params }) {
-            await store.dispatch('movies/setGenre', params.slug);
-            await store.dispatch('movies/setType', 'series');
-            await store.dispatch('movies/setOrderBy', 'year');
-            await store.dispatch('movies/setOrder', 'DESC');
-            await store.dispatch('movies/setMovies');
-            await store.dispatch('movies/setCount');
+            await store.dispatch('movies/loadMovies', { genre: params.slug, type: 'series', orderBy: 'year', order: 'DESC' });
         }
     };
 </script>

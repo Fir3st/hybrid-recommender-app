@@ -102,12 +102,7 @@
             }
         },
         async fetch({ store }) {
-            await store.dispatch('movies/setGenre', null);
-            await store.dispatch('movies/setType', 'all');
-            await store.dispatch('movies/setOrderBy', 'id');
-            await store.dispatch('movies/setOrder', 'ASC');
-            await store.dispatch('movies/setMovies');
-            await store.dispatch('movies/setCount');
+            await store.dispatch('movies/loadMovies', { genre: null, type: 'all', orderBy: 'id', order: 'ASC' });
         }
     };
 </script>
