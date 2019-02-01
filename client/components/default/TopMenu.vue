@@ -2,7 +2,8 @@
     <b-navbar
         toggleable="md"
         type="dark"
-        variant="dark">
+        variant="dark"
+        class="front">
         <b-container>
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
             <b-navbar-brand to="/">Recommender</b-navbar-brand>
@@ -35,6 +36,7 @@
                             exact>{{ item.name }}</b-dropdown-item>
                     </b-nav-item-dropdown>
                 </b-navbar-nav>
+                <top-menu-search />
                 <menu-user
                     :user-full-name="userFullName"
                     :is-logged="isLogged"
@@ -46,12 +48,14 @@
 </template>
 
 <script>
-    import TopMenu from '~/components/global/TopMenu';
-    import MenuUser from '~/components/global/MenuUser';
+    import TopMenu from '~/components/shared/TopMenu';
+    import MenuUser from '~/components/shared/MenuUser';
+    import TopMenuSearch from './TopMenuSearch';
 
     export default {
         components: {
-            MenuUser
+            MenuUser,
+            TopMenuSearch
         },
         extends: TopMenu,
         props: {
@@ -67,9 +71,17 @@
     };
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
     .bg-dark
         background-color: #232323 !important
-    .nav-link
-        text-transform: uppercase
+    .front
+        .nav-link
+            text-transform: uppercase
+        .dropdown-item
+            background: black !important
+            color: white !important
+        .dropdown-item:hover
+            background: #17a2b8 !important
+        .navbar-nav .dropdown-menu
+            background-color: #000 !important
 </style>

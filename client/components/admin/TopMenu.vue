@@ -27,8 +27,8 @@
 </template>
 
 <script>
-    import TopMenu from '~/components/global/TopMenu';
-    import MenuUser from '~/components/global/MenuUser';
+    import TopMenu from '~/components/shared/TopMenu';
+    import MenuUser from '~/components/shared/MenuUser';
 
     export default {
         components: {
