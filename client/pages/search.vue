@@ -9,7 +9,7 @@
             <b-col>
                 <input
                     v-model="searchTerm"
-                    class="form-control"
+                    class="form-control search"
                     type="text"
                     placeholder="Type to search"
                     @input="onChange">
@@ -74,4 +74,16 @@
         margin-bottom: 40px !important
     h2
         margin: 20px 0
+    .search
+        background: transparent
+        border: 0
+        font-size: 24px
+        padding: 20px 10px
+        border-bottom: 1px solid #17a2b8
+        color: #fff
+    .search:focus
+        outline: none
+        -webkit-box-shadow: none !important
+        -moz-box-shadow: none !important
+        box-shadow: none !important
 </style>
