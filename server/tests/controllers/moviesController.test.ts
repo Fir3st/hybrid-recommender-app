@@ -212,3 +212,59 @@ describe('GET /movies/count/:type', () => {
         expect(count).toEqual(moviesCount);
     });
 });
+
+describe('GET /movies/:id', () => {
+    let connection: Connection = null;
+    let repository: Repository<Movie> = null;
+
+    beforeAll(async () => {
+        try {
+            connection = await createConnection();
+            repository = getRepository(Movie);
+            await repository.save(movie);
+            await repository.save(movie2);
+        } catch (error) {
+            console.log(error.message);
+            throw new Error('Error while connecting to database');
+        }
+    }, 20000);
+
+    afterAll(async () => {
+        try {
+            await connection.dropDatabase();
+            await connection.close();
+        } catch (error) {
+            console.log(error.message);
+            throw new Error('Error while disconnecting from database');
+        }
+    }, 20000);
+
+    it('should respond with status code 200', async () => {
+        const id = 1;
+        const response: Response = await request
+            .get(`/movies/${id}`);
+
+        expect(response.status).toBe(200);
+    });
+
+    it('should match movie in database with same id', async () => {
+        const id = 1;
+        const response: Response = await request
+            .get(`/movies/${id}`);
+
+        const movie = await repository
+            .createQueryBuilder('movie')
+            .where('movie.id = :id', { id })
+            .getOne();
+
+        expect(response.body.title).toEqual(movie.title);
+    });
+
+    it('should respond with status code 400 for movie that doesn\'t exist', async () => {
+        const id = 100000;
+        const response: Response = await request
+            .get(`/movies/${id}`);
+
+        expect(response.status).toBe(400);
+    });
+});
