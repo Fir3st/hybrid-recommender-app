@@ -1,5 +1,6 @@
 const pkg = require('./package');
 const config = require('config');
+const webpack = require('webpack');
 
 module.exports = {
     mode: 'universal',
@@ -37,7 +38,7 @@ module.exports = {
      ** Customize the progress-bar color
      */
     loading: {
-        color: '#3B8070'
+        color: '#17a2b8'
     },
 
     /*
@@ -120,7 +121,10 @@ module.exports = {
                     exclude: /(node_modules)/
                 });
             }
-        }
+        },
+        plugins: [
+            new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /cs/),
+        ]
     },
     generate: {
         dir: 'client/dist'
