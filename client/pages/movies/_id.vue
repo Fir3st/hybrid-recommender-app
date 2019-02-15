@@ -78,10 +78,10 @@
             }
         },
         async mounted() {
-            await this.getSimilarMovies();
+            this.getSimilarMovies();
             if (this.isLogged) {
-                await this.getUserRecommendedMovies();
-                await this.getUserRating();
+                this.getUserRecommendedMovies();
+                this.getUserRating();
             }
         },
         async asyncData ({ app, params }) {
