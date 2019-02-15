@@ -332,7 +332,7 @@ router.post('/:id/rating', authenticate, async (req: Request, res: any) => {
             rating.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
         }
         await repository.save(rating);
-        axios.put(`${recommender}/users/re-train`);
+        axios.put(`${recommender}/users/re-train/${userId}`);
 
         return res.send({ message: 'Rating added successfully.' });
     } catch (error) {
