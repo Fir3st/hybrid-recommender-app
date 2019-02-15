@@ -9,6 +9,7 @@ import { User } from '../entities/User';
 import { validateRegister } from '../utils/validations/user';
 import { authenticate, authorize } from '../middleware/auth';
 import { Movie } from '../entities/Movie';
+import MoviesUtil from '../utils/movies/MoviesUtil';
 
 const router = Router();
 
@@ -149,14 +150,25 @@ router.get('/:id/recommendations', authenticate, async (req: Request, res: any) 
             const movies = await repository
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
+                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+                .select([
+                    'AVG(usersRatings.rating) AS avgRating',
+                    'COUNT(usersRatings.id) AS ratingsCount',
+                    'movies.id',
+                    'movies.title',
+                    'movies.poster',
+                    'movies.year',
+                    'movies.plot'
+                ])
+                .groupBy('movies.id')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .getMany();
+                .getRawMany();
 
             if (movies && movies.length > 0) {
                 const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendations.data.recommendations.find(movie => movie.id === item.id);
+                    const recommendedMovie = recommendations.data.recommendations.find(movie => movie.id === item.movies_id);
                     return {
-                        ...item,
+                        ...MoviesUtil.transformMovieData(item),
                         rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null
                     };
                 });

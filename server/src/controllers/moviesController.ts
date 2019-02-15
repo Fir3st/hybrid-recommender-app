@@ -211,14 +211,25 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
             const movies = await repository
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
+                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+                .select([
+                    'AVG(usersRatings.rating) AS avgRating',
+                    'COUNT(usersRatings.id) AS ratingsCount',
+                    'movies.id',
+                    'movies.title',
+                    'movies.poster',
+                    'movies.year',
+                    'movies.plot'
+                ])
+                .groupBy('movies.id')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .getMany();
+                .getRawMany();
 
             if (movies && movies.length > 0) {
                 const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendedMovies.find(movie => movie.id === item.id);
+                    const recommendedMovie = recommendedMovies.find(movie => movie.id === item.movies_id);
                     return {
-                        ...item,
+                        ...MoviesUtil.transformMovieData(item),
                         similarity: recommendedMovie ? parseFloat(recommendedMovie.similarity).toFixed(3) : null
                     };
                 });

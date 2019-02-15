@@ -7,6 +7,12 @@
     >
         <nuxt-link :to="`/movies/${movie.id}`">
             <div class="crop">
+                <span
+                    v-if="additionalInfo && movie.ratingsCount > 0"
+                    class="avg-rating">
+                    <i class="el-icon-star-on"></i>
+                    {{ averageRating }} / 5
+                </span>
                 <b-img
                     :src="image"
                     :alt="movie.title"
@@ -14,7 +20,13 @@
             </div>
             <div class="caption">
                 <p>{{ truncate(movie.title, 20) }}</p>
-                <p class="additional-info">{{ movie.year }}</p>
+                <p class="additional-info">
+                    {{ movie.year }}
+                    <span v-if="additionalInfo && movie.ratingsCount > 0">
+                        | rated by {{ movie.ratingsCount }} users
+                    </span>
+                    <span v-else-if="additionalInfo && movie.ratingsCount <= 0">| not rated yet</span>
+                </p>
             </div>
         </nuxt-link>
     </b-col>
@@ -27,12 +39,20 @@
                 type: Object,
                 required: true,
                 default: null
+            },
+            additionalInfo: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         computed: {
             image() {
                 const hasImage = this.movie.poster !== null && this.movie.poster !== '' && this.movie.poster !== 'N/A';
                 return hasImage ? this.movie.poster : 'https://via.placeholder.com/160x200';
+            },
+            averageRating() {
+                return Math.round(this.movie.avgRating);
             }
         },
         methods: {
@@ -62,4 +82,12 @@
         color: #7f828b
     a
         text-decoration: none
+    .avg-rating
+        position: absolute
+        right: 5px
+        top: 5px
+        background: #000
+        color: #fff
+        padding: 5px
+        font-size: 12px
 </style>

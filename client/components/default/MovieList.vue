@@ -4,6 +4,7 @@
             v-for="movie in movies"
             :key="movie.id"
             :movie="movie"
+            :additional-info="additionalInfo"
             class="movie" />
     </b-row>
 </template>
@@ -20,6 +21,11 @@
                 type: Array,
                 required: true,
                 default: null
+            },
+            additionalInfo: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         }
     };

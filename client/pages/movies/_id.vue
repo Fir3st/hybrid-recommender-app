@@ -17,13 +17,17 @@
                 <b-row v-if="similarMovies.length > 0">
                     <b-col>
                         <h2>You may also like</h2>
-                        <movie-list :movies="similarMovies" />
+                        <movie-list
+                            :movies="similarMovies"
+                            :additional-info="true" />
                     </b-col>
                 </b-row>
                 <b-row v-if="isLogged && recommendedMovies.length > 0">
                     <b-col>
                         <h2>Recommended for you</h2>
-                        <movie-list :movies="recommendedMovies" />
+                        <movie-list
+                            :movies="recommendedMovies"
+                            :additional-info="true" />
                     </b-col>
                 </b-row>
             </b-col>
