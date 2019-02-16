@@ -11,7 +11,7 @@ export default class MoviesUtil {
 
     public static transformMovieData(movie: any) {
         return {
-            id: movie.movies_id,
+            id: parseInt(movie.movies_id, 10),
             title: movie.movies_title,
             plot: movie.movies_plot,
             poster: movie.movies_poster,
