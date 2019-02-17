@@ -11,7 +11,7 @@
                     v-if="additionalInfo && movie.ratingsCount > 0"
                     class="avg-rating">
                     <i class="el-icon-star-on"></i>
-                    {{ averageRating }} / 5
+                    {{ averageRating }} / 5 ({{ movie.ratingsCount }} ratings)
                 </span>
                 <b-img
                     :src="image"
@@ -22,10 +22,6 @@
                 <p>{{ truncate(movie.title, 20) }}</p>
                 <p class="additional-info">
                     {{ movie.year }}
-                    <span v-if="additionalInfo && movie.ratingsCount > 0">
-                        | rated by {{ movie.ratingsCount }} users
-                    </span>
-                    <span v-else-if="additionalInfo && movie.ratingsCount <= 0">| not rated yet</span>
                 </p>
             </div>
         </nuxt-link>
