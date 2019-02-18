@@ -210,7 +210,6 @@ router.get('/:id/recommendations', async (req: Request, res: any) => {
             const moviesIds = recommendedMovies.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
-                .leftJoinAndSelect('movies.genres', 'genres')
                 .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
                 .select([
                     'AVG(usersRatings.rating) AS avgRating',
