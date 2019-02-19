@@ -17,7 +17,9 @@
         "test:watch": "jest --runInBand --watchAll",
         "typeorm": "node tsnode-typeorm",
         "load:data": "ts-node server/src/utils/data/moviesData.ts",
-        "load:ratings": "ts-node server/src/utils/data/ratingsData.ts"
+        "load:data:json": "ts-node server/src/utils/data/moviesDataJSON.ts",
+        "load:ratings": "ts-node server/src/utils/data/ratingsData.ts",
+        "load:ratings:json": "ts-node server/src/utils/data/ratingsDataJSON.ts"
     },
     "dependencies": {
         "@nuxtjs/auth": "^4.5.1",

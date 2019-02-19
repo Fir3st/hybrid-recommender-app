@@ -20,9 +20,13 @@ yarn.lock
 /.vscode
 /.idea
 
-#config file
+# config file
 config/local-development.json
 config/local-production.json
 
 # error files
 yarn-error.log
+
+# json data
+server/src/utils/data/ratings_data.json
+server/src/utils/data/movies_data.json
