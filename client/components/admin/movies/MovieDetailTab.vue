@@ -14,7 +14,8 @@
             <movie-analysis
                 :topics="topics"
                 :recommendations="recommendations"
-                :ratings="ratings" />
+                :ratings="ratings"
+                :avg-rating="avgRating" />
         </b-tab>
     </b-tabs>
 </template>
@@ -45,6 +46,10 @@
             },
             recommendations: {
                 type: Array,
+                required: true
+            },
+            avgRating: {
+                type: Number,
                 required: true
             }
         }

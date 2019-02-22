@@ -285,6 +285,32 @@ router.get('/:id/ratings', [authenticate, authorize], async (req: Request, res: 
     }
 });
 
+router.get('/:id/avg-rating', async (req: Request, res: any) => {
+    const id = req.params.id;
+    const repository = getRepository(Movie);
+
+    try {
+        const movieAvgRating = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
+            .select([
+                'movie.id',
+                'AVG(usersRatings.rating) AS avgRating'
+            ])
+            .where('movie.id = :id', { id })
+            .getRawOne();
+
+        if (movieAvgRating) {
+            return res.send({ id: movieAvgRating.movie_id, avgRating: movieAvgRating.avgRating });
+        }
+
+        return res.boom.badRequest(`Movie with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/:id/rating', authenticate, async (req: Request, res: any) => {
     const id = req.params.id;
     const userId = parseInt(req.user.id, 10);

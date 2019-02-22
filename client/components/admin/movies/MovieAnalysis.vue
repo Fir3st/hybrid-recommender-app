@@ -8,6 +8,7 @@
             </b-row>
             <b-row>
                 <b-col>
+                    <p>Average rating is {{ Number.parseFloat(avgRating).toFixed(2) }}</p>
                     <p>Movie was rated {{ ratings.length }} times</p>
                 </b-col>
             </b-row>
@@ -77,6 +78,10 @@
             },
             ratings: {
                 type: Array,
+                required: true
+            },
+            avgRating: {
+                type: Number,
                 required: true
             }
         }
