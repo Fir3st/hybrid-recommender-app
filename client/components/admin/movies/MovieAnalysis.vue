@@ -60,7 +60,7 @@
 </template>
 
 <script>
-    import TopicsChart from '~/components/admin/TopicsChart';
+    import TopicsChart from '~/components/admin/movies/TopicsChart';
 
     export default {
         components: {

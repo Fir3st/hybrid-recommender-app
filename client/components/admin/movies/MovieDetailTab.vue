@@ -20,9 +20,9 @@
 </template>
 
 <script>
-    import MovieDetail from '~/components/admin/MovieDetail';
-    import MovieRatings from '~/components/admin/MovieRatings';
-    import MovieAnalysis from '~/components/admin/MovieAnalysis';
+    import MovieDetail from '~/components/admin/movies/MovieDetail';
+    import MovieRatings from '~/components/admin/movies/MovieRatings';
+    import MovieAnalysis from '~/components/admin/movies/MovieAnalysis';
 
     export default {
         components: {

@@ -29,7 +29,7 @@
 
 <script>
     import AdminPage from '~/components/admin/AdminPage';
-    import MovieDetailTab from '~/components/admin/MovieDetailTab';
+    import MovieDetailTab from '~/components/admin/movies/MovieDetailTab';
 
     export default {
         components: {

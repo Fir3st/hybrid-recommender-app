@@ -165,7 +165,7 @@ router.get('/:id/recommendations', authenticate, async (req: Request, res: any) 
 
             if (movies && movies.length > 0) {
                 const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendations.data.recommendations.find(movie => movie.id === item.movies_id);
+                    const recommendedMovie = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.movies_id, 10));
                     return {
                         ...MoviesUtil.transformMovieData(item),
                         rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null

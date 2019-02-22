@@ -29,8 +29,11 @@
                             prop="title"
                             label="Title" />
                         <el-table-column
-                            prop="rating"
-                            label="Predicted rating (normalized)" />
+                            label="Predicted rating (normalized)" >
+                            <template slot-scope="scope">
+                                {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : '' }}
+                            </template>
+                        </el-table-column>
                         <el-table-column
                             label="Actions">
                             <template slot-scope="scope">

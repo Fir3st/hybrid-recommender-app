@@ -17,9 +17,9 @@
 </template>
 
 <script>
-    import UserDetail from '~/components/admin/UserDetail';
-    import UserRatedMovies from '~/components/admin/UserRatedMovies';
-    import UserAnalysis from '~/components/admin/UserAnalysis';
+    import UserDetail from '~/components/admin/users/UserDetail';
+    import UserRatedMovies from '~/components/admin/users/UserRatedMovies';
+    import UserAnalysis from '~/components/admin/users/UserAnalysis';
 
     export default {
         components: {

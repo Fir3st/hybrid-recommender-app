@@ -13,7 +13,7 @@
                     label="Title" />
                 <el-table-column
                     prop="rating"
-                    label="Rating" />
+                    label="Given rating" />
             </el-table>
         </b-col>
     </b-row>

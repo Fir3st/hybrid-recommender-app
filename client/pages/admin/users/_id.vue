@@ -27,7 +27,7 @@
 
 <script>
     import AdminPage from '~/components/admin/AdminPage';
-    import UserDetailTab from '~/components/admin/UserDetailTab';
+    import UserDetailTab from '~/components/admin/users/UserDetailTab';
 
     export default {
         components: {
