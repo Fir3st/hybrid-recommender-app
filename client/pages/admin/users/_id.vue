@@ -52,12 +52,15 @@
                 const user = await app.$axios.$get(`/users/${params.id}`);
 
                 if (user) {
-                    const recommendations = await app.$axios.$get(`/users/${user.id}/recommendations`);
+                    const promises = [];
+                    promises.push(app.$axios.$get(`/users/${user.id}/recommendations`));
 
-                    return {
-                        user,
-                        recommendations
-                    };
+                    return Promise.all(promises).then((data) => {
+                        return {
+                            user,
+                            recommendations: data[0]
+                        };
+                    });
                 }
             } catch (error) {
                 console.log(error.message);
