@@ -54,15 +54,19 @@
                 const movie = await app.$axios.$get(`/movies/${params.id}`);
 
                 if (movie) {
-                    const ratings = await app.$axios.$get(`/movies/${params.id}/ratings`);
-                    const recommendations = await app.$axios.$get(`/movies/${params.id}/recommendations`);
-                    const avgRating = await app.$axios.$get(`/movies/${params.id}/avg-rating`);
-                    return {
-                        movie,
-                        ratings,
-                        recommendations,
-                        avgRating: avgRating.avgRating ? avgRating.avgRating : 0
-                    };
+                    const promises = [];
+                    promises.push(app.$axios.$get(`/movies/${params.id}/ratings`));
+                    promises.push(app.$axios.$get(`/movies/${params.id}/recommendations`));
+                    promises.push(app.$axios.$get(`/movies/${params.id}/avg-rating`));
+
+                    return Promise.all(promises).then((data) => {
+                        return {
+                            movie,
+                            ratings: data[0],
+                            recommendations: data[1],
+                            avgRating: data[2].avgRating ? data[2].avgRating : 0
+                        };
+                    });
                 }
             } catch (error) {
                 console.log(error.message);
