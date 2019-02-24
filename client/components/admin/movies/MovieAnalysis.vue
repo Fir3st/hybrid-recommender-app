@@ -3,24 +3,13 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <h2>Number of ratings</h2>
+                    <h2>Rating statistics</h2>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <p>Average rating is {{ Number.parseFloat(avgRating).toFixed(2) }}</p>
-                    <p>Movie was rated {{ ratings.length }} times</p>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <h2>Movie topics</h2>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <topics-chart
-                        :topics="topics" />
+                    <p>Average rating is {{ Number.parseFloat(avgRating).toFixed(2) }}.</p>
+                    <p>Movie was rated {{ ratings.length }} times.</p>
                 </b-col>
             </b-row>
             <b-row>
@@ -68,10 +57,6 @@
             TopicsChart
         },
         props: {
-            topics: {
-                type: Array,
-                required: true
-            },
             recommendations: {
                 type: Array,
                 required: true

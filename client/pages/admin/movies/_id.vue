@@ -13,7 +13,6 @@
                         <movie-detail-tab
                             :movie="movie"
                             :ratings="ratings"
-                            :topics="topics"
                             :recommendations="recommendations"
                             :avg-rating="avgRating" />
                     </b-col>
@@ -56,13 +55,11 @@
 
                 if (movie) {
                     const ratings = await app.$axios.$get(`/movies/${params.id}/ratings`);
-                    const topics = await app.$axios.$get(`/movies/${params.id}/topics`);
                     const recommendations = await app.$axios.$get(`/movies/${params.id}/recommendations`);
                     const avgRating = await app.$axios.$get(`/movies/${params.id}/avg-rating`);
                     return {
                         movie,
                         ratings,
-                        topics: topics.topics,
                         recommendations,
                         avgRating: avgRating.avgRating ? avgRating.avgRating : 0
                     };

@@ -12,7 +12,6 @@
         <b-tab
             title="Analysis">
             <movie-analysis
-                :topics="topics"
                 :recommendations="recommendations"
                 :ratings="ratings"
                 :avg-rating="avgRating" />
@@ -37,10 +36,6 @@
                 required: true
             },
             ratings: {
-                type: Array,
-                required: true
-            },
-            topics: {
                 type: Array,
                 required: true
             },
