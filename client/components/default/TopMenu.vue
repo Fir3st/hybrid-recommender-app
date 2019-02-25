@@ -58,11 +58,11 @@
         extends: TopMenu,
         props: {
             moviesItems: {
-                type: Array | null,
+                type: Array,
                 required: true
             },
             seriesItems: {
-                type: Array | null,
+                type: Array,
                 required: true
             }
         }

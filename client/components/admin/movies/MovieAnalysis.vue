@@ -50,12 +50,7 @@
 </template>
 
 <script>
-    import TopicsChart from '~/components/admin/movies/TopicsChart';
-
     export default {
-        components: {
-            TopicsChart
-        },
         props: {
             recommendations: {
                 type: Array,
