@@ -1,7 +1,8 @@
 <template>
     <b-row
         id="admin-pagination"
-        class="text-center">
+        class="text-center"
+    >
         <b-col>
             <el-pagination
                 :total="count"
@@ -10,7 +11,8 @@
                 layout="prev, pager, next"
                 @prev-click="handlePrev"
                 @next-click="handleNext"
-                @current-change="handleChangePage">
+                @current-change="handleChangePage"
+            >
             </el-pagination>
         </b-col>
     </b-row>

@@ -12,7 +12,8 @@
                     class="form-control search"
                     type="text"
                     placeholder="Type to search"
-                    @input="onChange">
+                    @input="onChange"
+                />
             </b-col>
         </b-row>
         <b-row v-if="search">
@@ -32,7 +33,6 @@
                 </b-row>
             </b-col>
         </b-row>
-
     </div>
 </template>
 

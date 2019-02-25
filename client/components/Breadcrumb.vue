@@ -2,11 +2,15 @@
     <b-row>
         <b-col>
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item :to="{ path: '/' }">Home</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: '/' }">
+                    Home
+                </el-breadcrumb-item>
                 <el-breadcrumb-item
                     v-for="item in breadcrumbs"
                     :key="item.index"
-                    :to="{ path: item.path }">{{ item.name }}
+                    :to="{ path: item.path }"
+                >
+                    {{ item.name }}
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </b-col>

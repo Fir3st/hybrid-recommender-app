@@ -4,16 +4,20 @@
             <el-table
                 :data="movies"
                 stripe
-                style="width: 100%">
+                style="width: 100%"
+            >
                 <el-table-column
                     prop="id"
-                    label="#" />
+                    label="#"
+                />
                 <el-table-column
                     prop="title"
-                    label="Title" />
+                    label="Title"
+                />
                 <el-table-column
                     prop="rating"
-                    label="Given rating" />
+                    label="Given rating"
+                />
             </el-table>
         </b-col>
     </b-row>

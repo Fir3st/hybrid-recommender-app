@@ -12,7 +12,8 @@
                     <b-col>
                         <user-detail-tab
                             :user="user"
-                            :recommendations="recommendations" />
+                            :recommendations="recommendations"
+                        />
                     </b-col>
                 </b-row>
             </b-col>

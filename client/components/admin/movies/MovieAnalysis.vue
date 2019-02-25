@@ -22,23 +22,29 @@
                     <el-table
                         :data="recommendations"
                         stripe
-                        style="width: 100%">
+                        style="width: 100%"
+                    >
                         <el-table-column
                             prop="id"
-                            label="#" />
+                            label="#"
+                        />
                         <el-table-column
                             prop="title"
-                            label="Title" />
+                            label="Title"
+                        />
                         <el-table-column
                             prop="similarity"
-                            label="Similarity" />
+                            label="Similarity"
+                        />
                         <el-table-column
-                            label="Actions">
+                            label="Actions"
+                        >
                             <template slot-scope="scope">
                                 <nuxt-link :to="`/admin/movies/${scope.row.id}`">
                                     <el-button
                                         icon="el-icon-search"
-                                        circle />
+                                        circle
+                                    />
                                 </nuxt-link>
                             </template>
                         </el-table-column>

@@ -3,7 +3,8 @@
         <top-menu />
         <b-container
             id="content"
-            fluid>
+            fluid
+        >
             <b-row>
                 <b-col xs="12">
                     <nuxt />
@@ -11,7 +12,6 @@
             </b-row>
         </b-container>
     </div>
-
 </template>
 
 <script>

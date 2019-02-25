@@ -14,7 +14,8 @@
                             :movie="movie"
                             :ratings="ratings"
                             :recommendations="recommendations"
-                            :avg-rating="avgRating" />
+                            :avg-rating="avgRating"
+                        />
                     </b-col>
                 </b-row>
             </b-col>

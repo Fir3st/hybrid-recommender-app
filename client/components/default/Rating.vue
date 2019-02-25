@@ -8,7 +8,8 @@
                 show-score
                 text-color="#ff9900"
                 score-template="{value} points"
-                @change="rateMovie">
+                @change="rateMovie"
+            >
             </el-rate>
         </b-col>
     </b-row>

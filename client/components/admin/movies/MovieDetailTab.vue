@@ -2,19 +2,23 @@
     <b-tabs>
         <b-tab
             title="Movie information"
-            active>
+            active
+        >
             <movie-detail :movie="movie" />
         </b-tab>
         <b-tab
-            title="Movie user's ratings">
+            title="Movie user's ratings"
+        >
             <movie-ratings :ratings="ratings" />
         </b-tab>
         <b-tab
-            title="Analysis">
+            title="Analysis"
+        >
             <movie-analysis
                 :recommendations="recommendations"
                 :ratings="ratings"
-                :avg-rating="avgRating" />
+                :avg-rating="avgRating"
+            />
         </b-tab>
     </b-tabs>
 </template>

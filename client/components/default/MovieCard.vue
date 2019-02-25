@@ -9,14 +9,16 @@
             <div class="crop">
                 <span
                     v-if="additionalInfo && movie.ratingsCount > 0"
-                    class="avg-rating">
+                    class="avg-rating"
+                >
                     <i class="el-icon-star-on"></i>
                     {{ averageRating }} / 5 ({{ movie.ratingsCount }} ratings)
                 </span>
                 <b-img
                     :src="image"
                     :alt="movie.title"
-                    fluid></b-img>
+                    fluid
+                ></b-img>
             </div>
             <div class="caption">
                 <p>{{ truncate(movie.title, 20) }}</p>

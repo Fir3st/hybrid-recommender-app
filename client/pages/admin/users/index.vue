@@ -12,33 +12,41 @@
                     :data="users"
                     stripe
                     style="width: 100%"
-                    empty-text="No users found">
+                    empty-text="No users found"
+                >
                     <el-table-column
                         prop="id"
-                        label="#" />
+                        label="#"
+                    />
                     <el-table-column
                         prop="name"
-                        label="Name" />
+                        label="Name"
+                    />
                     <el-table-column
                         prop="surname"
-                        label="Last name" />
+                        label="Last name"
+                    />
                     <el-table-column
                         prop="email"
-                        label="E-mail" />
+                        label="E-mail"
+                    />
                     <el-table-column
-                        label="Role">
+                        label="Role"
+                    >
                         <template slot-scope="scope">
                             <span v-if="scope.row.admin">Admin</span>
                             <span v-else>User</span>
                         </template>
                     </el-table-column>
                     <el-table-column
-                        label="Actions">
+                        label="Actions"
+                    >
                         <template slot-scope="scope">
                             <nuxt-link :to="`/admin/users/${scope.row.id}`">
                                 <el-button
                                     icon="el-icon-search"
-                                    circle />
+                                    circle
+                                />
                             </nuxt-link>
                         </template>
                     </el-table-column>
@@ -50,7 +58,8 @@
             :take="take"
             :handle-prev="handlePrev"
             :handle-next="handleNext"
-            :handle-change-page="handleChangePage" />
+            :handle-change-page="handleChangePage"
+        />
     </div>
 </template>
 
@@ -80,6 +89,10 @@
                 skip: 'users/skip'
             })
         },
+        async fetch({ store }) {
+            await store.dispatch('users/setUsers');
+            await store.dispatch('users/setCount');
+        },
         methods: {
             ...mapActions({
                 setSkip: 'users/setSkip',
@@ -97,10 +110,6 @@
             handleChangePage(pageNum) {
                 this.setSkip(this.take * (pageNum - 1));
             }
-        },
-        async fetch({ store }) {
-            await store.dispatch('users/setUsers');
-            await store.dispatch('users/setCount');
         }
     };
 </script>

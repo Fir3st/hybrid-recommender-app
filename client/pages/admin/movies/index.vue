@@ -12,32 +12,40 @@
                     :data="movies"
                     stripe
                     style="width: 100%"
-                    empty-text="No movies found">
+                    empty-text="No movies found"
+                >
                     <el-table-column
                         prop="id"
-                        label="#" />
+                        label="#"
+                    />
                     <el-table-column
                         prop="title"
-                        label="Title" />
+                        label="Title"
+                    />
                     <el-table-column
                         prop="type"
-                        label="Type" />
+                        label="Type"
+                    />
                     <el-table-column
                         prop="year"
-                        label="Year" />
+                        label="Year"
+                    />
                     <el-table-column
-                        label="Release date">
+                        label="Release date"
+                    >
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.releaseDate) }}
                         </template>
                     </el-table-column>
                     <el-table-column
-                        label="Actions">
+                        label="Actions"
+                    >
                         <template slot-scope="scope">
                             <nuxt-link :to="`/admin/movies/${scope.row.id}`">
                                 <el-button
                                     icon="el-icon-search"
-                                    circle />
+                                    circle
+                                />
                             </nuxt-link>
                         </template>
                     </el-table-column>
@@ -49,7 +57,8 @@
             :take="take"
             :handle-prev="handlePrev"
             :handle-next="handleNext"
-            :handle-change-page="handleChangePage" />
+            :handle-change-page="handleChangePage"
+        />
     </div>
 </template>
 
@@ -80,6 +89,9 @@
                 skip: 'movies/skip'
             })
         },
+        async fetch({ store }) {
+            await store.dispatch('movies/loadMovies', { genre: null, type: 'all', orderBy: 'id', order: 'ASC' });
+        },
         methods: {
             ...mapActions({
                 setSkip: 'movies/setSkip',
@@ -100,9 +112,6 @@
             formatDate(date) {
                 return moment(date).format('DD. MM. YYYY');
             }
-        },
-        async fetch({ store }) {
-            await store.dispatch('movies/loadMovies', { genre: null, type: 'all', orderBy: 'id', order: 'ASC' });
         }
     };
 </script>

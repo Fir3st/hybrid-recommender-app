@@ -21,40 +21,36 @@
                     <el-table
                         :data="recommendations"
                         stripe
-                        style="width: 100%">
+                        style="width: 100%"
+                    >
                         <el-table-column
                             prop="id"
-                            label="#" />
+                            label="#"
+                        />
                         <el-table-column
                             prop="title"
-                            label="Title" />
+                            label="Title"
+                        />
                         <el-table-column
-                            label="Predicted rating (normalized)" >
+                            label="Predicted rating (normalized)"
+                        >
                             <template slot-scope="scope">
                                 {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : '' }}
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="Actions">
+                            label="Actions"
+                        >
                             <template slot-scope="scope">
                                 <nuxt-link :to="`/admin/movies/${scope.row.id}`">
                                     <el-button
                                         icon="el-icon-search"
-                                        circle />
+                                        circle
+                                    />
                                 </nuxt-link>
                             </template>
                         </el-table-column>
                     </el-table>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <h2>Recommended movies (hybrid)</h2>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <p>Will be added later.</p>
                 </b-col>
             </b-row>
         </b-col>

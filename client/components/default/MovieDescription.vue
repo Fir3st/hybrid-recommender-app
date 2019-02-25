@@ -1,10 +1,13 @@
 <template>
     <b-row>
         <b-col sm="6">
-            <p class="text-justify">{{ movie.plot }}</p>
+            <p class="text-justify">
+                {{ movie.plot }}
+            </p>
         </b-col>
         <b-col
-            sm="6">
+            sm="6"
+        >
             <div class="info">
                 <p><strong>Type:</strong> {{ movie.type }}</p>
                 <p><strong>Director(s):</strong> {{ movie.director }}</p>

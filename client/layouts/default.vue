@@ -3,7 +3,8 @@
         <b-container fluid>
             <top-menu
                 :movies-items="moviesItems"
-                :series-items="seriesItems" />
+                :series-items="seriesItems"
+            />
         </b-container>
         <b-container>
             <nuxt />

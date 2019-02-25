@@ -5,7 +5,8 @@
             :key="movie.id"
             :movie="movie"
             :additional-info="additionalInfo"
-            class="movie" />
+            class="movie"
+        />
     </b-row>
 </template>
 

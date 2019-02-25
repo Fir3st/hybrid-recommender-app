@@ -13,13 +13,15 @@
                 <rating
                     :is-logged="isLogged"
                     :user-rating="userRating"
-                    :rate-movie="rateMovie"/>
+                    :rate-movie="rateMovie"
+                />
                 <b-row v-if="similarMovies.length > 0">
                     <b-col>
                         <h2>You may also like</h2>
                         <movie-list
                             :movies="similarMovies"
-                            :additional-info="true" />
+                            :additional-info="true"
+                        />
                     </b-col>
                 </b-row>
                 <b-row v-if="isLogged && recommendedMovies.length > 0">
@@ -27,7 +29,8 @@
                         <h2>Recommended for you</h2>
                         <movie-list
                             :movies="recommendedMovies"
-                            :additional-info="true" />
+                            :additional-info="true"
+                        />
                     </b-col>
                 </b-row>
             </b-col>
@@ -77,13 +80,6 @@
                 return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
             }
         },
-        async mounted() {
-            this.getSimilarMovies();
-            if (this.isLogged) {
-                this.getUserRecommendedMovies();
-                this.getUserRating();
-            }
-        },
         async asyncData ({ app, params }) {
             try {
                 const movie = await app.$axios.$get(`/movies/${params.id}`);
@@ -95,6 +91,13 @@
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        async mounted() {
+            this.getSimilarMovies();
+            if (this.isLogged) {
+                this.getUserRecommendedMovies();
+                this.getUserRating();
             }
         },
         methods: {

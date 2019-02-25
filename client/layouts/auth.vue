@@ -1,9 +1,11 @@
 <template>
     <b-container
-        fluid>
+        fluid
+    >
         <b-row
             align-v="center"
-            class="justify-content-md-center">
+            class="justify-content-md-center"
+        >
             <b-col md="4">
                 <nuxt />
             </b-col>

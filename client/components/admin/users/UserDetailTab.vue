@@ -2,7 +2,8 @@
     <b-tabs>
         <b-tab
             title="User information"
-            active>
+            active
+        >
             <user-detail :user="user" />
         </b-tab>
         <b-tab title="Already rated movies">
@@ -11,7 +12,8 @@
         <b-tab title="Analysis">
             <user-analysis
                 :ratings="user.ratings"
-                :recommendations="recommendations" />
+                :recommendations="recommendations"
+            />
         </b-tab>
     </b-tabs>
 </template>

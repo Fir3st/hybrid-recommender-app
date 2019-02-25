@@ -2,16 +2,20 @@
     <el-table
         :data="ratings"
         stripe
-        style="width: 100%">
+        style="width: 100%"
+    >
         <el-table-column
             prop="user.name"
-            label="User name" />
+            label="User name"
+        />
         <el-table-column
             prop="user.surname"
-            label="User surname" />
+            label="User surname"
+        />
         <el-table-column
             prop="rating"
-            label="Rating" />
+            label="Rating"
+        />
     </el-table>
 </template>
 

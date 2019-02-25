@@ -1,39 +1,50 @@
 <template>
     <div class="login-form">
         <div class="title-container">
-            <h1 class="h1">{{ title }}</h1>
+            <h1 class="h1">
+                {{ title }}
+            </h1>
         </div>
         <el-alert
             v-if="error"
             :title="error"
             :closable="closableAlert"
             type="error"
-            show-icon>
+            show-icon
+        >
         </el-alert>
         <el-form
             ref="form"
-            :model="form">
+            :model="form"
+        >
             <el-form-item>
                 <el-input
                     v-model="form.email"
-                    placeholder="E-mail address"></el-input>
+                    placeholder="E-mail address"
+                ></el-input>
             </el-form-item>
             <el-form-item>
                 <el-input
                     v-model="form.password"
                     placeholder="Password"
-                    type="password"></el-input>
+                    type="password"
+                ></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button
                     type="primary"
                     class="btn"
-                    @click="onSubmit">Log in</el-button>
+                    @click="onSubmit"
+                >
+                    Log in
+                </el-button>
             </el-form-item>
         </el-form>
         <b-row class="text-center">
             <b-col>
-                <nuxt-link to="/">Go back to main page</nuxt-link>
+                <nuxt-link to="/">
+                    Go back to main page
+                </nuxt-link>
             </b-col>
         </b-row>
     </div>
