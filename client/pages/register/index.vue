@@ -45,7 +45,7 @@
             <el-form-item>
                 <el-button
                     type="primary"
-                    class="btn"
+                    class="button"
                     @click="onSubmit"
                 >
                     Register
@@ -117,6 +117,6 @@
             margin-bottom: 20px
         .el-alert
             margin-bottom: 20px
-        .btn
+        .button
             width: 100%
 </style>
