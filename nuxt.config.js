@@ -55,7 +55,7 @@ module.exports = {
     plugins: [
         '@/plugins/element-ui',
         '@/plugins/globals',
-        { src: '@/plugins/vue-chartjs.js', ssr: false },
+        { src: '@/plugins/apexcharts', ssr: false },
     ],
 
     /*
