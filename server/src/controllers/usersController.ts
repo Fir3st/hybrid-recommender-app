@@ -189,8 +189,7 @@ router.get('/:id/preferences', [authenticate, authorize], async (req: Request, r
     const repository = getRepository(Movie);
 
     try {
-        const genresCount = {};
-        const genresRatings = {};
+        const genres = {};
         const movies = await repository
             .createQueryBuilder('movie')
             .leftJoinAndSelect('movie.usersRatings', 'ratings')
@@ -201,17 +200,26 @@ router.get('/:id/preferences', [authenticate, authorize], async (req: Request, r
         if (movies && movies.length > 0) {
             for (const movie of movies) {
                 for (const genre of movie.genres) {
-                    genresCount[genre.name] = genresCount[genre.name] ? genresCount[genre.name] + 1 : 1;
-                    genresRatings[genre.name] = genresRatings[genre.name]
-                        ? genresRatings[genre.name] + movie.usersRatings[0].rating
-                        : movie.usersRatings[0].rating;
+                    if (genres[genre.name]) {
+                        genres[genre.name].count += 1;
+                        genres[genre.name].value += movie.usersRatings[0].rating;
+                    } else {
+                        genres[genre.name] = {
+                            count: 1,
+                            value: movie.usersRatings[0].rating
+                        };
+                    }
                 }
             }
 
-            return res.send({
-                genresCount,
-                genresRatings
-            });
+            return res.send(Object.keys(genres).map((name) => {
+                const avg: Number = genres[name].value / genres[name].count;
+                return {
+                    name,
+                    ...genres[name],
+                    avg: avg.toFixed(2)
+                };
+            }));
         }
 
         return res.boom.badRequest(`User with id ${id} not found.`);
