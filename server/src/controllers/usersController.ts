@@ -184,6 +184,43 @@ router.get('/:id/recommendations', authenticate, async (req: Request, res: any) 
     }
 });
 
+router.get('/:id/preferences', [authenticate, authorize], async (req: Request, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const repository = getRepository(Movie);
+
+    try {
+        const genresCount = {};
+        const genresRatings = {};
+        const movies = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'ratings')
+            .leftJoinAndSelect('movie.genres', 'genres')
+            .where('ratings.userId = :id', { id })
+            .getMany();
+
+        if (movies && movies.length > 0) {
+            for (const movie of movies) {
+                for (const genre of movie.genres) {
+                    genresCount[genre.name] = genresCount[genre.name] ? genresCount[genre.name] + 1 : 1;
+                    genresRatings[genre.name] = genresRatings[genre.name]
+                        ? genresRatings[genre.name] + movie.usersRatings[0].rating
+                        : movie.usersRatings[0].rating;
+                }
+            }
+
+            return res.send({
+                genresCount,
+                genresRatings
+            });
+        }
+
+        return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/:userId/:movieId/recommendations', authenticate, async (req: Request, res: any) => {
     const userId = parseInt(req.params.userId, 10);
     const movieId = parseInt(req.params.movieId, 10);

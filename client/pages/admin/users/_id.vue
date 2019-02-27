@@ -55,11 +55,13 @@
                 if (user) {
                     const promises = [];
                     promises.push(app.$axios.$get(`/users/${user.id}/recommendations`));
+                    promises.push(app.$axios.$get(`/users/${user.id}/preferences`));
 
                     return Promise.all(promises).then((data) => {
                         return {
                             user,
-                            recommendations: data[0]
+                            recommendations: data[0],
+                            preferences: data[1]
                         };
                     });
                 }
