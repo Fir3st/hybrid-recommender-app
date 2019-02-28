@@ -13,6 +13,7 @@
                         <user-detail-tab
                             :user="user"
                             :recommendations="recommendations"
+                            :preferences="preferences"
                         />
                     </b-col>
                 </b-row>

@@ -13,6 +13,7 @@
             <user-analysis
                 :ratings="user.ratings"
                 :recommendations="recommendations"
+                :preferences="preferences"
             />
         </b-tab>
     </b-tabs>
@@ -35,6 +36,10 @@
                 required: true
             },
             recommendations: {
+                type: Array,
+                required: true
+            },
+            preferences: {
                 type: Array,
                 required: true
             }

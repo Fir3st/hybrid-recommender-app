@@ -13,6 +13,18 @@
             </b-row>
             <b-row>
                 <b-col>
+                    <h2>User's preferences</h2>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <user-preferences-chart
+                        :preferences="preferences"
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
                     <h2>Recommended movies (user-based)</h2>
                 </b-col>
             </b-row>
@@ -58,13 +70,22 @@
 </template>
 
 <script>
+    import UserPreferencesChart from '~/components/admin/users/UserPreferencesChart';
+
     export default {
+        components: {
+            UserPreferencesChart
+        },
         props: {
             ratings: {
                 type: Array,
                 required: true
             },
             recommendations: {
+                type: Array,
+                required: true
+            },
+            preferences: {
                 type: Array,
                 required: true
             }
