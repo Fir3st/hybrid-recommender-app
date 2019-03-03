@@ -41,7 +41,9 @@
                 breadcrumbs: [
                     { index: 0, name: 'users', path: '/admin/users' },
                     { index: 1, name: 'user detail' , path: null }
-                ]
+                ],
+                recommendations: [],
+                preferences: []
             };
         },
         computed: {
@@ -54,20 +56,24 @@
                 const user = await app.$axios.$get(`/users/${params.id}`);
 
                 if (user) {
-                    const promises = [];
-                    promises.push(app.$axios.$get(`/users/${user.id}/recommendations`));
-                    promises.push(app.$axios.$get(`/users/${user.id}/preferences`));
-
-                    return Promise.all(promises).then((data) => {
-                        return {
-                            user,
-                            recommendations: data[0],
-                            preferences: data[1]
-                        };
-                    });
+                    return {
+                        user
+                    };
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        mounted() {
+            if (this.user) {
+                const promises = [];
+                promises.push(this.$axios.$get(`/users/${this.user.id}/recommendations`));
+                promises.push(this.$axios.$get(`/users/${this.user.id}/preferences`));
+
+                Promise.all(promises).then((data) => {
+                    this.recommendations = data[0];
+                    this.preferences = data[1];
+                });
             }
         }
     };

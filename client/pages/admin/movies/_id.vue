@@ -42,7 +42,10 @@
                 breadcrumbs: [
                     { index: 0, name: 'movies', path: '/admin/movies' },
                     { index: 1, name: 'movie detail' , path: null }
-                ]
+                ],
+                ratings: [],
+                recommendations: [],
+                avgRating: 0
             };
         },
         computed: {
@@ -55,22 +58,26 @@
                 const movie = await app.$axios.$get(`/movies/${params.id}`);
 
                 if (movie) {
-                    const promises = [];
-                    promises.push(app.$axios.$get(`/movies/${params.id}/ratings`));
-                    promises.push(app.$axios.$get(`/movies/${params.id}/recommendations`));
-                    promises.push(app.$axios.$get(`/movies/${params.id}/avg-rating`));
-
-                    return Promise.all(promises).then((data) => {
-                        return {
-                            movie,
-                            ratings: data[0],
-                            recommendations: data[1],
-                            avgRating: data[2].avgRating ? data[2].avgRating : 0
-                        };
-                    });
+                    return {
+                        movie
+                    };
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        mounted() {
+            if (this.movie) {
+                const promises = [];
+                promises.push(this.$axios.$get(`/movies/${this.movie.id}/ratings`));
+                promises.push(this.$axios.$get(`/movies/${this.movie.id}/recommendations`));
+                promises.push(this.$axios.$get(`/movies/${this.movie.id}/avg-rating`));
+
+                return Promise.all(promises).then((data) => {
+                    this.ratings = data[0];
+                    this.recommendations = data[1];
+                    this.avgRating = data[2].avgRating ? data[2].avgRating : 0;
+                });
             }
         }
     };
