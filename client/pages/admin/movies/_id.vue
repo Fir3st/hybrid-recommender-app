@@ -73,7 +73,7 @@
                 promises.push(this.$axios.$get(`/movies/${this.movie.id}/recommendations`));
                 promises.push(this.$axios.$get(`/movies/${this.movie.id}/avg-rating`));
 
-                return Promise.all(promises).then((data) => {
+                Promise.all(promises).then((data) => {
                     this.ratings = data[0];
                     this.recommendations = data[1];
                     this.avgRating = data[2].avgRating ? data[2].avgRating : 0;
