@@ -45,6 +45,7 @@ module.exports = {
      ** Global CSS
      */
     css: [
+        'bootstrap/scss/bootstrap.scss',
         'element-ui/lib/theme-chalk/index.css',
         '@/assets/css/main.sass'
     ],

@@ -34,7 +34,7 @@
         "cors": "^2.8.4",
         "csvtojson": "^2.0.8",
         "cwait": "^1.1.1",
-        "element-ui": "^2.5.4",
+        "element-ui": "^2.6.1",
         "express": "^4.16.3",
         "express-boom": "^2.0.0",
         "faker": "^4.1.0",
