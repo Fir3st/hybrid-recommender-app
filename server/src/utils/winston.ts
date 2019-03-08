@@ -1,35 +1,40 @@
 import * as appRoot from 'app-root-path';
-import * as winston from 'winston';
+import { createLogger, format, transports } from 'winston';
+import * as DailyRotateFile from 'winston-daily-rotate-file';
+const { combine, timestamp, printf, colorize } = format;
+const myFormat = printf((info) => {
+    return `${info.timestamp} ${info.level}: ${info.message}`;
+});
+const transport = new DailyRotateFile({
+    dirname: `${appRoot}/logs`,
+    filename: 'log-%DATE%.log',
+    datePattern: 'YYYY-MM-DD-HH',
+    zippedArchive: true,
+    maxSize: '5m',
+    maxFiles: '14d'
+});
 
-const options = {
-    file: {
-        level: 'info',
-        filename: `${appRoot}/logs/app.log`,
-        handleExceptions: true,
-        json: true,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
-        colorize: false
-    },
-    console: {
-        level: 'debug',
-        handleExceptions: true,
-        json: false,
-        colorize: true
-    }
-};
-
-const logger: any = winston.createLogger({
+const logger: any = createLogger({
     transports: [
-        new winston.transports.File(options.file),
-        new winston.transports.Console(options.console)
+        new transports.Console({
+            format: combine(
+                colorize(),
+                timestamp(),
+                myFormat
+            ),
+            handleExceptions: true
+        }),
+        transport
     ],
     exitOnError: false
 });
 
 logger.stream = {
     write(message, encoding) {
-        logger.info(message);
+        logger.log({
+            message,
+            level: 'info'
+        });
     }
 };
 

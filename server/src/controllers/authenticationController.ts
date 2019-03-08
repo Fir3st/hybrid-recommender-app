@@ -38,7 +38,7 @@ router.post('/login', async (req: Request, res: any) => {
 });
 
 router.post('/logout', async (req: Request, res: any) => {
-    res.boom.notImplemented();
+    return res.boom.notImplemented();
 });
 
 export default router;
