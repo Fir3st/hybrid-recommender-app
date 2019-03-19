@@ -54,6 +54,54 @@ export const getRecommendations = async (req: Request, res: any) => {
     }
 };
 
+export const getRecommendationsByGenre = async (req: Request, res: any) => {
+    const userId = parseInt(req.params.userId, 10);
+    const genreId = parseInt(req.params.genreId, 10);
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(Movie);
+
+    try {
+        const recommendations = await axios.get(`${recommender}/users/${userId}/${genreId}/recommendations`);
+
+        if (recommendations && recommendations.data.recommendations && recommendations.data.recommendations.length > 0) {
+            const moviesIds = recommendations.data.recommendations.map(item => item.id);
+            const movies = await repository
+                .createQueryBuilder('movies')
+                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+                .select([
+                    'AVG(usersRatings.rating) AS avgRating',
+                    'COUNT(usersRatings.id) AS ratingsCount',
+                    'movies.id',
+                    'movies.title',
+                    'movies.poster',
+                    'movies.year',
+                    'movies.plot'
+                ])
+                .groupBy('movies.id')
+                .where('movies.id IN (:ids)', { ids: moviesIds })
+                .getRawMany();
+
+            if (movies && movies.length > 0) {
+                const moviesForRes = movies.map((item) => {
+                    const recommendedMovie = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.movies_id, 10));
+                    return {
+                        ...MoviesUtil.transformMovieData(item),
+                        rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null
+                    };
+                });
+                return res.send(_.orderBy(moviesForRes, ['rating'], ['desc']));
+            }
+
+            return res.send(recommendations.data);
+        }
+
+        return res.boom.badRequest(`No recommendations for user ${userId} and genre ${genreId}.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
 export const getHybridRecommendations = async (req: Request, res: any) => {
     const userId = parseInt(req.params.userId, 10);
     const movieId = parseInt(req.params.movieId, 10);
