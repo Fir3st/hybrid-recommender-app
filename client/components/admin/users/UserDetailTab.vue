@@ -14,6 +14,7 @@
                 :ratings="user.ratings"
                 :recommendations="recommendations"
                 :preferences="preferences"
+                :user="user"
             />
         </b-tab>
     </b-tabs>

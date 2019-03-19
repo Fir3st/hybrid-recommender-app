@@ -25,44 +25,50 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <h2>Recommended movies (user-based)</h2>
+                    <h2>Recommendations (overall)</h2>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <el-table
-                        :data="recommendations"
-                        stripe
-                        style="width: 100%"
+                    <recommended-movies-table
+                        :recommendations="recommendations"
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h2>Recommendations for specific genre</h2>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-select
+                        v-model="genreId"
+                        :options="options"
+                    ></b-form-select>
+                    <b-button
+                        class="btn-rec"
+                        variant="outline-primary"
+                        @click="getRecommendationsForGenre"
                     >
-                        <el-table-column
-                            prop="id"
-                            label="#"
-                        />
-                        <el-table-column
-                            prop="title"
-                            label="Title"
-                        />
-                        <el-table-column
-                            label="Predicted rating (normalized)"
-                        >
-                            <template slot-scope="scope">
-                                {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : '' }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            label="Actions"
-                        >
-                            <template slot-scope="scope">
-                                <nuxt-link :to="`/admin/movies/${scope.row.id}`">
-                                    <el-button
-                                        icon="el-icon-search"
-                                        circle
-                                    />
-                                </nuxt-link>
-                            </template>
-                        </el-table-column>
-                    </el-table>
+                        Get recommendations
+                    </b-button>
+                </b-col>
+            </b-row>
+            <b-row v-if="genreRecommendations">
+                <b-col>
+                    <b-row v-if="selectedGenre">
+                        <b-col>
+                            <h2>Recommendations for genre: {{ selectedGenre.name }}</h2>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <recommended-movies-table
+                                :recommendations="genreRecommendations"
+                            />
+                        </b-col>
+                    </b-row>
                 </b-col>
             </b-row>
         </b-col>
@@ -70,11 +76,14 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import UserPreferencesChart from '~/components/admin/users/UserPreferencesChart';
+    import RecommendedMoviesTable from '~/components/admin/users/RecommendedMoviesTable';
 
     export default {
         components: {
-            UserPreferencesChart
+            UserPreferencesChart,
+            RecommendedMoviesTable
         },
         props: {
             ratings: {
@@ -88,7 +97,61 @@
             preferences: {
                 type: Array,
                 required: true
+            },
+            user: {
+                type: Object,
+                required: true
+            }
+        },
+        data() {
+            return {
+                genreId: null,
+                genreRecommendations: null
+            };
+        },
+        computed: {
+            ...mapGetters({
+                allGenres: 'genres/genres'
+            }),
+            genres() {
+                return this.allGenres.filter(item => item.name !== 'N/A');
+
+            },
+            selectedGenre() {
+                return this.genres.find(item => item.id === this.genreId);
+            },
+            options() {
+                const options = this.genres.map((item) => {
+                    return { value: item.id, text: item.name };
+                });
+
+                return [
+                    { value: null, text: 'Selected genre' },
+                    ...options
+                ];
+            }
+        },
+        methods: {
+            async getRecommendationsForGenre() {
+                this.genreRecommendations = null;
+                try {
+                    const url = `/users/${this.user.id}/${this.genreId}/recommendations`;
+                    const recommendations = await this.$axios.$get(url);
+
+                    if (recommendations && recommendations.length > 0) {
+                        this.genreRecommendations = recommendations;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
             }
         }
     };
 </script>
+
+<style lang="sass">
+    h2
+        margin: 20px 0
+    .btn-rec
+        margin-top: 20px
+</style>

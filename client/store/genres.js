@@ -1,9 +1,13 @@
 export const state = () => ({
+    genres: [],
     moviesGenres: [],
     seriesGenres: []
 });
 
 export const getters = {
+    genres(state) {
+        return state.genres;
+    },
     moviesGenres(state) {
         return state.moviesGenres;
     },
@@ -13,6 +17,9 @@ export const getters = {
 };
 
 export const mutations = {
+    setGenres(state, items) {
+        state.genres = items;
+    },
     setMoviesGenres(state, items) {
         state.moviesGenres = items;
     },
@@ -22,6 +29,18 @@ export const mutations = {
 };
 
 export const actions = {
+    async setGenres({ commit }) {
+        try {
+            const url = `/genres`;
+            const genres = await this.$axios.$get(url);
+
+            if (genres && genres.length > 0) {
+                commit('setGenres', genres);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    },
     async setMoviesGenres({ commit }) {
         try {
             const url = `/genres?type=movie`;
