@@ -150,7 +150,6 @@ export const search = async (req: Request, res: any) => {
         const query = repository
             .createQueryBuilder('movies')
             .where('LOWER(movies.title) LIKE :query', { query: `%${title.toLowerCase()}%` })
-            .orWhere('LOWER(movies.plot) LIKE :query', { query: `%${title.toLowerCase()}%` })
             .orderBy('movies.year', 'DESC');
 
         const movies = await query.getMany();
