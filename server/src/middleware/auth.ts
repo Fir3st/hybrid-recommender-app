@@ -27,10 +27,22 @@ export function authenticate(req: Request, res: Response, next: NextFunction): a
     passport.authenticate('jwt', { session: false })(req, res, next);
 }
 
-export function authorize(req: Request, res: Response, next: NextFunction): any {
+export function authorize(req: Request, res: any, next: NextFunction): any {
     if (!req.user.admin) {
-        return res.status(403).send({ message: 'You do not have the required permission for this action' });
+        return res.boom.forbidden('You do not have the required permission for this action.');
     }
+
+    next();
+}
+
+export function authorizedOrCurrentUser(req: Request, res: any, next: NextFunction): any {
+    const id = parseInt(req.params.id, 10);
+    const userId = parseInt(req.user.id, 10);
+
+    if ((id !== userId) && !req.user.admin) {
+        return res.boom.forbidden('You do not have the required permission for this action.');
+    }
+
     next();
 }
 
