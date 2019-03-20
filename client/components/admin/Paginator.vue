@@ -7,6 +7,7 @@
             <el-pagination
                 :total="count"
                 :page-size="take"
+                :current-page="currentPage"
                 background
                 layout="prev, pager, next"
                 @prev-click="handlePrev"
@@ -26,6 +27,10 @@
                 required: true
             },
             take: {
+                type: Number,
+                required: true
+            },
+            currentPage: {
                 type: Number,
                 required: true
             },

@@ -4,6 +4,7 @@ export const state = () => ({
     count: 0,
     take: 50,
     skip: 0,
+    currentPage: 1,
     type: 'all',
     genre: null,
     orderBy: 'id',
@@ -25,6 +26,9 @@ export const getters = {
     },
     skip (state) {
         return state.skip;
+    },
+    currentPage(state) {
+        return state.currentPage;
     },
     type (state) {
         return state.type;
@@ -52,6 +56,9 @@ export const mutations = {
     },
     setSkip(state, skip) {
         state.skip = skip;
+    },
+    setCurrentPage(state, skip) {
+        state.currentPage = skip;
     },
     setType(state, type) {
         state.type = type;
@@ -113,6 +120,9 @@ export const actions = {
     setSkip({ commit, dispatch }, skip) {
         commit('setSkip', skip);
         dispatch('setMovies');
+    },
+    setCurrentPage({ commit, dispatch }, currentPage) {
+        commit('setCurrentPage', currentPage);
     },
     setType({ commit }, type) {
         commit('setType', type);

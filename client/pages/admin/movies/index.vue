@@ -55,6 +55,7 @@
         <paginator
             :count="count"
             :take="take"
+            :current-page="currentPage"
             :handle-prev="handlePrev"
             :handle-next="handleNext"
             :handle-change-page="handleChangePage"
@@ -86,7 +87,8 @@
                 movies: 'movies/movies',
                 count: 'movies/count',
                 take: 'movies/take',
-                skip: 'movies/skip'
+                skip: 'movies/skip',
+                currentPage: 'movies/currentPage'
             })
         },
         async fetch({ store }) {
@@ -95,18 +97,22 @@
         methods: {
             ...mapActions({
                 setSkip: 'movies/setSkip',
+                setCurrentPage: 'movies/setCurrentPage'
             }),
             handlePrev() {
                 if ((this.skip - this.take) >= 0) {
+                    this.setCurrentPage(this.currentPage - 1);
                     this.setSkip(this.skip - this.take);
                 }
             },
             handleNext() {
                 if ((this.skip + this.take) < this.count) {
+                    this.setCurrentPage(this.currentPage + 1);
                     this.setSkip(this.skip + this.take);
                 }
             },
             handleChangePage(pageNum) {
+                this.setCurrentPage(pageNum);
                 this.setSkip(this.take * (pageNum - 1));
             },
             formatDate(date) {

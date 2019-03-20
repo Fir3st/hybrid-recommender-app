@@ -7,6 +7,7 @@
             <el-pagination
                 :total="count"
                 :page-size="take"
+                :current-page="currentPage"
                 background
                 layout="prev, pager, next"
                 @prev-click="handlePrev"
@@ -26,24 +27,29 @@
             ...mapGetters({
                 take: 'movies/take',
                 skip: 'movies/skip',
-                count: 'movies/count'
+                count: 'movies/count',
+                currentPage: 'movies/currentPage'
             })
         },
         methods: {
             ...mapActions({
                 setSkip: 'movies/setSkip',
+                setCurrentPage: 'movies/setCurrentPage'
             }),
             handlePrev() {
                 if ((this.skip - this.take) >= 0) {
+                    this.setCurrentPage(this.currentPage - 1);
                     this.setSkip(this.skip - this.take);
                 }
             },
             handleNext() {
                 if ((this.skip + this.take) < this.count) {
+                    this.setCurrentPage(this.currentPage + 1);
                     this.setSkip(this.skip + this.take);
                 }
             },
             handleChangePage(pageNum) {
+                this.setCurrentPage(pageNum);
                 this.setSkip(this.take * (pageNum - 1));
             }
         }
