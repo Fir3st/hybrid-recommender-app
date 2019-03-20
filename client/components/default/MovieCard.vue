@@ -2,7 +2,10 @@
     <b-col
         v-b-tooltip.hover
         :title="`${truncate(movie.plot, 300)}`"
-        sm="2"
+        lg="2"
+        md="3"
+        sm="4"
+        cols="6"
         class="movie-card"
     >
         <nuxt-link :to="`/movies/${movie.id}`">
@@ -88,4 +91,16 @@
         color: #fff
         padding: 5px
         font-size: 12px
+
+    @media screen and (max-width: 1200px)
+        .crop
+            height: 180px
+
+    @media screen and (max-width: 576px)
+        .crop
+            height: 250px
+
+    @media screen and (max-width: 420px)
+        .crop
+            height: 180px
 </style>

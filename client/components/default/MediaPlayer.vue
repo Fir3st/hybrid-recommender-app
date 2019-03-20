@@ -2,7 +2,11 @@
     <b-row>
         <b-col>
             <div class="movie-player">
-                <b-img src="https://via.placeholder.com/1110x550" />
+                <b-img
+                    src="https://via.placeholder.com/1110x550"
+                    fluid
+                    alt="Placeholder"
+                ></b-img>
             </div>
         </b-col>
     </b-row>
@@ -16,6 +20,5 @@
     .movie-player
         margin-top: 30px
         width: 100%
-        height: 550px
         background-color: #000000
 </style>
