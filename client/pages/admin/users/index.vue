@@ -91,30 +91,41 @@
                 currentPage: 'users/currentPage'
             })
         },
-        async fetch({ store }) {
+        async fetch({ store, query }) {
+            await store.dispatch('users/setPagination', query.page ? parseInt(query.page) : 1);
             await store.dispatch('users/setUsers');
             await store.dispatch('users/setCount');
         },
         methods: {
             ...mapActions({
                 setSkip: 'users/setSkip',
-                setCurrentPage: 'users/setCurrentPage'
+                setCurrentPage: 'users/setCurrentPage',
+                setUsers: 'users/setUsers'
             }),
             handlePrev() {
                 if ((this.skip - this.take) >= 0) {
                     this.setCurrentPage(this.currentPage - 1);
+                    this.setPage();
                     this.setSkip(this.skip - this.take);
+                    this.setUsers();
                 }
             },
             handleNext() {
                 if ((this.skip + this.take) < this.count) {
                     this.setCurrentPage(this.currentPage + 1);
+                    this.setPage();
                     this.setSkip(this.skip + this.take);
+                    this.setUsers();
                 }
             },
             handleChangePage(pageNum) {
                 this.setCurrentPage(pageNum);
+                this.setPage();
                 this.setSkip(this.take * (pageNum - 1));
+                this.setUsers();
+            },
+            setPage() {
+                this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
             }
         }
     };

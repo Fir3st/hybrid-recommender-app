@@ -79,7 +79,6 @@ export const actions = {
     },
     setSkip({ commit, dispatch }, skip) {
         commit('setSkip', skip);
-        dispatch('setUsers');
     },
     setCurrentPage({ commit, dispatch }, currentPage) {
         commit('setCurrentPage', currentPage);
@@ -89,5 +88,9 @@ export const actions = {
     },
     setOrder({ commit }, order) {
         commit('setOrder', order);
+    },
+    async setPagination({ dispatch, state }, currentPage) {
+        await dispatch('setCurrentPage', currentPage);
+        await dispatch('setSkip', state.take * (currentPage - 1));
     }
 };
