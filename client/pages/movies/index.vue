@@ -8,7 +8,8 @@
                 pageTitle: 'Movies'
             };
         },
-        async fetch ({ store }) {
+        async fetch ({ store, query }) {
+            await store.dispatch('movies/setPagination', query.page ? parseInt(query.page) : 1);
             await store.dispatch('movies/loadMovies', { genre: null, type: 'movie', orderBy: 'year', order: 'DESC' });
         }
     };

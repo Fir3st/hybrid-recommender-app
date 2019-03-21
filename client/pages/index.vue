@@ -8,7 +8,8 @@
                 pageTitle: 'Main page'
             };
         },
-        async fetch ({ store }) {
+        async fetch ({ store, query }) {
+            await store.dispatch('movies/setPagination', query.page ? parseInt(query.page) : 1);
             await store.dispatch('movies/loadMovies');
         }
     };

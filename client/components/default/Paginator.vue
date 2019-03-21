@@ -40,6 +40,7 @@
             handlePrev() {
                 if ((this.skip - this.take) >= 0) {
                     this.setCurrentPage(this.currentPage - 1);
+                    this.setPage();
                     this.setSkip(this.skip - this.take);
                     this.setMovies();
                 }
@@ -47,14 +48,19 @@
             handleNext() {
                 if ((this.skip + this.take) < this.count) {
                     this.setCurrentPage(this.currentPage + 1);
+                    this.setPage();
                     this.setSkip(this.skip + this.take);
                     this.setMovies();
                 }
             },
             handleChangePage(pageNum) {
                 this.setCurrentPage(pageNum);
+                this.setPage();
                 this.setSkip(this.take * (pageNum - 1));
                 this.setMovies();
+            },
+            setPage() {
+                this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
             }
         }
     };

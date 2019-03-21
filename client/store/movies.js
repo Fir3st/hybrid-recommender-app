@@ -135,6 +135,10 @@ export const actions = {
     setOrder({ commit }, order) {
         commit('setOrder', order);
     },
+    async setPagination({ dispatch, state }, currentPage) {
+        await dispatch('setCurrentPage', currentPage);
+        await dispatch('setSkip', state.take * (currentPage - 1));
+    },
     async loadMovies({ dispatch }, params = { genre: null, type: 'all', orderBy: 'year', order: 'DESC' }) {
         await dispatch('setGenre', params.genre);
         await dispatch('setType', params.type);
