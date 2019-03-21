@@ -119,7 +119,6 @@ export const actions = {
     },
     setSkip({ commit, dispatch }, skip) {
         commit('setSkip', skip);
-        dispatch('setMovies');
     },
     setCurrentPage({ commit, dispatch }, currentPage) {
         commit('setCurrentPage', currentPage);

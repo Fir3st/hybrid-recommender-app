@@ -8,7 +8,7 @@
                 pageTitle: 'Main page'
             };
         },
-        async fetch ({ store, params }) {
+        async fetch ({ store }) {
             await store.dispatch('movies/loadMovies');
         }
     };
