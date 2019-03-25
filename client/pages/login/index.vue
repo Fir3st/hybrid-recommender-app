@@ -16,15 +16,16 @@
         <el-form
             ref="form"
             :model="form"
+            :rules="rules"
             @submit.native.prevent="onSubmit"
         >
-            <el-form-item>
+            <el-form-item prop="email">
                 <el-input
                     v-model="form.email"
                     placeholder="E-mail address"
                 ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="password">
                 <el-input
                     v-model="form.password"
                     placeholder="Password"
@@ -67,29 +68,43 @@
                 },
                 title: 'Log in',
                 error: null,
-                closableAlert: false
+                closableAlert: false,
+                rules: {
+                    email: [
+                        { required: true, message: 'Please input your e-mail address', trigger: ['blur', 'change']  },
+                        { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
+                    ],
+                    password: [
+                        { required: true, message: 'Please input your password', trigger: ['blur', 'change'] }
+                    ]
+                }
             };
         },
         methods: {
             async onSubmit() {
-                try {
-                    await this.$auth.loginWith('local', {
-                        data: {
-                            email: this.form.email,
-                            password: this.form.password
+                this.$refs['form'].validate(async (valid) => {
+                    if (valid) {
+                        try {
+                            await this.$auth.loginWith('local', {
+                                data: {
+                                    email: this.form.email,
+                                    password: this.form.password
+                                }
+                            });
+                            this.$notify({
+                                title: 'Success',
+                                message: 'You have been successfully logged into system.',
+                                type: 'success',
+                                position: 'bottom-right'
+                            });
+                        } catch (error) {
+                            this.error = error.response.data.message;
+                            this.$refs['form'].resetFields();
                         }
-                    });
-                    this.$notify({
-                        title: 'Success',
-                        message: 'You have been successfully logged into system.',
-                        type: 'success',
-                        position: 'bottom-right'
-                    });
-                } catch (error) {
-                    this.error = error.response.data.message;
-                    this.form.email = '';
-                    this.form.password = '';
-                }
+                    } else {
+                        return false;
+                    }
+                });
             }
         }
     };
