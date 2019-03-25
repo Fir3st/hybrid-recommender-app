@@ -16,6 +16,7 @@
         <el-form
             ref="form"
             :model="form"
+            @submit.native.prevent="onSubmit"
         >
             <el-form-item>
                 <el-input
@@ -34,7 +35,7 @@
                 <el-button
                     type="primary"
                     class="button"
-                    @click="onSubmit"
+                    native-type="submit"
                 >
                     Log in
                 </el-button>
@@ -64,7 +65,7 @@
                     email: '',
                     password: ''
                 },
-                title: 'Sign in',
+                title: 'Log in',
                 error: null,
                 closableAlert: false
             };
@@ -110,4 +111,7 @@
         margin-bottom: 20px
     .button
         width: 100%
+    .el-button--primary
+        background-color: #17a2b8
+        border-color: #17a2b8
 </style>

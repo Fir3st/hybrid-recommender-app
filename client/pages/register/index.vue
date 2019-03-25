@@ -16,6 +16,7 @@
         <el-form
             ref="form"
             :model="form"
+            @submit.native.prevent="onSubmit"
         >
             <el-form-item>
                 <el-input
@@ -26,7 +27,7 @@
             <el-form-item>
                 <el-input
                     v-model="form.surname"
-                    placeholder="Last name"
+                    placeholder="Surname"
                 ></el-input>
             </el-form-item>
             <el-form-item>
@@ -46,7 +47,7 @@
                 <el-button
                     type="primary"
                     class="button"
-                    @click="onSubmit"
+                    native-type="submit"
                 >
                     Register
                 </el-button>
@@ -79,7 +80,7 @@
                     email: '',
                     password: ''
                 },
-                title: 'Sign up',
+                title: 'Registration',
                 error: null,
                 closableAlert: false
             };
@@ -119,4 +120,7 @@
             margin-bottom: 20px
         .button
             width: 100%
+        .el-button--primary
+            background-color: #17a2b8
+            border-color: #17a2b8
 </style>

@@ -8,7 +8,7 @@
         cols="6"
         class="movie-card"
     >
-        <nuxt-link :to="`/movies/${movie.id}`">
+        <nuxt-link :to="`/detail/${movie.id}`">
             <div class="crop">
                 <span
                     v-if="additionalInfo && movie.ratingsCount > 0"
