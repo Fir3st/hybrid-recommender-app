@@ -121,6 +121,28 @@ export const getUserByID = async (req: Request, res: any) => {
     }
 };
 
+export const deleteUser = async (req: Request, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const repository = getRepository(User);
+
+    try {
+        const user = await repository
+            .createQueryBuilder('user')
+            .where('user.id = :id', { id })
+            .getOne();
+
+        if (user) {
+            await repository.delete(user);
+            return res.send({ message: 'User was deleted.' });
+        }
+
+        return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
 export const getPreferences = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
     const repository = getRepository(Movie);

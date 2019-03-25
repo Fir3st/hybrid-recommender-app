@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize, authorizedOrCurrentUser } from '../middleware/auth';
-import { getUsers, createUser, countUsers, getUser, getUserByID, getPreferences } from './users/basics';
+import { getUsers, createUser, countUsers, getUser, getUserByID, getPreferences, deleteUser } from './users/basics';
 import { getRecommendations, getHybridRecommendations, getRecommendationsByGenre } from './users/recommendations';
 
 const router = Router();
@@ -14,6 +14,8 @@ router.get('/count', [authenticate, authorize], countUsers);
 router.get('/me', authenticate, getUser);
 
 router.get('/:id', [authenticate, authorizedOrCurrentUser], getUserByID);
+
+router.delete('/:id', [authenticate, authorize], deleteUser);
 
 router.get('/:id/recommendations', [authenticate, authorizedOrCurrentUser], getRecommendations);
 
