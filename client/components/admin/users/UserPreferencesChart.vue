@@ -36,19 +36,19 @@
                     chart: this.chart,
                     xaxis: {
                         categories: this.xaxis
+                    },
+                    tooltip: {
+                        x: {
+                            show: true,
+                            formatter: (val, opt) => {
+                                return  `${val} (${this.sortedPreferences[opt.dataPointIndex].count} ratings)`;
+                            }
+                        }
                     }
                 };
             },
             series() {
                 return [
-                    /* {
-                        name: 'Sum of ratings',
-                        data: this.preferences.map(preference => preference.value)
-                    },
-                    {
-                        name: 'Number of rated movies',
-                        data: this.preferences.map(preference => preference.count)
-                    } */
                     {
                         name: 'Average rating of category',
                         data: this.sortedPreferences.map(preference => preference.avg)
