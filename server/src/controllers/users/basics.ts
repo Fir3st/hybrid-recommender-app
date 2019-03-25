@@ -51,7 +51,7 @@ export const createUser = async (req: Request, res: any) => {
         user.name = validated.name;
         user.surname = validated.surname;
         user.email = validated.email;
-        user.admin = (validated.admin !== undefined) ? validated.admin : true;
+        user.admin = false;
         user.password = await bcrypt.hash(validated.password, 10);
 
         const createdUser = await userRepository.save(user);
