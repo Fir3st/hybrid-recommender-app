@@ -22,8 +22,8 @@
         "load:ratings:json": "ts-node server/src/utils/data/ratingsDataJSON.ts"
     },
     "dependencies": {
-        "@nuxtjs/auth": "^4.5.3",
-        "@nuxtjs/axios": "^5.3.6",
+        "@nuxtjs/auth": "4.5.3",
+        "@nuxtjs/axios": "5.3.6",
         "apexcharts": "^3.5.0",
         "app-root-path": "^2.1.0",
         "axios": "^0.18.0",
@@ -45,7 +45,7 @@
         "moment": "^2.22.2",
         "morgan": "^1.9.1",
         "mysql2": "^1.6.1",
-        "nuxt": "^2.4.3",
+        "nuxt": "2.4.3",
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
         "path-to-regexp": "^2.2.1",
