@@ -19,29 +19,38 @@ export const getRecommendations = async (req: Request, res: any) => {
             const moviesIds = recommendations.data.recommendations.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
-                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
-                .select([
-                    'AVG(usersRatings.rating) AS avgRating',
-                    'COUNT(usersRatings.id) AS ratingsCount',
-                    'movies.id',
-                    'movies.title',
-                    'movies.poster',
-                    'movies.year',
-                    'movies.plot'
-                ])
-                .groupBy('movies.id')
+                .leftJoinAndSelect('movies.genres', 'genres')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .getRawMany();
+                .getMany();
 
             if (movies && movies.length > 0) {
-                const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.movies_id, 10));
-                    return {
-                        ...MoviesUtil.transformMovieData(item),
-                        rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null
+                const moviesForRes = movies.map(async (item) => {
+                    const rec = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === item.id);
+                    const movie = {
+                        ...item
                     };
+
+                    movie['rating'] = rec ? parseFloat(rec.rating).toFixed(3) : null;
+                    const stats = await repository
+                        .createQueryBuilder('movie')
+                        .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
+                        .select([
+                            'AVG(usersRatings.rating) AS avgRating',
+                            'COUNT(usersRatings.id) AS ratingsCount',
+                            'movie.id'
+                        ])
+                        .groupBy('movie.id')
+                        .where('movie.id = :id', { id: item.id })
+                        .getRawOne();
+
+                    if (stats) {
+                        movie['avgRating'] = stats.avgRating;
+                        movie['ratingsCount'] = stats.ratingsCount;
+                    }
+
+                    return movie;
                 });
-                return res.send(_.orderBy(moviesForRes, ['rating'], ['desc']));
+                return res.send(_.orderBy(await Promise.all(moviesForRes), ['rating'], ['desc']));
             }
 
             return res.send(recommendations.data);
@@ -67,29 +76,37 @@ export const getRecommendationsByGenre = async (req: Request, res: any) => {
             const moviesIds = recommendations.data.recommendations.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
-                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
-                .select([
-                    'AVG(usersRatings.rating) AS avgRating',
-                    'COUNT(usersRatings.id) AS ratingsCount',
-                    'movies.id',
-                    'movies.title',
-                    'movies.poster',
-                    'movies.year',
-                    'movies.plot'
-                ])
-                .groupBy('movies.id')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .getRawMany();
+                .getMany();
 
             if (movies && movies.length > 0) {
-                const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.movies_id, 10));
-                    return {
-                        ...MoviesUtil.transformMovieData(item),
-                        rating: recommendedMovie ? parseFloat(recommendedMovie.rating).toFixed(3) : null
+                const moviesForRes = movies.map(async (item) => {
+                    const rec = recommendations.data.recommendations.find(movie => parseInt(movie.id, 10) === item.id);
+                    const movie = {
+                        ...item
                     };
+
+                    movie['rating'] = rec ? parseFloat(rec.rating).toFixed(3) : null;
+                    const stats = await repository
+                        .createQueryBuilder('movie')
+                        .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
+                        .select([
+                            'AVG(usersRatings.rating) AS avgRating',
+                            'COUNT(usersRatings.id) AS ratingsCount',
+                            'movie.id'
+                        ])
+                        .groupBy('movie.id')
+                        .where('movie.id = :id', { id: item.id })
+                        .getRawOne();
+
+                    if (stats) {
+                        movie['avgRating'] = stats.avgRating;
+                        movie['ratingsCount'] = stats.ratingsCount;
+                    }
+
+                    return movie;
                 });
-                return res.send(_.orderBy(moviesForRes, ['rating'], ['desc']));
+                return res.send(_.orderBy(await Promise.all(moviesForRes), ['rating'], ['desc']));
             }
 
             return res.send(recommendations.data);

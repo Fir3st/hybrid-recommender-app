@@ -31,15 +31,15 @@ export const getRecommendations = async (req: Request, res: any) => {
                     };
                     movie['similarity'] = rec ? parseFloat(rec.similarity).toFixed(3) : null;
                     const stats = await repository
-                        .createQueryBuilder('movies')
-                        .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+                        .createQueryBuilder('movie')
+                        .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
                         .select([
                             'AVG(usersRatings.rating) AS avgRating',
                             'COUNT(usersRatings.id) AS ratingsCount',
-                            'movies.id'
+                            'movie.id'
                         ])
-                        .groupBy('movies.id')
-                        .where('movies.id = :id', { id: item.id })
+                        .groupBy('movie.id')
+                        .where('movie.id = :id', { id: item.id })
                         .getRawOne();
 
                     if (stats) {
