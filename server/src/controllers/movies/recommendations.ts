@@ -5,7 +5,6 @@ import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../../utils/winston';
 import { Movie } from '../../entities/Movie';
-import MoviesUtil from '../../utils/movies/MoviesUtil';
 
 export const getRecommendations = async (req: Request, res: any) => {
     const id = req.params.id;
@@ -20,29 +19,38 @@ export const getRecommendations = async (req: Request, res: any) => {
             const moviesIds = recommendedMovies.map(item => item.id);
             const movies = await repository
                 .createQueryBuilder('movies')
-                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
-                .select([
-                    'AVG(usersRatings.rating) AS avgRating',
-                    'COUNT(usersRatings.id) AS ratingsCount',
-                    'movies.id',
-                    'movies.title',
-                    'movies.poster',
-                    'movies.year',
-                    'movies.plot'
-                ])
-                .groupBy('movies.id')
+                .leftJoinAndSelect('movies.genres', 'genres')
                 .where('movies.id IN (:ids)', { ids: moviesIds })
-                .getRawMany();
+                .getMany();
 
             if (movies && movies.length > 0) {
-                const moviesForRes = movies.map((item) => {
-                    const recommendedMovie = recommendedMovies.find(movie => movie.id === item.movies_id);
-                    return {
-                        ...MoviesUtil.transformMovieData(item),
-                        similarity: recommendedMovie ? parseFloat(recommendedMovie.similarity).toFixed(3) : null
+                const moviesForRes = movies.map(async (item) => {
+                    const rec = recommendedMovies.find(movie => movie.id === item.id);
+                    const movie = {
+                        ...item
                     };
+                    movie['similarity'] = rec ? parseFloat(rec.similarity).toFixed(3) : null;
+                    const stats = await repository
+                        .createQueryBuilder('movies')
+                        .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+                        .select([
+                            'AVG(usersRatings.rating) AS avgRating',
+                            'COUNT(usersRatings.id) AS ratingsCount',
+                            'movies.id'
+                        ])
+                        .groupBy('movies.id')
+                        .where('movies.id = :id', { id: item.id })
+                        .getRawOne();
+
+                    if (stats) {
+                        movie['avgRating'] = stats.avgRating;
+                        movie['ratingsCount'] = stats.ratingsCount;
+                    }
+
+                    return movie;
                 });
-                return res.send(_.orderBy(moviesForRes, ['similarity'], ['desc']));
+
+                return res.send(_.orderBy(await Promise.all(moviesForRes), ['similarity'], ['desc']));
             }
 
             return res.send(recommendations.data);
