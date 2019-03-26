@@ -15,7 +15,8 @@ export const getMovies = async (req: Request, res: any) => {
     try {
         const query = repository
             .createQueryBuilder('movies')
-            .leftJoin('movies.genres', 'genres')
+            .leftJoinAndSelect('movies.genres', 'genres')
+            .leftJoinAndSelect('movies.ratings', 'ratings')
             .orderBy(`movies.${orderBy}`, order)
             .take(take)
             .skip(skip);
@@ -44,21 +45,15 @@ export const getMovies = async (req: Request, res: any) => {
 export const getTopMovies = async (req: Request, res: any) => {
     const limit = req.query.limit || 10;
     const type = req.query.type || 'all';
-    const genre = req.query.genre || null;
     const repository = getRepository(Movie);
 
     try {
         const query = repository
             .createQueryBuilder('movies')
-            .leftJoinAndSelect('movies.genres', 'genres')
             .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
             .select([
-                'AVG(usersRatings.rating) * COUNT(usersRatings.rating) AS movie_score',
-                'movies.id',
-                'movies.title',
-                'movies.poster',
-                'movies.year',
-                'movies.plot'
+                'SUM(usersRatings.rating) * COUNT(usersRatings.rating) AS movie_score',
+                'movies.id'
             ])
             .groupBy('movies.id')
             .orderBy('movie_score', 'DESC')
@@ -68,13 +63,16 @@ export const getTopMovies = async (req: Request, res: any) => {
             query.where('movies.type = :type', { type });
         }
 
-        if (genre) {
-            query.andWhere('LOWER(genres.name) = LOWER(:genre)', { genre });
-        }
+        const topMovies = await query.getMany();
 
-        const movies = await query.getMany();
+        if (topMovies && topMovies.length > 0) {
+            const movies = await repository
+                .createQueryBuilder('movies')
+                .leftJoinAndSelect('movies.ratings', 'ratings')
+                .leftJoinAndSelect('movies.genres', 'genres')
+                .where('movies.id IN (:ids)', { ids: topMovies.map(movie => movie.id) })
+                .getMany();
 
-        if (movies && movies.length > 0) {
             return res.send(movies);
         }
 

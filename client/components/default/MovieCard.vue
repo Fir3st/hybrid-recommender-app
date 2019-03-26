@@ -1,14 +1,15 @@
 <template>
     <b-col
-        v-b-tooltip.hover
-        :title="`${truncate(movie.plot, 300)}`"
         lg="2"
         md="3"
         sm="4"
         cols="6"
         class="movie-card"
     >
-        <nuxt-link :to="`/detail/${movie.id}`">
+        <nuxt-link
+            :id="`card-${movie.id}`"
+            :to="`/detail/${movie.id}`"
+        >
             <div class="crop">
                 <span
                     v-if="additionalInfo && movie.ratingsCount > 0"
@@ -30,6 +31,23 @@
                 </p>
             </div>
         </nuxt-link>
+
+        <b-popover
+            :target="`card-${movie.id}`"
+            triggers="hover"
+            class="hidden-sm-and-down"
+        >
+            <template slot="title">
+                {{ movie.title }}
+            </template>
+            <p class="tooltip-caption">
+                <span>{{ movie.year }}</span>
+            </p>
+            <p class="tooltip-caption">
+                <span>{{ genres }}</span>
+            </p>
+            <p>{{ truncate(movie.plot, 200) }}</p>
+        </b-popover>
     </b-col>
 </template>
 
@@ -50,10 +68,14 @@
         computed: {
             image() {
                 const hasImage = this.movie.poster !== null && this.movie.poster !== '' && this.movie.poster !== 'N/A';
-                return hasImage ? this.movie.poster : 'https://via.placeholder.com/160x200';
+                return hasImage ? this.movie.poster : '://via.placeholder.com/160x200';
             },
             averageRating() {
                 return Math.round(this.movie.avgRating);
+            },
+            genres() {
+                const genresNames = this.movie.genres.map(item => item.name);
+                return genresNames.join(' | ');
             }
         },
         methods: {
@@ -91,6 +113,10 @@
         color: #fff
         padding: 5px
         font-size: 12px
+    .tooltip-caption
+        color: #949494
+        span
+            margin-right: 10px
 
     @media screen and (max-width: 1200px)
         .crop
