@@ -114,7 +114,7 @@
         padding: 5px
         font-size: 12px
     .tooltip-caption
-        color: #949494
+        color: #e4e4e4
         span
             margin-right: 10px
 
