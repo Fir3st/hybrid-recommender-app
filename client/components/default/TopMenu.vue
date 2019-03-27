@@ -1,5 +1,6 @@
 <template>
     <b-navbar
+        sticky
         toggleable="md"
         type="dark"
         variant="dark"
@@ -94,8 +95,6 @@
     .bg-dark
         background-color: #232323 !important
     .front
-        .nav-link
-            text-transform: uppercase
         .dropdown-item
             background: black !important
             color: white !important

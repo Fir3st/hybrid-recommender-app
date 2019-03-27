@@ -6,7 +6,7 @@
             fluid
         >
             <b-row>
-                <b-col xs="12">
+                <b-col>
                     <nuxt />
                 </b-col>
             </b-row>
@@ -25,7 +25,7 @@
     };
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
     #content
         margin-top: 20px
 </style>

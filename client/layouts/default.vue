@@ -1,15 +1,19 @@
 <template>
-    <b-container fluid>
-        <b-container fluid>
-            <top-menu
-                :movies-items="moviesItems"
-                :series-items="seriesItems"
-            />
+    <div id="main">
+        <top-menu
+            :movies-items="moviesItems"
+            :series-items="seriesItems"
+        />
+        <b-container
+            id="content"
+        >
+            <b-row>
+                <b-col>
+                    <nuxt />
+                </b-col>
+            </b-row>
         </b-container>
-        <b-container>
-            <nuxt />
-        </b-container>
-    </b-container>
+    </div>
 </template>
 
 <script>
@@ -36,12 +40,8 @@
 </script>
 
 <style lang="sass" scoped>
-    .container-fluid
-        min-height: 100%
+    #main
         background: #121212
         color: #ffffff
-        padding: 0
-    .top-menu
-        padding: 0
 </style>
 
