@@ -17,11 +17,11 @@ export default class MoviesUtil {
         const repository = getRepository(Movie);
 
         return movies.map(async (item) => {
-            const rec = recommendations.find(movie => movie.id === item.id);
+            const rec = recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.id, 10));
             const movie = {
                 ...item
             };
-            movie[key] = rec ? parseFloat(rec.similarity).toFixed(3) : null;
+            movie[key] = rec ? parseFloat(rec[key]).toFixed(3) : null;
             const stats = await repository
                 .createQueryBuilder('movie')
                 .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
