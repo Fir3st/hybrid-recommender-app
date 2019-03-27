@@ -2,17 +2,6 @@ import { Movie } from '../../entities/Movie';
 import { getRepository } from 'typeorm';
 
 export default class MoviesUtil {
-    public static transformMovieData(movie: any) {
-        return {
-            id: parseInt(movie.movies_id, 10),
-            title: movie.movies_title,
-            plot: movie.movies_plot,
-            poster: movie.movies_poster,
-            year: movie.movies_year,
-            avgRating: movie.avgRating,
-            ratingsCount: movie.ratingsCount
-        };
-    }
     public static getMoviesStats(movies, recommendations, key) {
         const repository = getRepository(Movie);
 
