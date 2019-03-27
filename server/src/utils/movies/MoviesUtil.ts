@@ -1,5 +1,5 @@
 import { Movie } from '../../entities/Movie';
-import {getRepository} from "typeorm";
+import { getRepository } from 'typeorm';
 
 export default class MoviesUtil {
     public static transformMovieData(movie: any) {
