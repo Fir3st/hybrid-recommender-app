@@ -41,6 +41,7 @@
 
 <style lang="sass" scoped>
     #main
+        min-height: 100%
         background: #121212
         color: #ffffff
 </style>

@@ -4,7 +4,7 @@
         toggleable="md"
         type="dark"
         variant="dark"
-        class="front"
+        class="front-nav"
     >
         <b-container>
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
@@ -94,7 +94,7 @@
 <style lang="sass">
     .bg-dark
         background-color: #232323 !important
-    .front
+    .front-nav
         .dropdown-item
             background: black !important
             color: white !important
