@@ -164,6 +164,8 @@
 </script>
 
 <style lang="sass" scoped>
+    h1
+        margin-top: 20px
     h2
         padding: 20px 0
 </style>
