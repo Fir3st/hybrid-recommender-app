@@ -9,7 +9,7 @@
         <b-container>
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
             <b-navbar-brand to="/">
-                Recommender
+                <span class="name">Recommender</span>
             </b-navbar-brand>
             <b-collapse
                 id="nav_collapse"
@@ -93,13 +93,15 @@
 
 <style lang="sass">
     .bg-dark
-        background-color: #232323 !important
+        background: #121212 !important
     .front-nav
         .dropdown-item
-            background: black !important
+            background: #232323 !important
             color: white !important
         .dropdown-item:hover
             background: #17a2b8 !important
         .navbar-nav .dropdown-menu
-            background-color: #000 !important
+            background-color: #232323 !important
+        .name
+            font-family: 'Roboto Condensed', sans-serif
 </style>

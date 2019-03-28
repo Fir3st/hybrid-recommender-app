@@ -147,6 +147,7 @@ export const search = async (req: Request, res: any) => {
     try {
         const query = repository
             .createQueryBuilder('movies')
+            .leftJoinAndSelect('movies.genres', 'genres')
             .where('LOWER(movies.title) LIKE :query', { query: `%${title.toLowerCase()}%` })
             .orderBy('movies.year', 'DESC');
 

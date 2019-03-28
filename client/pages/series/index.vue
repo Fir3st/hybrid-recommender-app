@@ -5,7 +5,8 @@
         extends: MoviesPage,
         data() {
             return {
-                pageTitle: 'Series'
+                pageTitle: 'Series',
+                contentType: 'series'
             };
         },
         async fetch ({ store, query }) {

@@ -1,15 +1,10 @@
 <template>
     <div>
-        <b-row>
-            <b-col>
-                <h1>{{ pageTitle }}</h1>
-            </b-col>
-        </b-row>
         <b-row v-if="isMainCategory && skip === 0">
             <b-col>
                 <b-row>
                     <b-col>
-                        <h2>Popular among other users</h2>
+                        <h2>Top rated {{ contentType }}</h2>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -19,9 +14,15 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <h2>Newest</h2>
+                        <h2>Newest {{ contentType }}</h2>
                     </b-col>
                 </b-row>
+            </b-col>
+        </b-row>
+        <b-row v-else-if="!isMainCategory && skip === 0">
+            <b-col>
+                <h2>{{ pageTitle }}</h2>
+                <hr />
             </b-col>
         </b-row>
         <movie-list :movies="movies" />
@@ -45,6 +46,11 @@
             };
         },
         auth: false,
+        data() {
+            return {
+                contentType: ''
+            };
+        },
         computed: {
             ...mapGetters({
                 movies: 'movies/movies',
