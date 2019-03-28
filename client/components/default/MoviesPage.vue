@@ -21,7 +21,7 @@
         </b-row>
         <b-row v-else-if="!isMainCategory && skip === 0">
             <b-col>
-                <h2>{{ pageTitle }}</h2>
+                <h2>{{ pageTitle }} - <span class="genre">{{ genreName }}</span></h2>
                 <hr />
             </b-col>
         </b-row>
@@ -73,4 +73,6 @@
     h2
         margin-bottom: 40px !important
         margin-top: 0
+    .genre
+        text-transform: capitalize
 </style>

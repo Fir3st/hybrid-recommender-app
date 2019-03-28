@@ -10,7 +10,7 @@
         },
         asyncData({ params }) {
             return {
-                pageTitle: `Movies - ${params.slug}`
+                genreName: params.slug
             };
         },
         async fetch ({ store, params, query }) {

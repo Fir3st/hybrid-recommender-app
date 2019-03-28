@@ -29,7 +29,7 @@
                         <b-dropdown-item
                             v-for="item in moviesItems"
                             :key="item.id"
-                            :to="`/movies/genre/${item.name}`"
+                            :to="`/movies/${item.name.toLowerCase()}`"
                             exact
                         >
                             {{ item.name }}
@@ -48,7 +48,7 @@
                         <b-dropdown-item
                             v-for="item in seriesItems"
                             :key="item.id"
-                            :to="`/series/genre/${item.name}`"
+                            :to="`/series/${item.name.toLowerCase()}`"
                             exact
                         >
                             {{ item.name }}

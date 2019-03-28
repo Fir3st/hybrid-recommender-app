@@ -10,7 +10,7 @@
         },
         asyncData({ params }) {
             return {
-                pageTitle: `Series - ${params.slug}`
+                genreName: params.slug
             };
         },
         async fetch ({ store, params, query }) {
