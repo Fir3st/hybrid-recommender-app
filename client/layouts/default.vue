@@ -44,8 +44,5 @@
         min-height: 100%
         background: #121212
         color: #ffffff
-
-        h1, h2, h3, h4, h5, h6
-            font-family: 'Roboto Condensed', sans-serif
 </style>
 
