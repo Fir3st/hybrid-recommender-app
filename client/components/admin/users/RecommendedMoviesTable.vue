@@ -20,6 +20,22 @@
             </template>
         </el-table-column>
         <el-table-column
+            v-if="additionalInfo"
+            label="Average rating"
+        >
+            <template slot-scope="scope">
+                {{ scope.row.avgRating ? Number.parseFloat(scope.row.avgRating).toFixed(2) : '' }}
+            </template>
+        </el-table-column>
+        <el-table-column
+            v-if="additionalInfo"
+            label="Number of ratings"
+        >
+            <template slot-scope="scope">
+                {{ scope.row.ratingsCount ? Number.parseInt(scope.row.ratingsCount) : '' }}
+            </template>
+        </el-table-column>
+        <el-table-column
             label="Actions"
         >
             <template slot-scope="scope">
@@ -40,6 +56,11 @@
             recommendations: {
                 type: Array,
                 required: true
+            },
+            additionalInfo: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         }
     };

@@ -66,6 +66,7 @@
                         <b-col>
                             <recommended-movies-table
                                 :recommendations="genreRecommendations"
+                                :additional-info="true"
                             />
                         </b-col>
                     </b-row>
