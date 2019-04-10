@@ -36,7 +36,7 @@ csv()
                 }
 
                 fastcsv
-                    .write(ratings, { headers: false, delimiter: '::', quote: null })
+                    .write(ratings, { headers: false, delimiter: ';', quote: null })
                     .pipe(ws);
             });
     });

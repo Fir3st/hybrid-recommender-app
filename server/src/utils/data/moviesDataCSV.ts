@@ -1,35 +1,32 @@
 import axios from 'axios';
 import * as csv from 'csvtojson';
 import * as fastcsv from 'fast-csv';
-import * as config from 'config';
 import * as fs from 'fs';
 
 const ws = fs.createWriteStream('server/src/utils/data/movies.dat');
 
 csv()
-    .fromFile('server/src/utils/data/links.csv')
-    .then(async (data) => {
-        const movies = [];
+    .fromFile('server/src/utils/data/movies.csv')
+    .then((moviesData) => {
 
-        for (const mov of data) {
-            const movie = {
-                id: mov.imdbId
-            };
+        csv()
+            .fromFile('server/src/utils/data/links.csv')
+            .then((linksData) => {
+                const movies = [];
 
-            console.log(`Getting data for movie with id: ${movie.id}`);
+                for (const link of linksData) {
+                    const movie = moviesData.find(item => parseInt(item.movieId, 10) === parseInt(link.movieId, 10));
+                    if (movie) {
+                        movies.push({
+                            id: link.imdbId,
+                            title: movie.title,
+                            genres: movie.genres
+                        });
+                    }
+                }
 
-            try {
-                const response = await axios.get(`http://www.omdbapi.com/?i=tt${movie.id}&apikey=${config.get('omdbApiKey')}&plot=full`);
-                movie['title'] = `${response.data.Title} (${response.data.Year})`;
-                movie['genre'] = response.data.Genre.split(',').map(item => item.trim()).join('|');
-            } catch (error) {
-                console.log(error.message);
-            }
-
-            movies.push(movie);
-        }
-
-        fastcsv
-            .write(movies, { headers: false, delimiter: '::', quote: null })
-            .pipe(ws);
+                fastcsv
+                    .write(movies, { headers: false, delimiter: ';', quote: '', escape: '' })
+                    .pipe(ws);
+            });
     });
