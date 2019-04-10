@@ -19,14 +19,15 @@ csv()
                     if (movie) {
                         movies.push({
                             id: link.imdbId,
-                            title: movie.title,
+                            title: movie.title.substring(0, movie.title.length - 7),
+                            year: movie.title.substring(movie.title.length - 5, movie.title.length - 1),
                             genres: movie.genres
                         });
                     }
                 }
 
                 fastcsv
-                    .write(movies, { headers: false, delimiter: ';', quote: '', escape: '' })
+                    .write(movies, { headers: false, delimiter: ';', quote: null, escape: null })
                     .pipe(ws);
             });
     });
