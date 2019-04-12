@@ -2,10 +2,10 @@ import * as csv from 'csvtojson';
 import * as fastcsv from 'fast-csv';
 import * as fs from 'fs';
 
-const ws = fs.createWriteStream('server/src/utils/data/ratings.dat');
+const ws = fs.createWriteStream('server/src/utils/data/output/ratings.dat');
 
 csv()
-    .fromFile('server/src/utils/data/links.csv')
+    .fromFile('server/src/utils/data/filtered/links.csv')
     .then(async (data) => {
         return data.map((item) => {
             return {
@@ -16,7 +16,7 @@ csv()
     })
     .then((movies) => {
         csv()
-            .fromFile('server/src/utils/data/ratings.csv')
+            .fromFile('server/src/utils/data/filtered/ratings.csv')
             .then((data) => {
                 const ratings = [];
 

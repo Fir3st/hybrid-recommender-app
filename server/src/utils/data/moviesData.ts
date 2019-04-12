@@ -12,7 +12,7 @@ import { Country } from './../../entities/Country';
 
 createConnection().then(async (connection) => {
     csv()
-        .fromFile('server/src/utils/data/links.csv')
+        .fromFile('server/src/utils/data/filtered/links.csv')
         .then(async (data) => {
             for (const mov of data) {
                 const movie = new Movie();

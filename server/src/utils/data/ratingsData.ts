@@ -9,7 +9,7 @@ import { Movie } from './../../entities/Movie';
 
 createConnection().then(async (connection) => {
     csv()
-        .fromFile('server/src/utils/data/ratings.csv')
+        .fromFile('server/src/utils/data/filtered/ratings.csv')
         .then(async (data) => {
             for (const rating of data) {
                 try {

@@ -2,7 +2,7 @@ import * as csv from 'csvtojson';
 import * as fs from 'fs';
 
 csv()
-    .fromFile('server/src/utils/data/ratings.csv')
+    .fromFile('server/src/utils/data/filtered/ratings.csv')
     .then((data) => {
         const ratings = [];
 
@@ -19,5 +19,5 @@ csv()
             }
         }
 
-        fs.writeFile('server/src/utils/data/ratings_data.json', JSON.stringify({ data: ratings }), 'utf8', () => console.log('Done.'));
+        fs.writeFile('server/src/utils/data/output/ratings_data.json', JSON.stringify({ data: ratings }), 'utf8', () => console.log('Done.'));
     });

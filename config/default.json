@@ -13,5 +13,6 @@
     },
     "jwtSecret": "mySuperSecret",
     "omdbApiKey": "secret",
+    "tmdbApiKey": "secret",
     "recommenderUrl": "http://localhost:3002"
 }

@@ -4,10 +4,10 @@ import * as config from 'config';
 import * as fastcsv from 'fast-csv';
 import * as fs from 'fs';
 
-const ws = fs.createWriteStream('server/src/utils/data/movies.dat');
+const ws = fs.createWriteStream('server/src/utils/data/output/movies.dat');
 
 csv()
-    .fromFile('server/src/utils/data/links.csv')
+    .fromFile('server/src/utils/data/filtered/links.csv')
     .then(async (linksData) => {
         const movies = [];
 
@@ -22,7 +22,8 @@ csv()
                 const response = await axios.get(`http://www.omdbapi.com/?i=tt${movie.id}&apikey=${config.get('omdbApiKey')}`);
                 movie['title'] = response.data.Title;
                 movie['year'] = response.data.Year;
-                movie['genre'] = response.data.Genre.split(', ').join('|');
+                const genres = response.data.Genre;
+                movie['genres'] = genres ? genres.split(',').map(item => item.trim()).join('|') : '';
 
                 movies.push(movie);
             } catch (error) {

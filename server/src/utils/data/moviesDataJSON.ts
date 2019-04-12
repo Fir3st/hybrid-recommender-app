@@ -4,7 +4,7 @@ import * as config from 'config';
 import * as fs from 'fs';
 
 csv()
-    .fromFile('server/src/utils/data/links.csv')
+    .fromFile('server/src/utils/data/filtered/links.csv')
     .then(async (data) => {
         const movies = [];
 
@@ -28,5 +28,5 @@ csv()
             movies.push(movie);
         }
 
-        fs.writeFile('server/src/utils/data/movies_data.json', JSON.stringify({ data: movies }), 'utf8', () => console.log('Done.'));
+        fs.writeFile('server/src/utils/data/output/movies_data.json', JSON.stringify({ data: movies }), 'utf8', () => console.log('Done.'));
     });
