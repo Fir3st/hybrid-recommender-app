@@ -26,7 +26,7 @@ createConnection().then(async (connection) => {
                         user.id = rating.userId;
                         user.name = faker.name.firstName();
                         user.surname = faker.name.lastName();
-                        user.email = faker.internet.email();
+                        user.email = faker.internet.email(user.name, user.surname);
                         user.admin = false;
                         user.password = await bcrypt.hash('secret', 10);
                         await connection.manager.save(user);
