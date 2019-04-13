@@ -19,13 +19,13 @@ csv()
             console.log(`Getting data for movie with id: ${movie.id}`);
 
             try {
-                const response = await axios.get(`http://www.omdbapi.com/?i=${link.imdbId}&apikey=${config.get('omdbApiKey')}`);
+                const response = await axios.get(`http://www.omdbapi.com/?i=tt${link.imdbId}&apikey=${config.get('omdbApiKey')}`);
                 const type = response.data.Type === 'movie' ? 'movie' : 'tv';
 
-                const tmdbAddResponse = await axios.get(`https://api.themoviedb.org/3/${type}/${link.tmdbId}?api_key=${config.get('tmdbApiKey')}`);
+                const tmdbAddResponse = await axios.get(`https://api.themoviedb.org/3/${type}/${link.tmdbId}/keywords?api_key=${config.get('tmdbApiKey')}`);
 
                 const keywords = tmdbAddResponse.data['keywords'];
-                movie['keywords'] = keywords ? JSON.stringify(keywords).replace(/"/g, '\'') : [];
+                movie['keywords'] = keywords ? JSON.stringify(keywords).replace(/"/g, '\'') : '[]';
 
                 movies.push(movie);
             } catch (error) {

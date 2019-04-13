@@ -23,6 +23,7 @@
         "load:ratings": "ts-node server/src/utils/data/ratingsData.ts",
         "load:ratings:json": "ts-node server/src/utils/data/ratingsDataJSON.ts",
         "load:ratings:csv": "ts-node server/src/utils/data/ratingsDataCSV.ts",
+        "load:keywords:csv": "ts-node server/src/utils/data/moviesKeywordsCSV.ts",
         "filter:sourceData": "ts-node server/src/utils/data/filterMoviesAndLinks.ts",
         "filter:sourceRatings": "ts-node server/src/utils/data/filterRatings.ts"
     },
