@@ -16,8 +16,19 @@
                 />
             </b-col>
         </b-row>
+        <b-row v-if="searchGenres.length > 0">
+            <b-col>
+                <p class="custom-search">
+                    Do you want to search
+                    <a
+                        href="#"
+                        @click="customSearch"
+                    >{{ customSearchText }}</a>?
+                </p>
+            </b-col>
+        </b-row>
         <b-row v-if="search">
-            <b-col v-if="movies.length > 1">
+            <b-col v-if="movies.length > 0">
                 <b-row>
                     <b-col>
                         <h2>{{ movies.length }} results for '{{ searchTerm }}':</h2>
@@ -37,6 +48,8 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
+    import { CancelToken } from 'axios';
     import MovieList from '~/components/default/MovieList';
 
     export default {
@@ -44,37 +57,96 @@
             MovieList
         },
         auth: false,
-        data() {
-            return {
-                pageTitle: 'Search',
-                minLength: 3,
-                movies: [],
-                searchTerm: '',
-                search: false
-            };
-        },
         head() {
             return {
                 title: this.pageTitle
             };
         },
+        data() {
+            return {
+                pageTitle: 'Search',
+                minLength: 3,
+                movies: [],
+                types: ['movie', 'movies', 'series', 'serial'],
+                searchTerm: '',
+                searchGenres: [],
+                searchTypes: [],
+                source: CancelToken.source(),
+                search: false
+            };
+        },
+        computed: {
+            ...mapGetters({
+                genres: 'genres/genres'
+            }),
+            customSearchText() {
+                let text = this.searchGenres.join('/');
+                if (this.searchTypes.length === 1) {
+                    text = `${text} ${this.searchTypes[0]}`;
+                }
+
+                return text;
+            },
+            type() {
+                const type = this.searchTypes[0];
+                return (type === 'movies' || type === 'movie') ? 'movie' : 'series';
+            }
+        },
         methods: {
             async onChange() {
-                this.search = false;
+                this.reset();
+
                 if (this.searchTerm.length >= this.minLength) {
-                    this.movies = [];
+                    this.searchGenres = this.containedGenres(this.searchTerm) || [];
+                    this.searchTypes = this.containedTypes(this.searchTerm) || [];
 
-                    try {
-                        const results = await this.$axios.$get(`/movies/search/${this.searchTerm}`);
-                        if (results) {
-                            this.movies = results;
-                        }
-                    } catch (error) {
-                        console.log(error.message);
-                    }
-
-                    this.search = true;
+                    await this.searchByQuery(this.searchTerm);
                 }
+            },
+            async customSearch() {
+                const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
+                const type = (this.searchTypes.length === 1) ? this.type: 'all';
+                this.reset();
+
+                await this.searchByCustomParams(genres.map(item => item.id), type);
+            },
+            containedGenres(searchQuery) {
+                const genres = this.genres
+                    .map(genre => genre.name.toLowerCase())
+                    .join('|');
+
+                return searchQuery.match(new RegExp(genres, 'g'));
+            },
+            containedTypes(searchQuery) {
+                const types = this.types
+                    .map(type => type.toLowerCase())
+                    .join('|');
+
+                return searchQuery.match(new RegExp(types, 'g'));
+            },
+            reset() {
+                this.source.cancel('Request cancelled.');
+                this.search = false;
+                this.source = CancelToken.source();
+                this.movies = [];
+                this.searchGenres = [];
+                this.searchTypes = [];
+            },
+            async searchByQuery(searchQuery) {
+                try {
+                    const results = await this.$axios.$get(`/movies/search/${searchQuery}`, { cancelToken: this.source.token });
+                    if (results && results.length > 0) {
+                        this.movies = results;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
+
+                this.search = true;
+            },
+            async searchByCustomParams(genres, type = 'all') {
+                console.log('Searching for genres', genres);
+                console.log('Searching for type', type);
             }
         }
     };
@@ -97,4 +169,7 @@
         -webkit-box-shadow: none !important
         -moz-box-shadow: none !important
         box-shadow: none !important
+    .custom-search
+        margin-top: 20px
+        color: #ccc
 </style>

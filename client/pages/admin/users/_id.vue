@@ -64,9 +64,6 @@
                 console.log(error.message);
             }
         },
-        async fetch({ store }) {
-            await store.dispatch('genres/setGenres');
-        },
         mounted() {
             if (this.user) {
                 const promises = [];
