@@ -97,7 +97,7 @@ describe('GET /movies', () => {
     });
 });
 
-describe('GET /movies/search/:title', () => {
+describe('GET /movies/search?query=title', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -124,14 +124,14 @@ describe('GET /movies/search/:title', () => {
 
     it('should respond with status code 200', async () => {
         const response: Response = await request
-            .get('/movies/search/test');
+            .get('/movies/search?query=test');
 
         expect(response.status).toBe(200);
     });
 
     it('should respond with status code 400 for title that doesn\'t exist', async () => {
         const response: Response = await request
-            .get('/movies/search/x-men');
+            .get('/movies/search?query=x-men');
 
         expect(response.status).toBe(400);
     });
