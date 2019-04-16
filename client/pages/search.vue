@@ -134,7 +134,7 @@
             },
             async searchByQuery(searchQuery) {
                 try {
-                    const results = await this.$axios.$get(`/movies/search/${searchQuery}`, { cancelToken: this.source.token });
+                    const results = await this.$axios.$get(`/movies/search?query=${searchQuery}`, { cancelToken: this.source.token });
                     if (results && results.length > 0) {
                         this.movies = results;
                     }

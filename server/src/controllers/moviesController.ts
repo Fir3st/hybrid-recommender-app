@@ -8,7 +8,7 @@ const router = Router();
 
 router.get('/', getMovies);
 
-router.get('/search/:query', search);
+router.get('/search', search);
 
 router.get('/top', getTopMovies);
 

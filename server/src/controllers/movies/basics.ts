@@ -142,16 +142,45 @@ export const getMovieByID = async (req: Request, res: any) => {
 
 export const search = async (req: Request, res: any) => {
     const repository = getRepository(Movie);
-    const title = req.params.query || '';
+    const searchQuery = req.query.query || '';
+    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
+    const type = req.query.type || 'all';
 
     try {
-        const query = repository
-            .createQueryBuilder('movies')
-            .leftJoinAndSelect('movies.genres', 'genres')
-            .where('LOWER(movies.title) LIKE :query', { query: `%${title.toLowerCase()}%` })
-            .orderBy('movies.year', 'DESC');
+        let movies;
 
-        const movies = await query.getMany();
+        if (genres && genres.length > 0) {
+            const query = repository
+                .createQueryBuilder('movies')
+                .leftJoin('movies.genres', 'genres')
+                .select(['movies.id'])
+                .where('genres.id IN (:genres)', { genres })
+                .groupBy('movies.id')
+                .having('COUNT(genres.id) = :count', { count: genres.length });
+
+            if (type !== 'all') {
+                query.andWhere('movies.type = :type', { type });
+            }
+
+            movies = await query.getMany();
+            if (movies && movies.length > 0) {
+                const query = repository
+                    .createQueryBuilder('movies')
+                    .leftJoinAndSelect('movies.genres', 'genres')
+                    .where('movies.id IN (:ids)', { ids: movies.map(item => item.id) })
+                    .orderBy('movies.year', 'DESC');
+
+                movies = await query.getMany();
+            }
+        } else {
+            const query = repository
+                .createQueryBuilder('movies')
+                .leftJoinAndSelect('movies.genres', 'genres')
+                .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
+                .orderBy('movies.year', 'DESC');
+
+            movies = await query.getMany();
+        }
 
         if (movies && movies.length > 0) {
             return res.send(movies);

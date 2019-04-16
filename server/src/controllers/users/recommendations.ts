@@ -15,7 +15,7 @@ export const getRecommendations = async (req: Request, res: any) => {
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
     let url = `${recommender}/users/${id}/recommendations?take=${take}&skip=${skip}`;
-    if (genres && genres.split(',') > 0) {
+    if (genres && genres.split(',').length > 0) {
         url = `${url}&genres=${genres}`;
     }
 

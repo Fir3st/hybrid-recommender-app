@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize, authorizedOrCurrentUser } from '../middleware/auth';
-import { getUsers, createUser, countUsers, getUser, getUserByID, getPreferences, deleteUser } from './users/basics';
+import { getUsers, createUser, countUsers, getUser, getUserByID, getPreferences, deleteUser, search } from './users/basics';
 import { getRecommendations } from './users/recommendations';
 
 const router = Router();
@@ -8,6 +8,8 @@ const router = Router();
 router.get('/', [authenticate, authorize], getUsers);
 
 router.post('/', createUser);
+
+router.get('/search', authenticate, search);
 
 router.get('/count', [authenticate, authorize], countUsers);
 
