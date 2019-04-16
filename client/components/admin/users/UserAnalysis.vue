@@ -136,7 +136,7 @@
             async getRecommendationsForGenre() {
                 this.genreRecommendations = null;
                 try {
-                    const url = `/users/${this.user.id}/${this.genreId}/recommendations`;
+                    const url = `/users/${this.user.id}/recommendations?genres=${this.genreId}`;
                     const recommendations = await this.$axios.$get(url);
 
                     if (recommendations && recommendations.length > 0) {
