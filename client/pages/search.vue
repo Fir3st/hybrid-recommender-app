@@ -1,83 +1,49 @@
 <template>
-    <div>
-        <b-row>
-            <b-col>
-                <h1>{{ pageTitle }}</h1>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <input
-                    v-model="searchTerm"
-                    class="form-control search"
-                    type="text"
-                    placeholder="Type to search"
-                    @input="onChange"
-                />
-            </b-col>
-        </b-row>
-        <b-row v-if="(searchGenres && searchGenres.length > 0) && !customSearching">
-            <b-col>
-                <p class="custom-search">
-                    Do you want to search
-                    <a
-                        href="#"
-                        @click="customSearch"
-                    >{{ customSearchText }}</a>?
-                </p>
-            </b-col>
-        </b-row>
-        <b-row v-if="showResults">
-            <b-col>
-                <b-row v-if="!searching">
-                    <b-col v-if="movies && movies.length > 0">
-                        <b-row>
-                            <b-col>
-                                <h2 v-if="customSearching">
-                                    {{ movies.length }} results for {{ customSearchText }}:
-                                </h2>
-                                <h2 v-else>
-                                    {{ movies.length }} results for '{{ searchTerm }}':
-                                </h2>
-                            </b-col>
-                        </b-row>
-                        <movie-list :movies="movies" />
-                    </b-col>
-                    <b-col v-else>
-                        <b-row>
-                            <b-col>
-                                <h2 v-if="customSearching">
-                                    No results found for {{ customSearchText }}.
-                                </h2>
-                                <h2 v-else>
-                                    No results found for search term '{{ searchTerm }}'.
-                                </h2>
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
-                <b-row v-else>
-                    <b-col class="d-flex justify-content-center mb-3 loading">
-                        <b-spinner
-                            label="Loading..."
-                            variant="info"
-                        >
-                        </b-spinner>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
-    </div>
+    <b-row>
+        <b-col>
+            <b-row>
+                <b-col>
+                    <h1>{{ pageTitle }}</h1>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <search-input
+                        :on-change="onChange"
+                        :search-term="searchTerm"
+                    />
+                </b-col>
+            </b-row>
+            <custom-search
+                :search-genres="searchGenres"
+                :custom-searching="customSearching"
+                :custom-search="customSearch"
+                :custom-search-text="customSearchText"
+            />
+            <results
+                v-if="showResults"
+                :searching="searching"
+                :movies="movies"
+                :custom-searching="customSearching"
+                :custom-search-text="customSearchText"
+                :search-term="searchTerm"
+            />
+        </b-col>
+    </b-row>
 </template>
 
 <script>
     import { mapGetters } from 'vuex';
     import { CancelToken } from 'axios';
-    import MovieList from '~/components/default/MovieList';
+    import Input from '~/components/default/search/Input';
+    import CustomSearch from '~/components/default/search/CustomSearch';
+    import Results from '~/components/default/search/Results';
 
     export default {
         components: {
-            MovieList
+            CustomSearch,
+            Results,
+            SearchInput: Input
         },
         auth: false,
         head() {
@@ -124,7 +90,8 @@
             }
         },
         methods: {
-            async onChange() {
+            async onChange(event) {
+                this.searchTerm = event.target.value;
                 this.reset();
                 this.showResults = false;
 
@@ -164,8 +131,6 @@
                 this.customSearching = false;
                 this.source = CancelToken.source();
                 this.movies = [];
-                // this.searchGenres = [];
-                // this.searchTypes = [];
             },
             async searchByQuery(searchQuery) {
                 try {
@@ -206,21 +171,4 @@
         margin-bottom: 40px !important
     h2
         margin: 20px 0
-    .search
-        background: transparent
-        border: 0
-        font-size: 24px
-        padding: 20px 10px
-        border-bottom: 1px solid #17a2b8
-        color: #fff
-    .search:focus
-        outline: none
-        -webkit-box-shadow: none !important
-        -moz-box-shadow: none !important
-        box-shadow: none !important
-    .custom-search
-        margin-top: 20px
-        color: #ccc
-    .loading
-        margin-top: 40px
 </style>
