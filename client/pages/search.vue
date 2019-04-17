@@ -90,6 +90,12 @@
             type() {
                 const type = this.searchTypes[0];
                 return (type === 'movies' || type === 'movie') ? 'movie' : 'series';
+            },
+            isLogged() {
+                return !!this.$auth.user;
+            },
+            url() {
+                return this.isLogged ? '/movies/secured-search' : '/movies/search';
             }
         },
         methods: {
@@ -134,7 +140,7 @@
             },
             async searchByQuery(searchQuery) {
                 try {
-                    const results = await this.$axios.$get(`/movies/search?query=${searchQuery}`, { cancelToken: this.source.token });
+                    const results = await this.$axios.$get(`${this.url}?query=${searchQuery}`, { cancelToken: this.source.token });
                     if (results && results.length > 0) {
                         this.movies = results;
                     }
@@ -145,6 +151,22 @@
                 this.search = true;
             },
             async searchByCustomParams(genres, type = 'all') {
+                let url = `${this.url}?genres=${genres.join(',')}`;
+
+                if (type !== 'all') {
+                    url = `${url}&type=${type}`;
+                }
+                
+                try {
+                    const results = await this.$axios.$get(url, { cancelToken: this.source.token });
+                    if (results && results.length > 0) {
+                        this.movies = results;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
+
+                this.search = true;
                 console.log('Searching for genres', genres);
                 console.log('Searching for type', type);
             }
