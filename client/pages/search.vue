@@ -16,7 +16,7 @@
                 />
             </b-col>
         </b-row>
-        <b-row v-if="searchGenres.length > 0">
+        <b-row v-if="(searchGenres && searchGenres.length > 0) && !customSearching">
             <b-col>
                 <p class="custom-search">
                     Do you want to search
@@ -27,19 +27,42 @@
                 </p>
             </b-col>
         </b-row>
-        <b-row v-if="search">
-            <b-col v-if="movies.length > 0">
-                <b-row>
-                    <b-col>
-                        <h2>{{ movies.length }} results for '{{ searchTerm }}':</h2>
+        <b-row v-if="showResults">
+            <b-col>
+                <b-row v-if="!searching">
+                    <b-col v-if="movies && movies.length > 0">
+                        <b-row>
+                            <b-col>
+                                <h2 v-if="customSearching">
+                                    {{ movies.length }} results for {{ customSearchText }}:
+                                </h2>
+                                <h2 v-else>
+                                    {{ movies.length }} results for '{{ searchTerm }}':
+                                </h2>
+                            </b-col>
+                        </b-row>
+                        <movie-list :movies="movies" />
+                    </b-col>
+                    <b-col v-else>
+                        <b-row>
+                            <b-col>
+                                <h2 v-if="customSearching">
+                                    No results found for {{ customSearchText }}.
+                                </h2>
+                                <h2 v-else>
+                                    No results found for search term '{{ searchTerm }}'.
+                                </h2>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
-                <movie-list :movies="movies" />
-            </b-col>
-            <b-col v-else>
-                <b-row>
-                    <b-col>
-                        <h2>No results found for '{{ searchTerm }}'.</h2>
+                <b-row v-else>
+                    <b-col class="d-flex justify-content-center mb-3 loading">
+                        <b-spinner
+                            label="Loading..."
+                            variant="info"
+                        >
+                        </b-spinner>
                     </b-col>
                 </b-row>
             </b-col>
@@ -72,7 +95,9 @@
                 searchGenres: [],
                 searchTypes: [],
                 source: CancelToken.source(),
-                search: false
+                showResults: false,
+                searching: false,
+                customSearching: false
             };
         },
         computed: {
@@ -101,8 +126,10 @@
         methods: {
             async onChange() {
                 this.reset();
+                this.showResults = false;
 
                 if (this.searchTerm.length >= this.minLength) {
+                    this.showResults = true;
                     this.searchGenres = this.containedGenres(this.searchTerm) || [];
                     this.searchTypes = this.containedTypes(this.searchTerm) || [];
 
@@ -113,6 +140,7 @@
                 const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                 const type = (this.searchTypes.length === 1) ? this.type: 'all';
                 this.reset();
+                this.customSearching = true;
 
                 await this.searchByCustomParams(genres.map(item => item.id), type);
             },
@@ -132,11 +160,12 @@
             },
             reset() {
                 this.source.cancel('Request cancelled.');
-                this.search = false;
+                this.searching = true;
+                this.customSearching = false;
                 this.source = CancelToken.source();
                 this.movies = [];
-                this.searchGenres = [];
-                this.searchTypes = [];
+                // this.searchGenres = [];
+                // this.searchTypes = [];
             },
             async searchByQuery(searchQuery) {
                 try {
@@ -148,7 +177,7 @@
                     console.log(error.message);
                 }
 
-                this.search = true;
+                this.searching = false;
             },
             async searchByCustomParams(genres, type = 'all') {
                 let url = `${this.url}?genres=${genres.join(',')}`;
@@ -156,7 +185,7 @@
                 if (type !== 'all') {
                     url = `${url}&type=${type}`;
                 }
-                
+
                 try {
                     const results = await this.$axios.$get(url, { cancelToken: this.source.token });
                     if (results && results.length > 0) {
@@ -166,9 +195,7 @@
                     console.log(error.message);
                 }
 
-                this.search = true;
-                console.log('Searching for genres', genres);
-                console.log('Searching for type', type);
+                this.searching = false;
             }
         }
     };
@@ -194,4 +221,6 @@
     .custom-search
         margin-top: 20px
         color: #ccc
+    .loading
+        margin-top: 40px
 </style>
