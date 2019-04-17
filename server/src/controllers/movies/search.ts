@@ -12,9 +12,12 @@ export const search = async (req: Request, res: any) => {
     const searchQuery = req.query.query || '';
     const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
     const type = req.query.type || 'all';
+    const take = req.query.take || 10;
+    const skip = req.query.skip || 0;
 
     try {
         let movies;
+        let count = 0;
 
         if (genres && genres.length > 0) {
             const query = repository
@@ -30,12 +33,16 @@ export const search = async (req: Request, res: any) => {
             }
 
             movies = await query.getMany();
+            count = movies.length;
+
             if (movies && movies.length > 0) {
                 const query = repository
                     .createQueryBuilder('movies')
                     .leftJoinAndSelect('movies.genres', 'genres')
                     .where('movies.id IN (:ids)', { ids: movies.map(item => item.id) })
-                    .orderBy('movies.year', 'DESC');
+                    .orderBy('movies.year', 'DESC')
+                    .take(take)
+                    .skip(skip);
 
                 movies = await query.getMany();
             }
@@ -47,10 +54,11 @@ export const search = async (req: Request, res: any) => {
                 .orderBy('movies.year', 'DESC');
 
             movies = await query.getMany();
+            count = await query.getCount();
         }
 
         if (movies && movies.length > 0) {
-            return res.send(movies);
+            return res.send({ movies, count });
         }
 
         return res.boom.badRequest('No movies found.');
@@ -72,9 +80,10 @@ export const securedSearch = async (req: Request, res: any) => {
 
     try {
         let movies;
+        let count = 0;
 
         if (genres && genres.length > 0) {
-            let url = `${recommender}/users/${user.id}/recommendations?take=${take}&skip=${skip}`;
+            let url = `${recommender}/search/${user.id}?take=${take}&skip=${skip}`;
             if (genres && genres.length > 0) {
                 url = `${url}&genres=${genres}`;
             }
@@ -99,6 +108,7 @@ export const securedSearch = async (req: Request, res: any) => {
                 } else {
                     movies = recommendations;
                 }
+                count = recsResponse.data.ratingsCount;
             }
         } else {
             const query = repository
@@ -108,10 +118,11 @@ export const securedSearch = async (req: Request, res: any) => {
                 .orderBy('movies.year', 'DESC');
 
             movies = await query.getMany();
+            count = await query.getCount();
         }
 
         if (movies && movies.length > 0) {
-            return res.send(movies);
+            return res.send({ movies, count });
         }
 
         return res.boom.badRequest('No movies found.');

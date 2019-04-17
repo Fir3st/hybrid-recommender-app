@@ -27,6 +27,7 @@
                 :custom-searching="customSearching"
                 :custom-search-text="customSearchText"
                 :search-term="searchTerm"
+                :count="count"
             />
         </b-col>
     </b-row>
@@ -55,7 +56,10 @@
             return {
                 pageTitle: 'Search',
                 minLength: 3,
+                take: 10,
+                skip: 0,
                 movies: [],
+                count: 0,
                 types: ['movie', 'movies', 'series', 'serial'],
                 searchTerm: '',
                 searchGenres: [],
@@ -131,12 +135,15 @@
                 this.customSearching = false;
                 this.source = CancelToken.source();
                 this.movies = [];
+                this.count = 0;
             },
             async searchByQuery(searchQuery) {
                 try {
-                    const results = await this.$axios.$get(`${this.url}?query=${searchQuery}`, { cancelToken: this.source.token });
-                    if (results && results.length > 0) {
-                        this.movies = results;
+                    const response = await this.$axios.$get(`${this.url}?query=${searchQuery}`, { cancelToken: this.source.token });
+                    const { movies, count } = response;
+                    this.count = count;
+                    if (movies && movies.length > 0) {
+                        this.movies = movies;
                     }
                 } catch (error) {
                     console.log(error.message);
@@ -152,9 +159,11 @@
                 }
 
                 try {
-                    const results = await this.$axios.$get(url, { cancelToken: this.source.token });
-                    if (results && results.length > 0) {
-                        this.movies = results;
+                    const response = await this.$axios.$get(url, { cancelToken: this.source.token });
+                    const { movies, count } = response;
+                    this.count = count;
+                    if (movies && movies.length > 0) {
+                        this.movies = movies;
                     }
                 } catch (error) {
                     console.log(error.message);

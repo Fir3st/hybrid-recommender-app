@@ -6,10 +6,10 @@
                     <b-row>
                         <b-col>
                             <h2 v-if="customSearching">
-                                {{ movies.length }} results for {{ customSearchText }}:
+                                {{ count }} results for {{ customSearchText }}:
                             </h2>
                             <h2 v-else>
-                                {{ movies.length }} results for '{{ searchTerm }}':
+                                {{ count }} results for '{{ searchTerm }}':
                             </h2>
                         </b-col>
                     </b-row>
@@ -61,6 +61,10 @@
             },
             searchTerm: {
                 type: String,
+                required: true
+            },
+            count: {
+                type: Number,
                 required: true
             }
         }
