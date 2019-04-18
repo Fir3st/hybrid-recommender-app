@@ -51,12 +51,10 @@ export const search = async (req: Request, res: any) => {
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
                 .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
-                .orderBy('movies.year', 'DESC')
-                .take(take)
-                .skip(skip);
+                .orderBy('movies.year', 'DESC');
 
-            movies = await query.getMany();
             count = await query.getCount();
+            movies = await query.take(take).skip(skip).getMany();
         }
 
         if (movies && movies.length > 0) {
@@ -117,11 +115,12 @@ export const securedSearch = async (req: Request, res: any) => {
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
                 .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
-                .orderBy('movies.year', 'DESC')
-                .take(take)
-                .skip(skip);
+                .orderBy('movies.year', 'DESC');
 
             movies = await query.getMany();
+            if (movies && movies.length > 0) {
+                movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
+            }
             count = await query.getCount();
         }
 

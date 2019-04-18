@@ -1,3 +1,5 @@
+import axios from 'axios';
+import * as _ from 'lodash';
 import { Movie } from '../../entities/Movie';
 import { getRepository } from 'typeorm';
 
@@ -30,5 +32,20 @@ export default class MoviesUtil {
 
             return movie;
         });
+    }
+
+    public static async getQueriedMoviesRatings(movies, user, recommenderUrl) {
+        const ratingsResponse = await axios.post(`${recommenderUrl}/search/${user.id}`, { movies: movies.map(item => item.id) });
+        const { ratings } = ratingsResponse.data;
+        if (ratings && ratings.length > 0) {
+            const moviesWithRatings = movies.map((movie) => {
+                const rating = ratings.find(item => item.id === movie.id);
+                return { ...movie, rating: rating.rating };
+            });
+
+            return _.orderBy(moviesWithRatings, ['rating'], ['desc']);
+        }
+
+        return movies;
     }
 }
