@@ -51,7 +51,9 @@ export const search = async (req: Request, res: any) => {
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
                 .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
-                .orderBy('movies.year', 'DESC');
+                .orderBy('movies.year', 'DESC')
+                .take(take)
+                .skip(skip);
 
             movies = await query.getMany();
             count = await query.getCount();
@@ -115,7 +117,9 @@ export const securedSearch = async (req: Request, res: any) => {
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
                 .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
-                .orderBy('movies.year', 'DESC');
+                .orderBy('movies.year', 'DESC')
+                .take(take)
+                .skip(skip);
 
             movies = await query.getMany();
             count = await query.getCount();

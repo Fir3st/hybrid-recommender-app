@@ -14,6 +14,11 @@
                         </b-col>
                     </b-row>
                     <movie-list :movies="movies" />
+                    <load-more
+                        :count="count"
+                        :movies="movies"
+                        :load-more="loadMore"
+                    />
                 </b-col>
                 <b-col v-else>
                     <b-row>
@@ -36,11 +41,13 @@
 <script>
     import MovieList from '~/components/default/MovieList';
     import Loading from '~/components/default/search/Loading';
+    import LoadMore from '~/components/default/search/LoadMore';
 
     export default {
         components: {
             MovieList,
-            Loading
+            Loading,
+            LoadMore
         },
         props: {
             searching: {
@@ -65,6 +72,10 @@
             },
             count: {
                 type: Number,
+                required: true
+            },
+            loadMore: {
+                type: Function,
                 required: true
             }
         }

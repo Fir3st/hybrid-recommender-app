@@ -28,6 +28,9 @@
                 :custom-search-text="customSearchText"
                 :search-term="searchTerm"
                 :count="count"
+                :load-more="loadMore"
+                :take="take"
+                :skip="skip"
             />
         </b-col>
     </b-row>
@@ -96,7 +99,8 @@
         methods: {
             async onChange(event) {
                 this.searchTerm = event.target.value;
-                this.reset();
+                this.requestReset();
+                this.stateReset();
                 this.showResults = false;
 
                 if (this.searchTerm.length >= this.minLength) {
@@ -110,7 +114,8 @@
             async customSearch() {
                 const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                 const type = (this.searchTypes.length === 1) ? this.type: 'all';
-                this.reset();
+                this.requestReset();
+                this.stateReset();
                 this.customSearching = true;
 
                 await this.searchByCustomParams(genres.map(item => item.id), type);
@@ -129,21 +134,26 @@
 
                 return searchQuery.match(new RegExp(types, 'g'));
             },
-            reset() {
+            requestReset() {
                 this.source.cancel('Request cancelled.');
                 this.searching = true;
-                this.customSearching = false;
                 this.source = CancelToken.source();
+            },
+            stateReset() {
+                this.customSearching = false;
                 this.movies = [];
                 this.count = 0;
+                this.take = 10;
+                this.skip = 0;
             },
             async searchByQuery(searchQuery) {
                 try {
-                    const response = await this.$axios.$get(`${this.url}?query=${searchQuery}`, { cancelToken: this.source.token });
+                    const url = `${this.url}?query=${searchQuery}&take=${this.take}&skip=${this.skip}`;
+                    const response = await this.$axios.$get(url, { cancelToken: this.source.token });
                     const { movies, count } = response;
                     this.count = count;
                     if (movies && movies.length > 0) {
-                        this.movies = movies;
+                        this.movies.push(...movies);
                     }
                 } catch (error) {
                     console.log(error.message);
@@ -152,7 +162,7 @@
                 this.searching = false;
             },
             async searchByCustomParams(genres, type = 'all') {
-                let url = `${this.url}?genres=${genres.join(',')}`;
+                let url = `${this.url}?genres=${genres.join(',')}&take=${this.take}&skip=${this.skip}`;
 
                 if (type !== 'all') {
                     url = `${url}&type=${type}`;
@@ -163,13 +173,27 @@
                     const { movies, count } = response;
                     this.count = count;
                     if (movies && movies.length > 0) {
-                        this.movies = movies;
+                        this.movies.push(...movies);
                     }
                 } catch (error) {
                     console.log(error.message);
                 }
 
                 this.searching = false;
+            },
+            async loadMore() {
+                if (this.count > this.movies.length) {
+                    this.requestReset();
+                    this.skip += this.take;
+                    if (this.customSearching) {
+                        const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
+                        const type = (this.searchTypes.length === 1) ? this.type: 'all';
+
+                        await this.searchByCustomParams(genres.map(item => item.id), type);
+                    } else {
+                        await this.searchByQuery(this.searchTerm);
+                    }
+                }
             }
         }
     };
