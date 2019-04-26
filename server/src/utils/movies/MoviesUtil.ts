@@ -4,7 +4,7 @@ import { Movie } from '../../entities/Movie';
 import { getRepository } from 'typeorm';
 
 export default class MoviesUtil {
-    public static getMoviesStats(movies, recommendations, key) {
+    public static getMoviesStats(movies, recommendations = [], key) {
         const repository = getRepository(Movie);
 
         return movies.map(async (item) => {

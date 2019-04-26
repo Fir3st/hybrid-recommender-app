@@ -16,7 +16,7 @@
                     class="avg-rating"
                 >
                     <i class="el-icon-star-on"></i>
-                    {{ averageRating }} / 5 ({{ movie.ratingsCount }} ratings)
+                    {{ averageRating }} / 5 ({{ movie.ratingsCount }})
                 </span>
                 <b-img
                     :src="image"
@@ -71,7 +71,7 @@
                 return hasImage ? this.movie.poster : '://via.placeholder.com/160x200';
             },
             averageRating() {
-                return Math.round(this.movie.avgRating);
+                return parseFloat(this.movie.avgRating).toFixed(1);
             },
             genres() {
                 const genresNames = this.movie.genres.map(item => item.name);

@@ -58,7 +58,8 @@ export const search = async (req: Request, res: any) => {
         }
 
         if (movies && movies.length > 0) {
-            return res.send({ movies, count });
+            const moviesForRes = MoviesUtil.getMoviesStats(movies, [], 'rating');
+            return res.send({ count, movies: await Promise.all(moviesForRes) });
         }
 
         return res.boom.badRequest('No movies found.');
@@ -120,12 +121,14 @@ export const securedSearch = async (req: Request, res: any) => {
             movies = await query.getMany();
             if (movies && movies.length > 0) {
                 movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
+                const moviesForRes = MoviesUtil.getMoviesStats(movies, [], 'rating');
+                movies = await Promise.all(moviesForRes);
             }
             count = await query.getCount();
         }
 
         if (movies && movies.length > 0) {
-            return res.send({ movies, count });
+            return res.send({ count, movies });
         }
 
         return res.boom.badRequest('No movies found.');

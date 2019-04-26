@@ -13,7 +13,10 @@
                             </h2>
                         </b-col>
                     </b-row>
-                    <movie-list :movies="movies" />
+                    <movie-list
+                        :movies="movies"
+                        :additional-info="true"
+                    />
                     <load-more
                         :count="count"
                         :movies="movies"
