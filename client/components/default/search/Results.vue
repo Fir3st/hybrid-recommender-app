@@ -16,6 +16,7 @@
                     <movie-list
                         :movies="movies"
                         :additional-info="true"
+                        :show-rating-buttons="true"
                     />
                     <load-more
                         :count="count"

@@ -5,6 +5,7 @@
             :key="movie.id"
             :movie="movie"
             :additional-info="additionalInfo"
+            :show-rating-buttons="showRatingButtons"
             class="movie"
         />
     </b-row>
@@ -24,6 +25,11 @@
                 default: null
             },
             additionalInfo: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            showRatingButtons: {
                 type: Boolean,
                 required: false,
                 default: false

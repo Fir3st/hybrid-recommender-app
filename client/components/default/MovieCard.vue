@@ -6,31 +6,42 @@
         cols="6"
         class="movie-card"
     >
-        <nuxt-link
-            :id="`card-${movie.id}`"
-            :to="`/detail/${movie.id}`"
-        >
-            <div class="crop">
-                <span
-                    v-if="additionalInfo && movie.ratingsCount > 0"
-                    class="avg-rating"
-                >
-                    <i class="el-icon-star-on"></i>
-                    {{ averageRating }} / 5 ({{ movie.ratingsCount }})
-                </span>
+        <div class="crop">
+            <span
+                v-if="additionalInfo && movie.ratingsCount > 0"
+                class="avg-rating"
+            >
+                <i class="el-icon-star-on"></i>
+                {{ averageRating }} / 5 ({{ movie.ratingsCount }})
+            </span>
+            <span
+                v-if="showRatingButtons && isLogged"
+                class="rating-buttons"
+            >
+                <i class="el-icon-error rating-button"></i>
+                <i class="el-icon-success rating-button"></i>
+            </span>
+            <nuxt-link
+                :id="`card-${movie.id}`"
+                :to="`/detail/${movie.id}`"
+            >
                 <b-img
                     :src="image"
                     :alt="movie.title"
                     fluid
                 ></b-img>
-            </div>
-            <div class="caption">
+            </nuxt-link>
+        </div>
+        <div class="caption">
+            <nuxt-link
+                :to="`/detail/${movie.id}`"
+            >
                 <p>{{ truncate(movie.title, 20) }}</p>
-                <p class="additional-info">
-                    {{ movie.year }}
-                </p>
-            </div>
-        </nuxt-link>
+            </nuxt-link>
+            <p class="additional-info">
+                {{ movie.year }}
+            </p>
+        </div>
 
         <b-popover
             :target="`card-${movie.id}`"
@@ -63,6 +74,11 @@
                 type: Boolean,
                 required: false,
                 default: false
+            },
+            showRatingButtons: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         computed: {
@@ -76,6 +92,9 @@
             genres() {
                 const genresNames = this.movie.genres.map(item => item.name);
                 return genresNames.join(' | ');
+            },
+            isLogged() {
+                return !!this.$auth.user;
             }
         },
         methods: {
@@ -99,10 +118,12 @@
         color: #ffffff
         padding: 5px
         font-size: 12px
-    .caption > p
-        margin-bottom: 5px
-    .caption .additional-info
-        color: #7f828b
+        a
+            color: #fff
+            p
+                margin-bottom: 5px
+        .additional-info
+            color: #7f828b
     a
         text-decoration: none
     .avg-rating
@@ -113,6 +134,17 @@
         color: #fff
         padding: 5px
         font-size: 12px
+    .rating-buttons
+        position: absolute
+        right: 5px
+        bottom: 5px
+        background: #000
+        color: #fff
+        padding: 5px
+        font-size: 13px
+    .rating-button:hover
+        color: #17a2b8
+        cursor: Pointer
     .tooltip-caption
         color: #e4e4e4
         span
