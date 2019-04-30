@@ -7,20 +7,15 @@
         class="movie-card"
     >
         <div class="crop">
-            <span
-                v-if="additionalInfo && movie.ratingsCount > 0"
-                class="avg-rating"
-            >
-                <i class="el-icon-star-on"></i>
-                {{ averageRating }} / 5 ({{ movie.ratingsCount }})
-            </span>
-            <span
-                v-if="showRatingButtons && isLogged"
-                class="rating-buttons"
-            >
-                <i class="el-icon-error rating-button"></i>
-                <i class="el-icon-success rating-button"></i>
-            </span>
+            <average-rating
+                :movie="movie"
+                :average-rating="averageRating"
+                :additional-info="additionalInfo"
+            />
+            <rating-buttons
+                :movie="movie"
+                :show-rating-buttons="showRatingButtons"
+            />
             <nuxt-link
                 :id="`card-${movie.id}`"
                 :to="`/detail/${movie.id}`"
@@ -63,7 +58,14 @@
 </template>
 
 <script>
+    import AverageRating from '~/components/default/movie-card/AverageRating';
+    import RatingButtons from '~/components/default/movie-card/RatingButtons';
+
     export default {
+        components: {
+            AverageRating,
+            RatingButtons
+        },
         props: {
             movie: {
                 type: Object,
@@ -92,9 +94,6 @@
             genres() {
                 const genresNames = this.movie.genres.map(item => item.name);
                 return genresNames.join(' | ');
-            },
-            isLogged() {
-                return !!this.$auth.user;
             }
         },
         methods: {
@@ -126,25 +125,6 @@
             color: #7f828b
     a
         text-decoration: none
-    .avg-rating
-        position: absolute
-        right: 5px
-        top: 5px
-        background: #000
-        color: #fff
-        padding: 5px
-        font-size: 12px
-    .rating-buttons
-        position: absolute
-        right: 5px
-        bottom: 5px
-        background: #000
-        color: #fff
-        padding: 5px
-        font-size: 13px
-    .rating-button:hover
-        color: #17a2b8
-        cursor: Pointer
     .tooltip-caption
         color: #e4e4e4
         span
