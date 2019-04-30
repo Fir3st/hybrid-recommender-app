@@ -5,15 +5,12 @@ import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import { Movie } from '../../entities/Movie';
 import MoviesUtil from '../../utils/movies/MoviesUtil';
+import SearchUtil from '../../utils/search/SearchUtil';
 import winston from '../../utils/winston';
 
 export const search = async (req: Request, res: any) => {
     const repository = getRepository(Movie);
-    const searchQuery = req.query.query || '';
-    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
-    const type = req.query.type || 'all';
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
+    const { searchQuery, genres, type, take, skip } = SearchUtil.getQueryArgs(req.query);
 
     try {
         let movies;
@@ -73,11 +70,7 @@ export const securedSearch = async (req: Request, res: any) => {
     const user = req.user;
     const repository = getRepository(Movie);
     const recommender = config.get('recommenderUrl');
-    const searchQuery = req.query.query || '';
-    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
-    const type = req.query.type || 'all';
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
+    const { searchQuery, genres, type, take, skip } = SearchUtil.getQueryArgs(req.query);
 
     try {
         let movies;
@@ -115,14 +108,17 @@ export const securedSearch = async (req: Request, res: any) => {
             const query = repository
                 .createQueryBuilder('movies')
                 .leftJoinAndSelect('movies.genres', 'genres')
+                .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
                 .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
                 .orderBy('movies.year', 'DESC');
 
             movies = await query.getMany();
             if (movies && movies.length > 0) {
+                movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, user));
                 movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
                 const moviesForRes = MoviesUtil.getMoviesStats(movies, [], 'rating');
                 movies = await Promise.all(moviesForRes);
+                movies = _.sortBy(movies, ['isPenalized']);
             }
             count = await query.getCount();
         }

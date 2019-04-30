@@ -1,12 +1,13 @@
 <template>
     <span
-        v-if="showRatingButtons && isLogged"
+        v-if="showRatingButtons && isLogged && !movie.isPenalized"
         class="rating-buttons"
     >
         <el-button
             type="danger"
             icon="el-icon-error"
             size="mini"
+            title="Mark this movie as non-relevant for your preferences"
             circle
             @click="negativeRating"
         />

@@ -48,4 +48,19 @@ export default class MoviesUtil {
 
         return movies;
     }
+
+    public static isPenalizedByUser(movie, user) {
+        let isPenalized = false;
+        for (const rating of movie.usersRatings) {
+            if (rating.userId === user.id && rating.rating === 0) {
+                isPenalized = true;
+                break;
+            }
+        }
+
+        return {
+            ..._.omit(movie, ['usersRatings']),
+            isPenalized
+        };
+    }
 }

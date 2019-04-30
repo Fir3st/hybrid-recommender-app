@@ -23,6 +23,7 @@
                 <b-img
                     :src="image"
                     :alt="movie.title"
+                    :class="{ penalized: movie.isPenalized }"
                     fluid
                 ></b-img>
             </nuxt-link>
@@ -129,6 +130,9 @@
         color: #e4e4e4
         span
             margin-right: 10px
+    .penalized
+        -webkit-filter: grayscale(100%)
+        filter: grayscale(100%)
 
     @media screen and (max-width: 1200px)
         .crop

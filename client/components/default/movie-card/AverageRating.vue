@@ -27,7 +27,7 @@
     };
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
     .avg-rating
         position: absolute
         right: 5px
@@ -36,4 +36,5 @@
         color: #fff
         padding: 5px
         font-size: 12px
+        z-index: 999
 </style>
