@@ -12,7 +12,7 @@
     export default {
         props: {
             additionalInfo: {
-                type: Number,
+                type: Boolean,
                 required: true
             },
             movie: {
@@ -20,7 +20,7 @@
                 required: true
             },
             averageRating: {
-                type: Boolean,
+                type: String,
                 required: true
             }
         }

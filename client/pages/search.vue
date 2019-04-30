@@ -96,6 +96,9 @@
                 return this.isLogged ? '/movies/secured-search' : '/movies/search';
             }
         },
+        async created() {
+            this.$root.$on('refreshResults', async () => await this.refreshResults());
+        },
         methods: {
             async onChange(event) {
                 this.searchTerm = event.target.value;
@@ -108,7 +111,7 @@
                     this.searchGenres = this.containedGenres(this.searchTerm) || [];
                     this.searchTypes = this.containedTypes(this.searchTerm) || [];
 
-                    await this.searchByQuery(this.searchTerm);
+                    await this.searchByQuery(this.searchTerm, this.take, this.skip);
                 }
             },
             async customSearch() {
@@ -118,7 +121,7 @@
                 this.stateReset();
                 this.customSearching = true;
 
-                await this.searchByCustomParams(genres.map(item => item.id), type);
+                await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip);
             },
             containedGenres(searchQuery) {
                 const genres = this.genres
@@ -146,9 +149,9 @@
                 this.take = 10;
                 this.skip = 0;
             },
-            async searchByQuery(searchQuery) {
+            async searchByQuery(searchQuery, take, skip) {
                 try {
-                    const url = `${this.url}?query=${searchQuery}&take=${this.take}&skip=${this.skip}`;
+                    const url = `${this.url}?query=${searchQuery}&take=${take}&skip=${skip}`;
                     const response = await this.$axios.$get(url, { cancelToken: this.source.token });
                     const { movies, count } = response;
                     this.count = count;
@@ -161,8 +164,8 @@
 
                 this.searching = false;
             },
-            async searchByCustomParams(genres, type = 'all') {
-                let url = `${this.url}?genres=${genres.join(',')}&take=${this.take}&skip=${this.skip}`;
+            async searchByCustomParams(genres, type = 'all', take, skip) {
+                let url = `${this.url}?genres=${genres.join(',')}&take=${take}&skip=${skip}`;
 
                 if (type !== 'all') {
                     url = `${url}&type=${type}`;
@@ -189,10 +192,26 @@
                         const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                         const type = (this.searchTypes.length === 1) ? this.type: 'all';
 
-                        await this.searchByCustomParams(genres.map(item => item.id), type);
+                        await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip);
                     } else {
-                        await this.searchByQuery(this.searchTerm);
+                        await this.searchByQuery(this.searchTerm, this.take, this.skip);
                     }
+                }
+            },
+            async refreshResults() {
+                this.requestReset();
+                const skip = 0;
+                const take = this.movies.length;
+                this.movies = [];
+                this.count = 0;
+
+                if (this.customSearching) {
+                    const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
+                    const type = (this.searchTypes.length === 1) ? this.type: 'all';
+
+                    await this.searchByCustomParams(genres.map(item => item.id), type, take, skip);
+                } else {
+                    await this.searchByQuery(this.searchTerm, take, skip);
                 }
             }
         }

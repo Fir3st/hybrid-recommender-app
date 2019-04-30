@@ -3,8 +3,13 @@
         v-if="showRatingButtons && isLogged"
         class="rating-buttons"
     >
-        <i class="el-icon-error rating-button"></i>
-        <i class="el-icon-success rating-button"></i>
+        <el-button
+            type="danger"
+            icon="el-icon-error"
+            size="mini"
+            circle
+            @click="negativeRating"
+        />
     </span>
 </template>
 
@@ -20,9 +25,37 @@
                 required: true
             }
         },
+        data() {
+            return {
+                negativeRatingValue: 0.0
+            };
+        },
         computed: {
             isLogged() {
                 return !!this.$auth.user;
+            }
+        },
+        methods: {
+            async negativeRating() {
+                try {
+                    const movieId = this.movie.id;
+                    await this.$axios.$post(`/movies/${movieId}/rating`, { rating: this.negativeRatingValue });
+                    this.$notify({
+                        title: 'Success',
+                        message: `Movie ${this.movie.title} has been rated as non-relevant for you.`,
+                        type: 'success',
+                        position: 'bottom-right'
+                    });
+                    this.$root.$emit('refreshResults');
+                } catch (error) {
+                    console.log(error.message);
+                    this.$notify({
+                        title: 'Error',
+                        message: `Something went wrong with rating ${this.movie.title}. Please try it again.`,
+                        type: 'error',
+                        position: 'bottom-right'
+                    });
+                }
             }
         }
     };
@@ -33,12 +66,9 @@
         position: absolute
         right: 5px
         bottom: 5px
-        background: #000
-        color: #fff
         padding: 5px
-        font-size: 13px
-
-        .rating-button:hover
-            color: #17a2b8
-            cursor: Pointer
+    .el-button
+        margin: 0
+    .el-button--mini .is-circle
+        padding: 0
 </style>
