@@ -6,14 +6,10 @@
                     <h1>{{ pageTitle }}</h1>
                 </b-col>
             </b-row>
-            <b-row>
-                <b-col>
-                    <search-input
-                        :on-change="onChange"
-                        :search-term="searchTerm"
-                    />
-                </b-col>
-            </b-row>
+            <search-input
+                :on-change="onChange"
+                :search-term="searchTerm"
+            />
             <custom-search
                 :search-genres="searchGenres"
                 :custom-searching="customSearching"
@@ -42,13 +38,10 @@
     import Input from '~/components/default/search/Input';
     import CustomSearch from '~/components/default/search/CustomSearch';
     import Results from '~/components/default/search/Results';
+    import { containedGenres, containedTypes } from '~/utils/search';
 
     export default {
-        components: {
-            CustomSearch,
-            Results,
-            SearchInput: Input
-        },
+        components: { CustomSearch, Results, SearchInput: Input },
         auth: false,
         head() {
             return {
@@ -108,8 +101,8 @@
 
                 if (this.searchTerm.length >= this.minLength) {
                     this.showResults = true;
-                    this.searchGenres = this.containedGenres(this.searchTerm) || [];
-                    this.searchTypes = this.containedTypes(this.searchTerm) || [];
+                    this.searchGenres = containedGenres(this.genres, this.searchTerm) || [];
+                    this.searchTypes = containedTypes(this.types, this.searchTerm) || [];
 
                     await this.searchByQuery(this.searchTerm, this.take, this.skip);
                 }
@@ -122,20 +115,6 @@
                 this.customSearching = true;
 
                 await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip);
-            },
-            containedGenres(searchQuery) {
-                const genres = this.genres
-                    .map(genre => genre.name.toLowerCase())
-                    .join('|');
-
-                return searchQuery.match(new RegExp(genres, 'g'));
-            },
-            containedTypes(searchQuery) {
-                const types = this.types
-                    .map(type => type.toLowerCase())
-                    .join('|');
-
-                return searchQuery.match(new RegExp(types, 'g'));
             },
             requestReset() {
                 this.source.cancel('Request cancelled.');

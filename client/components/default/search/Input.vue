@@ -1,11 +1,15 @@
 <template>
-    <input
-        :value="searchTerm"
-        class="form-control search"
-        type="text"
-        placeholder="Type to search"
-        @input="onChange"
-    />
+    <b-row>
+        <b-col>
+            <input
+                :value="searchTerm"
+                class="form-control search"
+                type="text"
+                placeholder="Type to search"
+                @input="onChange"
+            />
+        </b-col>
+    </b-row>
 </template>
 
 <script>
