@@ -7,7 +7,7 @@
                 </b-col>
             </b-row>
             <search-input
-                :on-change="onChange"
+                :on-change="onInputChange"
                 :search-term="searchTerm"
             />
             <custom-search
@@ -15,6 +15,8 @@
                 :custom-searching="customSearching"
                 :custom-search="customSearch"
                 :custom-search-text="customSearchText"
+                :on-change="onCheckboxChange"
+                :include-rated="includeRated"
             />
             <results
                 v-if="showResults"
@@ -63,7 +65,8 @@
                 source: CancelToken.source(),
                 showResults: false,
                 searching: false,
-                customSearching: false
+                customSearching: false,
+                includeRated: true
             };
         },
         computed: {
@@ -93,7 +96,10 @@
             this.$root.$on('refreshResults', async () => await this.refreshResults());
         },
         methods: {
-            async onChange(event) {
+            onCheckboxChange() {
+                this.includeRated = !this.includeRated;
+            },
+            async onInputChange(event) {
                 this.searchTerm = event.target.value;
                 this.requestReset();
                 this.stateReset();
@@ -114,7 +120,7 @@
                 this.stateReset();
                 this.customSearching = true;
 
-                await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip);
+                await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip, this.includeRated);
             },
             requestReset() {
                 this.source.cancel('Request cancelled.');
@@ -143,8 +149,8 @@
 
                 this.searching = false;
             },
-            async searchByCustomParams(genres, type = 'all', take, skip) {
-                let url = `${this.url}?genres=${genres.join(',')}&take=${take}&skip=${skip}`;
+            async searchByCustomParams(genres, type = 'all', take, skip, includeRated) {
+                let url = `${this.url}?genres=${genres.join(',')}&take=${take}&skip=${skip}&includeRated=${includeRated}`;
 
                 if (type !== 'all') {
                     url = `${url}&type=${type}`;
@@ -171,7 +177,7 @@
                         const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                         const type = (this.searchTypes.length === 1) ? this.type: 'all';
 
-                        await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip);
+                        await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip, this.includeRated);
                     } else {
                         await this.searchByQuery(this.searchTerm, this.take, this.skip);
                     }
@@ -188,7 +194,7 @@
                     const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                     const type = (this.searchTypes.length === 1) ? this.type: 'all';
 
-                    await this.searchByCustomParams(genres.map(item => item.id), type, take, skip);
+                    await this.searchByCustomParams(genres.map(item => item.id), type, take, skip, this.includeRated);
                 } else {
                     await this.searchByQuery(this.searchTerm, take, skip);
                 }

@@ -70,14 +70,14 @@ export const securedSearch = async (req: Request, res: any) => {
     const user = req.user;
     const repository = getRepository(Movie);
     const recommender = config.get('recommenderUrl');
-    const { searchQuery, genres, type, take, skip } = SearchUtil.getQueryArgs(req.query);
+    const { searchQuery, genres, type, take, skip, includeRated } = SearchUtil.getQueryArgs(req.query);
 
     try {
         let movies;
         let count = 0;
 
         if (genres && genres.length > 0) {
-            let url = `${recommender}/search/${user.id}?take=${take}&skip=${skip}`;
+            let url = `${recommender}/search/${user.id}?take=${take}&skip=${skip}&includeRated=${includeRated}`;
             if (genres && genres.length > 0) {
                 url = `${url}&genres=${genres}`;
             }

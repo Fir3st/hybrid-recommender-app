@@ -5,13 +5,15 @@ export default class SearchUtil {
         const type = query.type || 'all';
         const take = query.take || 10;
         const skip = query.skip || 0;
+        const includeRated = query.includeRated || 'false';
 
         return {
             searchQuery,
             genres,
             type,
             take,
-            skip
+            skip,
+            includeRated
         };
     }
 }
