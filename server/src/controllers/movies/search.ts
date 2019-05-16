@@ -55,7 +55,7 @@ export const search = async (req: Request, res: any) => {
         }
 
         if (movies && movies.length > 0) {
-            const moviesForRes = MoviesUtil.getMoviesStats(movies, [], 'rating');
+            const moviesForRes = MoviesUtil.getMoviesStats(movies);
             return res.send({ count, movies: await Promise.all(moviesForRes) });
         }
 
@@ -116,7 +116,7 @@ export const securedSearch = async (req: Request, res: any) => {
             if (movies && movies.length > 0) {
                 movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, user));
                 movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
-                const moviesForRes = MoviesUtil.getMoviesStats(movies, [], 'rating');
+                const moviesForRes = MoviesUtil.getMoviesStats(movies);
                 movies = await Promise.all(moviesForRes);
                 movies = _.sortBy(movies, ['isPenalized']);
             }

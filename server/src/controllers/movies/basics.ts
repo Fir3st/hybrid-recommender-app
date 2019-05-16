@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import { Movie } from '../../entities/Movie';
 import winston from '../../utils/winston';
+import MoviesUtil from '../../utils/movies/MoviesUtil';
 
 export const getMovies = async (req: Request, res: any) => {
     const take = req.query.take || 10;
@@ -32,7 +33,8 @@ export const getMovies = async (req: Request, res: any) => {
         const movies = await query.getMany();
 
         if (movies && movies.length > 0) {
-            return res.send(movies);
+            const moviesForRes = MoviesUtil.getMoviesStats(movies);
+            return res.send(await Promise.all(moviesForRes));
         }
 
         return res.boom.badRequest('No movies found.');
@@ -73,7 +75,8 @@ export const getTopMovies = async (req: Request, res: any) => {
                 .where('movies.id IN (:ids)', { ids: topMovies.map(movie => movie.id) })
                 .getMany();
 
-            return res.send(movies);
+            const moviesForRes = MoviesUtil.getMoviesStats(movies);
+            return res.send(await Promise.all(moviesForRes));
         }
 
         return res.boom.badRequest('No top movies found.');

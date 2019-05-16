@@ -9,7 +9,10 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <movie-list :movies="topMovies" />
+                        <movie-list
+                            :movies="topMovies"
+                            :additional-info="true"
+                        />
                     </b-col>
                 </b-row>
                 <b-row>
@@ -25,7 +28,10 @@
                 <hr />
             </b-col>
         </b-row>
-        <movie-list :movies="movies" />
+        <movie-list
+            :movies="movies"
+            :additional-info="true"
+        />
         <paginator />
     </div>
 </template>

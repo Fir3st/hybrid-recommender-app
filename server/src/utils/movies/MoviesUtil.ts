@@ -4,7 +4,7 @@ import { Movie } from '../../entities/Movie';
 import { getRepository } from 'typeorm';
 
 export default class MoviesUtil {
-    public static getMoviesStats(movies, recommendations = [], key) {
+    public static getMoviesStats(movies, recommendations = [], key = null) {
         const repository = getRepository(Movie);
 
         return movies.map(async (item) => {
@@ -12,7 +12,7 @@ export default class MoviesUtil {
             const movie = {
                 ...item
             };
-            movie[key] = rec ? parseFloat(rec[key]).toFixed(3) : null;
+            movie[key] = (rec && key) ? parseFloat(rec[key]).toFixed(3) : null;
             const stats = await repository
                 .createQueryBuilder('movie')
                 .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
