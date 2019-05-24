@@ -1,14 +1,11 @@
 import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
-import * as config from 'config';
-import axios from 'axios';
 import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../../utils/winston';
 import { validateRegister } from '../../utils/validations/user';
 import { User } from '../../entities/User';
 import { Movie } from '../../entities/Movie';
-import MoviesUtil from '../../utils/movies/MoviesUtil';
 
 export const getUsers = async (req: Request, res: any) => {
     const take = req.query.take || 10;

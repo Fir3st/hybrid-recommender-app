@@ -26,6 +26,12 @@
                 >
                     Movies
                 </b-nav-item>
+                <b-nav-item
+                    to="/admin/analytics"
+                    exact
+                >
+                    Analytics
+                </b-nav-item>
             </b-navbar-nav>
             <menu-user
                 :user-full-name="userFullName"
