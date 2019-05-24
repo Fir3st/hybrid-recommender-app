@@ -4,6 +4,7 @@ import authenticationController from './authenticationController';
 import moviesController from './moviesController';
 import genresController from './genresController';
 import analyticsController from './analyticsController';
+import ratingsController from './ratingsController';
 
 export default (app: Application) => {
     app.use('/auth', authenticationController);
@@ -11,4 +12,5 @@ export default (app: Application) => {
     app.use('/movies', moviesController);
     app.use('/genres', genresController);
     app.use('/analytics', analyticsController);
+    app.use('/ratings', ratingsController);
 };

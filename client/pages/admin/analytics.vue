@@ -23,6 +23,14 @@
             </b-col>
         </b-row>
         <b-row>
+            <b-col sm="2">
+                Total number of ratings:
+            </b-col>
+            <b-col sm="10">
+                {{ ratingsCount }}
+            </b-col>
+        </b-row>
+        <b-row>
             <b-col>
                 <h2>Ratings distribution</h2>
             </b-col>
@@ -57,12 +65,14 @@
             ...mapGetters({
                 usersCount: 'users/count',
                 moviesCount: 'movies/count',
+                ratingsCount: 'ratings/count',
                 ratingsDistribution: 'ratings/distribution'
             })
         },
         async fetch({ store }) {
             await store.dispatch('users/setCount');
             await store.dispatch('movies/setCount');
+            await store.dispatch('ratings/setCount');
             await store.dispatch('ratings/setRatingsDistribution');
         }
     };

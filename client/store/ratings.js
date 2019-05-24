@@ -29,11 +29,29 @@ export const mutations = {
 };
 
 export const actions = {
-    async setRatings({ commit, state }) {
-        // TODO: Get all ratings
+    async setRatings({ commit }) {
+        try {
+            const url = '/ratings';
+            const ratings = await this.$axios.$get(url);
+
+            if (ratings && ratings.length > 0) {
+                commit('setRatings', ratings);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     },
-    async setCount({ commit, state }) {
-        // TODO: Get count of ratings
+    async setCount({ commit }) {
+        try {
+            const url = '/ratings/count';
+            const ratingsCount = await this.$axios.$get(url);
+
+            if (ratingsCount) {
+                commit('setCount', ratingsCount.count);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     },
     async setRatingsDistribution({ commit }) {
         try {
