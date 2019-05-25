@@ -51,5 +51,5 @@ const extractFiles = async () => {
 downloadData()
     .then(fileName => copyFile(fileName))
     .then(() => extractFiles())
-    .then(() => console.log('Done.'))
+    .then(() => console.log('Datasets downloaded.'))
     .catch(error => console.log(error));
