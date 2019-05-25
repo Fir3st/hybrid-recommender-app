@@ -30,7 +30,8 @@
         "db:prepare": "npm run typeorm schema:drop && npm run typeorm migration:run",
         "db:populate": "npm run db:movies && npm run db:ratings",
         "db:movies": "ts-node data/moviesData.ts",
-        "db:ratings": "ts-node data/ratingsData.ts"
+        "db:ratings": "ts-node data/ratingsData.ts",
+        "recommender:train": "ts-node data/trainRecommender.ts"
     },
     "dependencies": {
         "@nuxtjs/auth": "4.5.3",
