@@ -2,6 +2,7 @@ import * as csv from 'csvtojson';
 import * as faker from 'faker';
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
+import * as config from 'config';
 import * as cliProgress from 'cli-progress';
 import { createConnection } from 'typeorm';
 import { UserRating } from '../server/src/entities/UserRating';
@@ -19,30 +20,37 @@ createConnection()
                 progressBar.start(data.length, 0);
                 for (const rating of data) {
                     try {
-                        const userRating = new UserRating();
-                        userRating.rating = rating.rating;
-                        userRating.createdAt = moment.unix(rating.timestamp).format('YYYY-MM-DD HH:mm:ss');
-                        const movie = await connection.manager.findOne(Movie, rating.movieId);
-                        if (movie) {
-                            userRating.movie = movie;
+                        let userRating = await connection.manager.findOne(UserRating, {
+                            userId: rating.userId,
+                            movieId: rating.movieId
+                        });
+
+                        if (!userRating) {
+                            userRating = new UserRating();
+                            userRating.rating = rating.rating;
+                            userRating.createdAt = moment.unix(rating.timestamp).format('YYYY-MM-DD HH:mm:ss');
+                            const movie = await connection.manager.findOne(Movie, rating.movieId);
+                            if (movie) {
+                                userRating.movie = movie;
+                            }
+                            let user = await connection.manager.findOne(User, rating.userId);
+                            if (!user) {
+                                user = new User();
+                                user.id = rating.userId;
+                                user.name = faker.name.firstName();
+                                user.surname = faker.name.lastName();
+                                user.email = faker.internet.email(user.name, user.surname);
+                                user.admin = false;
+                                user.password = await bcrypt.hash(config.get('defaultUserPassword'), 10);
+                                await connection.manager.save(user);
+                            }
+                            userRating.user = user;
+                            await connection.manager.save(userRating);
                         }
-                        let user = await connection.manager.findOne(User, rating.userId);
-                        if (!user) {
-                            user = new User();
-                            user.id = rating.userId;
-                            user.name = faker.name.firstName();
-                            user.surname = faker.name.lastName();
-                            user.email = faker.internet.email(user.name, user.surname);
-                            user.admin = false;
-                            user.password = await bcrypt.hash('secret', 10);
-                            await connection.manager.save(user);
-                        }
-                        userRating.user = user;
-                        await connection.manager.save(userRating);
-                        progressBar.increment(1);
                     } catch (error) {
                         console.log(error.message);
                     }
+                    progressBar.increment(1);
                 }
             })
             .then(async () => {

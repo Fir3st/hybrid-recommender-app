@@ -16,6 +16,7 @@
         "test": "jest --runInBand",
         "test:watch": "jest --runInBand --watchAll",
         "typeorm": "node tsnode-typeorm",
+        "data:prepare": "yarn data:download && data:filter",
         "data:download": "ts-node data/downloadDatasets.ts",
         "data:filter": "yarn data:filter:movies && data:filter:ratings",
         "data:filter:movies": "ts-node data/filterMoviesAndLinks.ts",
@@ -27,6 +28,7 @@
         "data:csv:metadata": "ts-node data/moviesMetadataCSV.ts",
         "data:csv:keywords": "ts-node data/moviesKeywordsCSV.ts",
         "db:prepare": "yarn typeorm schema:drop && yarn typeorm migration:run",
+        "db:populate": "yarn db:movies && db:ratings",
         "db:movies": "ts-node data/moviesData.ts",
         "db:ratings": "ts-node data/ratingsData.ts"
     },
