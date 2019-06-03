@@ -21,6 +21,7 @@
                         <movie-list
                             :movies="similarMovies"
                             :additional-info="true"
+                            :similarity="true"
                         />
                     </b-col>
                 </b-row>

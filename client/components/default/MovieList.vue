@@ -6,6 +6,7 @@
             :movie="movie"
             :additional-info="additionalInfo"
             :show-rating-buttons="showRatingButtons"
+            :similarity="similarity"
             class="movie"
         />
     </b-row>
@@ -30,6 +31,11 @@
                 default: false
             },
             showRatingButtons: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            similarity: {
                 type: Boolean,
                 required: false,
                 default: false

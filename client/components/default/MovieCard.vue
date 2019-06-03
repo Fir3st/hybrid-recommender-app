@@ -16,6 +16,10 @@
                 :movie="movie"
                 :show-rating-buttons="showRatingButtons"
             />
+            <similarity
+                :movie="movie"
+                :similarity="similarity"
+            />
             <nuxt-link
                 :id="`card-${movie.id}`"
                 :to="`/detail/${movie.id}`"
@@ -61,11 +65,13 @@
 <script>
     import AverageRating from '~/components/default/movie-card/AverageRating';
     import RatingButtons from '~/components/default/movie-card/RatingButtons';
+    import Similarity from '~/components/default/movie-card/Similarity';
 
     export default {
         components: {
             AverageRating,
-            RatingButtons
+            RatingButtons,
+            Similarity
         },
         props: {
             movie: {
@@ -79,6 +85,11 @@
                 default: false
             },
             showRatingButtons: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            similarity: {
                 type: Boolean,
                 required: false,
                 default: false
