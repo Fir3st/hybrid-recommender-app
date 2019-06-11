@@ -32,7 +32,19 @@
                 return {
                     chart: this.chart,
                     xaxis: {
-                        categories: this.xaxis
+                        categories: this.xaxis,
+                        labels: {
+                            show: false
+                        },
+                        title: {
+                            text: 'Similarity'
+                        }
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Count'
+                        },
+                        min: 469000,
                     },
                     dataLabels: {
                         enabled: false
