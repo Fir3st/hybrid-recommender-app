@@ -1,8 +1,10 @@
+import * as config from 'config';
 import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../utils/winston';
 import { UserRating } from '../entities/UserRating';
 import { authenticate, authorize } from '../middleware/auth';
+import axios from 'axios';
 const router = Router();
 
 router.get('/ratings-distribution', [authenticate, authorize], async (req: Request, res: any) => {
@@ -26,6 +28,24 @@ router.get('/ratings-distribution', [authenticate, authorize], async (req: Reque
         }
 
         return res.boom.badRequest('No ratings found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/similarities-distribution', [authenticate, authorize], async (req: Request, res: any) => {
+    const recommender = config.get('recommenderUrl');
+
+    try {
+        const recsResponse = await axios.get(`${recommender}/movies/similarities-distribution`);
+        const distributions = recsResponse.data;
+
+        if (distributions && distributions.length > 0) {
+            return res.send(distributions);
+        }
+
+        return res.boom.badRequest('No similarities distribution found');
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();
