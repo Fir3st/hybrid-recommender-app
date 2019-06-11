@@ -40,6 +40,16 @@
                 <ratings-distribution :ratings-distribution="ratingsDistribution" />
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <h2>Similarities distribution</h2>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <similarities-distribution :similarities="similaritiesDistribution" />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -47,10 +57,12 @@
     import { mapGetters } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
     import RatingsDistribution from '~/components/admin/analytics/RatingsDistributionChart';
+    import SimilaritiesDistribution from '~/components/admin/analytics/SimilaritiesDistribution';
 
     export default {
         components: {
-            RatingsDistribution
+            RatingsDistribution,
+            SimilaritiesDistribution
         },
         extends: AdminPage,
         data() {
@@ -66,7 +78,8 @@
                 usersCount: 'users/count',
                 moviesCount: 'movies/count',
                 ratingsCount: 'ratings/count',
-                ratingsDistribution: 'ratings/distribution'
+                ratingsDistribution: 'ratings/distribution',
+                similaritiesDistribution: 'similarities/distribution'
             })
         },
         async fetch({ store }) {
@@ -74,6 +87,7 @@
             await store.dispatch('movies/setCount');
             await store.dispatch('ratings/setCount');
             await store.dispatch('ratings/setRatingsDistribution');
+            await store.dispatch('similarities/setDistributions');
         }
     };
 </script>
