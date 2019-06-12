@@ -15,7 +15,8 @@ router.get('/movies', async (req: Request, res: any) => {
                 'movies.id',
                 'movies.title',
                 'AVG(usersRatings.rating) AS avgRating',
-                'COUNT(usersRatings.id) AS ratingsCount'
+                'COUNT(usersRatings.id) AS ratingsCount',
+                'SUM(CASE WHEN usersRatings.rating = 0 THEN 1 ELSE 0 END) AS penalized'
             ])
             .groupBy('movies.id');
 
@@ -26,7 +27,8 @@ router.get('/movies', async (req: Request, res: any) => {
                     id: item.movies_id,
                     title: item.movies_title,
                     average_rating: item.avgRating,
-                    count: parseInt(item.ratingsCount, 10)
+                    count: parseInt(item.ratingsCount, 10),
+                    penalized: parseInt(item.penalized, 10)
                 };
             });
 
