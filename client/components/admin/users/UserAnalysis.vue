@@ -30,6 +30,17 @@
             </b-row>
             <b-row>
                 <b-col>
+                    <b-button
+                        variant="info"
+                        class="btn-download"
+                        @click="downloadRecommendationsCSV"
+                    >
+                        Download all recommendations as CSV
+                    </b-button>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
                     <recommended-movies-table
                         :recommendations="recommendations"
                     />
@@ -77,6 +88,8 @@
 </template>
 
 <script>
+    import Download from 'downloadjs';
+    import PapaParse from 'papaparse';
     import { mapGetters } from 'vuex';
     import UserPreferencesChart from '~/components/admin/users/UserPreferencesChart';
     import RecommendedMoviesTable from '~/components/admin/users/RecommendedMoviesTable';
@@ -145,7 +158,28 @@
                 } catch (error) {
                     console.log(error.message);
                 }
+            },
+            async downloadRecommendationsCSV() {
+                const response = await this.$axios.$get(`/users/${this.user.id}/recommendations?take=100`);
+                const recs = response.map((item) => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        predicted_rating: item.rating,
+                        average_rating: item.avgRating,
+                        count: parseInt(item.ratingsCount, 10)
+                        // TODO: add number of penalizations (also on API)
+                        // TODO: add similarity to already rated movies
+                    };
+                });
+
+                const data = PapaParse.unparse(recs, {
+                    delimiter: ',',
+                    encoding: 'utf8'
+                });
+                Download(data, `recommendations_user_${this.user.id}.csv`, 'application/csv');
             }
+            // TODO: add downloading recommendations for genre as CSV
         }
     };
 </script>
