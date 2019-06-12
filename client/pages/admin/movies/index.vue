@@ -8,6 +8,17 @@
         </b-row>
         <b-row>
             <b-col>
+                <b-button
+                    variant="info"
+                    class="btn-download"
+                    @click="downloadCSV"
+                >
+                    Download all movies as CSV
+                </b-button>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <el-table
                     :data="movies"
                     stripe
@@ -64,6 +75,8 @@
 </template>
 
 <script>
+    import Download from 'downloadjs';
+    import PapaParse from 'papaparse';
     import moment from 'moment';
     import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
@@ -128,7 +141,20 @@
             },
             setPage() {
                 this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
+            },
+            async downloadCSV() {
+                const movies = await this.$axios.$get('/data/movies');
+                const data = PapaParse.unparse(movies, {
+                    delimiter: ',',
+                    encoding: 'utf8'
+                });
+                Download(data, 'movies.csv', 'application/csv');
             }
         }
     };
 </script>
+
+<style lang="sass">
+    .btn-download
+        margin-bottom: 20px
+</style>
