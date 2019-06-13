@@ -20,6 +20,10 @@
                 :movie="movie"
                 :similarity="similarity"
             />
+            <rating
+                :movie="movie"
+                :rating="rating"
+            />
             <nuxt-link
                 :id="`card-${movie.id}`"
                 :to="`/detail/${movie.id}`"
@@ -58,6 +62,14 @@
                 <span>{{ genres }}</span>
             </p>
             <p>{{ truncate(movie.plot, 200) }}</p>
+            <div v-if="isAdmin">
+                <p><strong>Analytics</strong></p>
+                <p><strong>Predicated rating for curr. user: </strong> {{ movie.rating }}</p>
+                <p><strong>Average rating: </strong> {{ movie.avgRating }}</p>
+                <p><strong>Number of ratings: </strong> {{ movie.ratingsCount }}</p>
+                <p><strong>Number of penalizations: </strong> {{ movie.penalized }}</p>
+                <p><strong>Sim. to already rated items: </strong> {{ movie.ratedSimilarity || '-' }}</p>
+            </div>
         </b-popover>
     </b-col>
 </template>
@@ -66,12 +78,14 @@
     import AverageRating from '~/components/default/movie-card/AverageRating';
     import RatingButtons from '~/components/default/movie-card/RatingButtons';
     import Similarity from '~/components/default/movie-card/Similarity';
+    import Rating from '~/components/default/movie-card/Rating';
 
     export default {
         components: {
             AverageRating,
             RatingButtons,
-            Similarity
+            Similarity,
+            Rating
         },
         props: {
             movie: {
@@ -90,6 +104,11 @@
                 default: false
             },
             similarity: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            rating: {
                 type: Boolean,
                 required: false,
                 default: false

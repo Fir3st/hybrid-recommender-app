@@ -44,21 +44,8 @@
 <script>
     export default {
         props: {
-            userFullName: {
-                type: String,
-                required: true,
-                default: ''
-            },
             handleLogout: {
                 type: Function,
-                required: true
-            },
-            isLogged: {
-                type: Boolean,
-                required: true
-            },
-            isAdmin: {
-                type: Boolean,
                 required: true
             }
         },

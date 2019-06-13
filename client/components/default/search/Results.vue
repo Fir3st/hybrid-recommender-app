@@ -17,6 +17,7 @@
                         :movies="movies"
                         :additional-info="true"
                         :show-rating-buttons="true"
+                        :rating="true"
                     />
                     <load-more
                         :count="count"

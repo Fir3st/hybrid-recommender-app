@@ -31,11 +31,6 @@
                 negativeRatingValue: 0.0
             };
         },
-        computed: {
-            isLogged() {
-                return !!this.$auth.user;
-            }
-        },
         methods: {
             async negativeRating() {
                 try {

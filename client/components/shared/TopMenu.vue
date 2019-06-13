@@ -1,17 +1,5 @@
 <script>
     export default {
-        computed: {
-            isLogged() {
-                return !!this.$auth.user;
-            },
-            isAdmin() {
-                return this.isLogged ? this.$auth.user.admin : false;
-            },
-            userFullName() {
-                const user = this.$auth.user;
-                return user ? `${user.name} ${user.surname}` : '';
-            }
-        },
         methods: {
             async handleLogout() {
                 await this.$auth.logout();

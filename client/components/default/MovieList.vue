@@ -7,6 +7,7 @@
             :additional-info="additionalInfo"
             :show-rating-buttons="showRatingButtons"
             :similarity="similarity"
+            :rating="rating"
             class="movie"
         />
     </b-row>
@@ -36,6 +37,11 @@
                 default: false
             },
             similarity: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            rating: {
                 type: Boolean,
                 required: false,
                 default: false

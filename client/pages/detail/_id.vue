@@ -31,6 +31,7 @@
                         <movie-list
                             :movies="recommendedMovies"
                             :additional-info="true"
+                            :rating="true"
                         />
                     </b-col>
                 </b-row>
