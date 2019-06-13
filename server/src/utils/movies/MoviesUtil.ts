@@ -15,7 +15,7 @@ export default class MoviesUtil {
             if (key) {
                 movie[key] = (rec && key) ? parseFloat(rec[key]).toFixed(4) : null;
             }
-            if (key && key === 'rating' && rec && rec.similarity) {
+            if (key && key === 'rating' && rec && 'similarity' in rec) {
                 movie['ratedSimilarity'] = rec.similarity;
             }
             const stats = await repository
