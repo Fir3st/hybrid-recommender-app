@@ -11,7 +11,7 @@
                 <b-button
                     variant="info"
                     class="btn-download"
-                    @click="downloadCSV"
+                    @click="downloadMoviesCSV"
                 >
                     Download all movies as CSV
                 </b-button>
@@ -75,8 +75,6 @@
 </template>
 
 <script>
-    import Download from 'downloadjs';
-    import PapaParse from 'papaparse';
     import moment from 'moment';
     import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
@@ -142,13 +140,9 @@
             setPage() {
                 this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
             },
-            async downloadCSV() {
+            async downloadMoviesCSV() {
                 const movies = await this.$axios.$get('/data/movies');
-                const data = PapaParse.unparse(movies, {
-                    delimiter: ',',
-                    encoding: 'utf8'
-                });
-                Download(data, 'movies.csv', 'application/csv');
+                this.downloadCSV(movies, 'movies.csv');
             }
         }
     };

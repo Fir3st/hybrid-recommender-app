@@ -88,8 +88,6 @@
 </template>
 
 <script>
-    import Download from 'downloadjs';
-    import PapaParse from 'papaparse';
     import { mapGetters } from 'vuex';
     import UserPreferencesChart from '~/components/admin/users/UserPreferencesChart';
     import RecommendedMoviesTable from '~/components/admin/users/RecommendedMoviesTable';
@@ -173,11 +171,7 @@
                     };
                 });
 
-                const data = PapaParse.unparse(recs, {
-                    delimiter: ',',
-                    encoding: 'utf8'
-                });
-                Download(data, `recommendations_user_${this.user.id}.csv`, 'application/csv');
+                this.downloadCSV(recs, `recommendations_user_${this.user.id}.csv`);
             }
             // TODO: add downloading recommendations for genre as CSV
         }

@@ -57,6 +57,7 @@ module.exports = {
     plugins: [
         '@/plugins/element-ui',
         '@/plugins/globals',
+        '@/plugins/globalMethods',
         { src: '@/plugins/apexcharts', ssr: false },
     ],
 
