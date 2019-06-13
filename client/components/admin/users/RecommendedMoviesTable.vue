@@ -13,7 +13,7 @@
             label="Title"
         />
         <el-table-column
-            label="Predicted rating (normalized)"
+            label="Predicted rating"
         >
             <template slot-scope="scope">
                 {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : '' }}
@@ -33,6 +33,22 @@
         >
             <template slot-scope="scope">
                 {{ scope.row.ratingsCount ? Number.parseInt(scope.row.ratingsCount) : '' }}
+            </template>
+        </el-table-column>
+        <el-table-column
+            v-if="additionalInfo"
+            label="Number of penalizations"
+        >
+            <template slot-scope="scope">
+                {{ scope.row.penalized ? Number.parseInt(scope.row.penalized) : '' }}
+            </template>
+        </el-table-column>
+        <el-table-column
+            v-if="additionalInfo"
+            label="Similarity to already rated items"
+        >
+            <template slot-scope="scope">
+                {{ scope.row.ratedSimilarity ? Number.parseFloat(scope.row.ratedSimilarity) : '' }}
             </template>
         </el-table-column>
         <el-table-column

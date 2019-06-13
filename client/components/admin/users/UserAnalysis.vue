@@ -43,6 +43,7 @@
                 <b-col>
                     <recommended-movies-table
                         :recommendations="recommendations"
+                        :additional-info="true"
                     />
                 </b-col>
             </b-row>
@@ -176,9 +177,9 @@
                                 title: item.title,
                                 predicted_rating: item.rating,
                                 average_rating: item.avgRating,
-                                count: parseInt(item.ratingsCount, 10)
-                                // TODO: add number of penalizations (also on API)
-                                // TODO: add similarity to already rated movies
+                                count: parseInt(item.ratingsCount, 10),
+                                penalized: parseInt(item.penalized, 10),
+                                rated_similarity: item.ratedSimilarity || '-'
                             };
                         });
 
@@ -199,9 +200,9 @@
                                 title: item.title,
                                 predicted_rating: item.rating,
                                 average_rating: item.avgRating,
-                                count: parseInt(item.ratingsCount, 10)
-                                // TODO: add number of penalizations (also on API)
-                                // TODO: add similarity to already rated movies
+                                count: parseInt(item.ratingsCount, 10),
+                                penalized: parseInt(item.penalized, 10),
+                                rated_similarity: item.ratedSimilarity || '-'
                             };
                         });
 

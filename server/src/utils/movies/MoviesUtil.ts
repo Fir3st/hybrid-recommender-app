@@ -9,25 +9,33 @@ export default class MoviesUtil {
 
         return movies.map(async (item) => {
             const rec = recommendations.find(movie => parseInt(movie.id, 10) === parseInt(item.id, 10));
-            const movie = {
+            let movie = {
                 ...item
             };
-            movie[key] = (rec && key) ? parseFloat(rec[key]).toFixed(3) : null;
+            if (key) {
+                movie[key] = (rec && key) ? parseFloat(rec[key]).toFixed(4) : null;
+            }
+            if (key && key === 'rating' && rec && rec.similarity) {
+                movie['ratedSimilarity'] = rec.similarity;
+            }
             const stats = await repository
                 .createQueryBuilder('movie')
                 .leftJoinAndSelect('movie.usersRatings', 'usersRatings')
                 .select([
+                    'movie.id',
                     'AVG(usersRatings.rating) AS avgRating',
                     'COUNT(usersRatings.id) AS ratingsCount',
-                    'movie.id'
+                    'SUM(CASE WHEN usersRatings.rating = 0 THEN 1 ELSE 0 END) AS penalized'
                 ])
                 .groupBy('movie.id')
                 .where('movie.id = :id', { id: item.id })
                 .getRawOne();
 
             if (stats) {
-                movie['avgRating'] = stats.avgRating;
-                movie['ratingsCount'] = stats.ratingsCount;
+                movie = {
+                    ...movie,
+                    ..._.omit(stats, ['movie_id'])
+                };
             }
 
             return movie;
@@ -40,6 +48,7 @@ export default class MoviesUtil {
         if (ratings && ratings.length > 0) {
             const moviesWithRatings = movies.map((movie) => {
                 const rating = ratings.find(item => item.id === movie.id);
+                // TODO: add similarity
                 return { ...movie, rating: rating.rating };
             });
 
