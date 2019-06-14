@@ -12,7 +12,7 @@
 
     export default {
         props: {
-            ratingsDistribution: {
+            distribution: {
                 type: Array,
                 required: true
             }
@@ -26,7 +26,7 @@
         },
         computed: {
             sorted() {
-                return _.sortBy(this.ratingsDistribution, ['rating']);
+                return _.sortBy(this.distribution, ['rating']);
             },
             xaxis() {
                 return this.sorted.map(rating => rating.rating.toString());

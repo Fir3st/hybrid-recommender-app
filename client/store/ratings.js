@@ -1,7 +1,7 @@
 export const state = () => ({
     ratings: [],
     count: 0,
-    distribution: []
+    valuesDistribution: []
 });
 
 export const getters = {
@@ -11,8 +11,8 @@ export const getters = {
     count (state) {
         return state.count;
     },
-    distribution (state) {
-        return state.distribution;
+    valuesDistribution (state) {
+        return state.valuesDistribution;
     }
 };
 
@@ -23,8 +23,8 @@ export const mutations = {
     setCount (state, count) {
         state.count = count;
     },
-    setDistribution (state, distribution) {
-        state.distribution = distribution;
+    setValuesDistribution (state, distribution) {
+        state.valuesDistribution = distribution;
     }
 };
 
@@ -53,13 +53,13 @@ export const actions = {
             console.log(error.message);
         }
     },
-    async setRatingsDistribution({ commit }) {
+    async setValuesDistribution({ commit }) {
         try {
-            const url = `/analytics/ratings-distribution`;
+            const url = `/analytics/ratings-values-distribution`;
             const ratingsDistribution = await this.$axios.$get(url);
 
             if (ratingsDistribution && ratingsDistribution.length > 0) {
-                commit('setDistribution', ratingsDistribution);
+                commit('setValuesDistribution', ratingsDistribution);
             }
         } catch (error) {
             console.log(error.message);

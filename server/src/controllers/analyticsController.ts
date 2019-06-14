@@ -7,7 +7,7 @@ import { authenticate, authorize } from '../middleware/auth';
 import axios from 'axios';
 const router = Router();
 
-router.get('/ratings-distribution', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/ratings-values-distribution', [authenticate, authorize], async (req: Request, res: any) => {
     const repository = getRepository(UserRating);
 
     try {

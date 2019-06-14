@@ -32,12 +32,12 @@
         </b-row>
         <b-row>
             <b-col>
-                <h2>Ratings distribution</h2>
+                <h2>Ratings distribution (by value)</h2>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <ratings-distribution :ratings-distribution="ratingsDistribution" />
+                <values-distribution :distribution="valuesDistribution" />
             </b-col>
         </b-row>
         <b-row>
@@ -56,12 +56,12 @@
 <script>
     import { mapGetters } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
-    import RatingsDistribution from '~/components/admin/analytics/RatingsDistributionChart';
+    import ValuesDistribution from '~/components/admin/analytics/ValuesDistribution';
     import SimilaritiesDistribution from '~/components/admin/analytics/SimilaritiesDistribution';
 
     export default {
         components: {
-            RatingsDistribution,
+            ValuesDistribution,
             SimilaritiesDistribution
         },
         extends: AdminPage,
@@ -78,7 +78,7 @@
                 usersCount: 'users/count',
                 moviesCount: 'movies/count',
                 ratingsCount: 'ratings/count',
-                ratingsDistribution: 'ratings/distribution',
+                valuesDistribution: 'ratings/valuesDistribution',
                 similaritiesDistribution: 'similarities/distribution'
             })
         },
@@ -86,7 +86,7 @@
             await store.dispatch('users/setCount');
             await store.dispatch('movies/setCount');
             await store.dispatch('ratings/setCount');
-            await store.dispatch('ratings/setRatingsDistribution');
+            await store.dispatch('ratings/setValuesDistribution');
             await store.dispatch('similarities/setDistributions');
         }
     };
