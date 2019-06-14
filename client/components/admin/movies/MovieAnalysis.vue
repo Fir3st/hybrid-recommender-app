@@ -19,6 +19,17 @@
             </b-row>
             <b-row>
                 <b-col>
+                    <b-button
+                        variant="info"
+                        class="btn-download"
+                        @click="downloadSimilaritiesCSV"
+                    >
+                        Download all similarities as CSV
+                    </b-button>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
                     <el-table
                         :data="recommendations"
                         stripe
@@ -69,6 +80,34 @@
             avgRating: {
                 type: Number,
                 required: true
+            },
+            movie: {
+                type: Object,
+                required: true
+            }
+        },
+        methods: {
+            async downloadSimilaritiesCSV() {
+                try {
+                    const url = `/movies/${this.movie.id}/recommendations?take=100`;
+                    const response = await this.$axios.$get(url);
+                    if (response && response.length > 0) {
+                        const recs = response.map((item) => {
+                            return {
+                                id: item.id,
+                                title: item.title,
+                                similarity: item.similarity || 0,
+                                average_rating: item.avgRating,
+                                count: parseInt(item.ratingsCount, 10),
+                                penalized: parseInt(item.penalized, 10)
+                            };
+                        });
+
+                        this.downloadCSV(recs, `recommendations_movie_${this.movie.id}.csv`);
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
             }
         }
     };

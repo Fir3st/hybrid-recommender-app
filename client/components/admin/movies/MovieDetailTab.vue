@@ -18,6 +18,7 @@
                 :recommendations="recommendations"
                 :ratings="ratings"
                 :avg-rating="avgRating"
+                :movie="movie"
             />
         </b-tab>
     </b-tabs>
