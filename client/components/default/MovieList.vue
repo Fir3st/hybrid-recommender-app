@@ -8,6 +8,7 @@
             :show-rating-buttons="showRatingButtons"
             :similarity="similarity"
             :rating="rating"
+            :analytics="analytics"
             class="movie"
         />
     </b-row>
@@ -42,6 +43,11 @@
                 default: false
             },
             rating: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            analytics: {
                 type: Boolean,
                 required: false,
                 default: false

@@ -49,7 +49,7 @@ export default class MoviesUtil {
             const moviesWithRatings = movies.map((movie) => {
                 const rating = ratings.find(item => item.id === movie.id);
                 // TODO: add similarity
-                return { ...movie, rating: rating.rating };
+                return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity };
             });
 
             return _.orderBy(moviesWithRatings, ['rating'], ['desc']);

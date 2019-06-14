@@ -62,7 +62,7 @@
                 <span>{{ genres }}</span>
             </p>
             <p>{{ truncate(movie.plot, 200) }}</p>
-            <div v-if="isAdmin">
+            <div v-if="isAdmin && analytics">
                 <p><strong>Analytics</strong></p>
                 <p><strong>Predicated rating for curr. user: </strong> {{ movie.rating }}</p>
                 <p><strong>Average rating: </strong> {{ movie.avgRating }}</p>
@@ -109,6 +109,11 @@
                 default: false
             },
             rating: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            analytics: {
                 type: Boolean,
                 required: false,
                 default: false

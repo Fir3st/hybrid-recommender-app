@@ -11,7 +11,6 @@
                 <movie-info :movie="movie" />
                 <movie-description :movie="movie" />
                 <rating
-                    :is-logged="isLogged"
                     :user-rating="userRating"
                     :rate-movie="rateMovie"
                 />
@@ -75,9 +74,6 @@
             };
         },
         computed: {
-            isLogged() {
-                return !!this.$auth.user;
-            },
             movieTitle() {
                 return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
             }

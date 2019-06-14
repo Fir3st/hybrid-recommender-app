@@ -18,6 +18,7 @@
                         :additional-info="true"
                         :show-rating-buttons="true"
                         :rating="true"
+                        :analytics="true"
                     />
                     <load-more
                         :count="count"

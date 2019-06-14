@@ -18,10 +18,6 @@
 <script>
     export default {
         props: {
-            isLogged: {
-                type: Boolean,
-                required: true
-            },
             userRating: {
                 type: Number,
                 required: true
