@@ -42,6 +42,16 @@
         </b-row>
         <b-row>
             <b-col>
+                <h2>Ratings distribution (frequency)</h2>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <frequency-distribution :distribution="frequencyDistribution" />
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <h2>Similarities distribution</h2>
             </b-col>
         </b-row>
@@ -58,11 +68,13 @@
     import AdminPage from '~/components/admin/AdminPage';
     import ValuesDistribution from '~/components/admin/analytics/ValuesDistribution';
     import SimilaritiesDistribution from '~/components/admin/analytics/SimilaritiesDistribution';
+    import FrequencyDistribution from '~/components/admin/analytics/FrequencyDistribution';
 
     export default {
         components: {
             ValuesDistribution,
-            SimilaritiesDistribution
+            SimilaritiesDistribution,
+            FrequencyDistribution
         },
         extends: AdminPage,
         data() {
@@ -79,6 +91,7 @@
                 moviesCount: 'movies/count',
                 ratingsCount: 'ratings/count',
                 valuesDistribution: 'ratings/valuesDistribution',
+                frequencyDistribution: 'ratings/frequencyDistribution',
                 similaritiesDistribution: 'similarities/distribution'
             })
         },
@@ -87,6 +100,7 @@
             await store.dispatch('movies/setCount');
             await store.dispatch('ratings/setCount');
             await store.dispatch('ratings/setValuesDistribution');
+            await store.dispatch('ratings/setFrequencyDistribution');
             await store.dispatch('similarities/setDistributions');
         }
     };
