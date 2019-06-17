@@ -32,8 +32,8 @@ export const getRecommendations = async (req: Request, res: any) => {
                 .getMany();
 
             if (movies && movies.length > 0) {
-                const moviesForRes = MoviesUtil.getMoviesStats(movies, recommendations, 'rating');
-                return res.send(_.orderBy(await Promise.all(moviesForRes), ['rating'], ['desc']));
+                const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
+                return res.send(_.orderBy(moviesWithInfo, ['rating'], ['desc']));
             }
 
             return res.send(recommendations.data);

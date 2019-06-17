@@ -28,8 +28,8 @@ export const getRecommendations = async (req: Request, res: any) => {
                 .getMany();
 
             if (movies && movies.length > 0) {
-                const moviesForRes = MoviesUtil.getMoviesStats(movies, recommendations, 'similarity');
-                return res.send(_.orderBy(await Promise.all(moviesForRes), ['similarity'], ['desc']));
+                const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'similarity');
+                return res.send(_.orderBy(moviesWithInfo, ['similarity'], ['desc']));
             }
 
             return res.send(recommendations);

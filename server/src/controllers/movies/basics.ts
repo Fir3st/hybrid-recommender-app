@@ -33,8 +33,8 @@ export const getMovies = async (req: Request, res: any) => {
         const movies = await query.getMany();
 
         if (movies && movies.length > 0) {
-            const moviesForRes = MoviesUtil.getMoviesStats(movies);
-            return res.send(await Promise.all(moviesForRes));
+            const moviesWithStats = await MoviesUtil.getStats(movies);
+            return res.send(moviesWithStats);
         }
 
         return res.boom.badRequest('No movies found.');
@@ -75,8 +75,8 @@ export const getTopMovies = async (req: Request, res: any) => {
                 .where('movies.id IN (:ids)', { ids: topMovies.map(movie => movie.id) })
                 .getMany();
 
-            const moviesForRes = MoviesUtil.getMoviesStats(movies);
-            return res.send(await Promise.all(moviesForRes));
+            const moviesWithStats = await MoviesUtil.getStats(movies);
+            return res.send(moviesWithStats);
         }
 
         return res.boom.badRequest('No top movies found.');
