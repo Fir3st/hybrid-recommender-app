@@ -1,4 +1,5 @@
 import * as moxios from 'moxios';
+import * as config from 'config';
 import { Connection, createConnection, getRepository, Repository } from 'typeorm';
 import MoviesUtil from '../../src/utils/movies/MoviesUtil';
 import { Movie } from '../../src/entities/Movie';
@@ -244,5 +245,61 @@ describe('getStats', () => {
 
         expect(moviesWithStats[0]).toHaveProperty('avgRating');
         expect(moviesWithStats[0].avgRating).toEqual(ratingsSum / movie.usersRatings.length);
+    });
+});
+
+describe('getQueriedMoviesRatings', () => {
+    beforeEach(() => {
+        moxios.install();
+    });
+    afterEach(() => {
+        moxios.uninstall();
+    });
+
+    it('should return stats for requested movies', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        moxios.stubRequest(`${recommenderUrl}/search/1`, {
+            status: 200,
+            response: {
+                ratings: [
+                    { id: 1, rating: 0.5, similarity: 0.05 },
+                    { id: 2, rating: 1.5, similarity: 0.15 }
+                ]
+            }
+        });
+        const movies = [
+            { id: 1 },
+            { id: 2 }
+        ];
+        const user = { id: 1 };
+        const moviesWithStats = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommenderUrl);
+
+        expect(moviesWithStats[0]).toHaveProperty('rating');
+        expect(moviesWithStats[0]).toHaveProperty('ratedSimilarity');
+    });
+
+    it('stats for requested movies should have expected values', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        const stats = [
+            { id: 1, rating: 2.5, similarity: 0.05 },
+            { id: 2, rating: 1.5, similarity: 0.04 }
+        ];
+        moxios.stubRequest(`${recommenderUrl}/search/1`, {
+            status: 200,
+            response: {
+                ratings: stats
+            }
+        });
+        const movies = [
+            { id: 1 },
+            { id: 2 }
+        ];
+        const user = { id: 1 };
+        const moviesWithStats = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommenderUrl);
+
+        expect(moviesWithStats[1]).toHaveProperty('rating');
+        expect(moviesWithStats[1]).toHaveProperty('ratedSimilarity');
+        expect(moviesWithStats[1].rating).toEqual(stats[1].rating);
+        expect(moviesWithStats[1].ratedSimilarity).toEqual(stats[1].similarity);
     });
 });

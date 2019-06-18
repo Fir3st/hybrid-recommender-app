@@ -30,18 +30,22 @@ export default class MoviesUtil {
     }
 
     public static async getQueriedMoviesRatings(movies, user, recommenderUrl) {
-        const ratingsResponse = await axios.post(`${recommenderUrl}/search/${user.id}`, { movies: movies.map(item => item.id) });
-        const { ratings } = ratingsResponse.data;
-        if (ratings && ratings.length > 0) {
-            const moviesWithRatings = movies.map((movie) => {
-                const rating = ratings.find(item => item.id === movie.id);
-                return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity };
-            });
+        try {
+            const ratingsResponse = await axios.post(`${recommenderUrl}/search/${user.id}`, { movies: movies.map(item => item.id) });
+            const { ratings } = ratingsResponse.data;
+            if (ratings && ratings.length > 0) {
+                const moviesWithRatings = movies.map((movie) => {
+                    const rating = ratings.find(item => item.id === movie.id);
+                    return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity };
+                });
 
-            return _.orderBy(moviesWithRatings, ['rating'], ['desc']);
+                return _.orderBy(moviesWithRatings, ['rating'], ['desc']);
+            }
+
+            return movies;
+        } catch (error) {
+            console.log(error.message);
         }
-
-        return movies;
     }
 
     public static isPenalizedByUser(movie, user) {
