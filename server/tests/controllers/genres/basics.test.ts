@@ -1,8 +1,8 @@
 import { agent, Response, SuperTest, Test } from 'supertest';
 import { Connection, createConnection, getRepository, Repository } from 'typeorm';
-import app from '../../src/app';
-import { Movie } from '../../src/entities/Movie';
-import { Genre } from '../../src/entities/Genre';
+import app from '../../../src/app';
+import { Movie } from '../../../src/entities/Movie';
+import { Genre } from '../../../src/entities/Genre';
 
 const request: SuperTest<Test> = agent(app);
 
@@ -22,7 +22,7 @@ movie.poster = 'some poster link';
 movie.type = 'movie';
 movie.production = 'Some production name';
 
-describe('GET /genres', () => {
+describe('Basics for /genres', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -32,8 +32,7 @@ describe('GET /genres', () => {
             repository = getRepository(Movie);
             await repository.save(movie);
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while connecting to database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -42,8 +41,7 @@ describe('GET /genres', () => {
             await connection.dropDatabase();
             await connection.close();
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while disconnecting from database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -59,5 +57,39 @@ describe('GET /genres', () => {
             .get('/genres?type=series');
 
         expect(response.status).toBe(400);
+    });
+
+    it('number of genres should correspond to number of genres of movie', async () => {
+        const genresRepository = getRepository(Genre);
+
+        const response: Response = await request
+            .get('/genres?type=movie');
+        const query = genresRepository
+            .createQueryBuilder('genres')
+            .innerJoin('genres.movies', 'movies')
+            .where('movies.type = :type', { type: 'movie' });
+
+        const genres = await query.getMany();
+
+        expect(response.body).toBeDefined();
+        expect(Array.isArray(response.body)).toBeTruthy();
+        expect(response.body.length).toEqual(genres.length);
+    });
+
+    it('genres in respond should correspond to genres in database', async () => {
+        const genresRepository = getRepository(Genre);
+
+        const response: Response = await request
+            .get('/genres?type=movie');
+        const query = genresRepository
+            .createQueryBuilder('genres')
+            .innerJoin('genres.movies', 'movies')
+            .where('movies.type = :type', { type: 'movie' });
+
+        const genres = await query.getMany();
+
+        expect(response.body).toBeDefined();
+        expect(Array.isArray(response.body)).toBeTruthy();
+        expect(response.body).toEqual(genres);
     });
 });
