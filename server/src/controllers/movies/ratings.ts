@@ -67,7 +67,7 @@ export const getAvgRating = async (req: Request, res: any) => {
             .where('movie.id = :id', { id })
             .getRawOne();
 
-        if (movieAvgRating) {
+        if (movieAvgRating && movieAvgRating.movie_id !== null) {
             return res.send({ id: movieAvgRating.movie_id, avgRating: movieAvgRating.avgRating });
         }
 
