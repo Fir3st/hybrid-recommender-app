@@ -1,8 +1,8 @@
 import { agent, Response, SuperTest, Test } from 'supertest';
 import { Connection, createConnection, getRepository, Repository } from 'typeorm';
-import app from '../../src/app';
-import { Movie } from '../../src/entities/Movie';
-import { Genre } from '../../src/entities/Genre';
+import app from '../../../src/app';
+import { Movie } from '../../../src/entities/Movie';
+import { Genre } from '../../../src/entities/Genre';
 
 const request: SuperTest<Test> = agent(app);
 
@@ -36,7 +36,7 @@ movie2.poster = 'some poster link';
 movie2.type = 'series';
 movie2.production = 'Some production name';
 
-describe('GET /movies', () => {
+describe('Basics for movies', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -46,8 +46,7 @@ describe('GET /movies', () => {
             repository = getRepository(Movie);
             await repository.save(movie);
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while connecting to database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -56,8 +55,7 @@ describe('GET /movies', () => {
             await connection.dropDatabase();
             await connection.close();
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while disconnecting from database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -95,9 +93,21 @@ describe('GET /movies', () => {
 
         expect(response.status).toBe(400);
     });
+
+    it('number of movies in response should correspond to number of movies in database', async () => {
+        const response: Response = await request
+            .get('/movies');
+        const movies = await repository
+            .createQueryBuilder('movies')
+            .getMany();
+
+        expect(response.body).toBeDefined();
+        expect(Array.isArray(response.body)).toBeTruthy();
+        expect(response.body.length).toEqual(movies.length);
+    });
 });
 
-describe('GET /movies/search?query=title', () => {
+describe('Basics - top movies', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -107,8 +117,7 @@ describe('GET /movies/search?query=title', () => {
             repository = getRepository(Movie);
             await repository.save(movie);
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while connecting to database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -117,27 +126,33 @@ describe('GET /movies/search?query=title', () => {
             await connection.dropDatabase();
             await connection.close();
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while disconnecting from database');
+            throw new Error(error.message);
         }
     }, 20000);
 
     it('should respond with status code 200', async () => {
         const response: Response = await request
-            .get('/movies/search?query=test');
+            .get('/movies/top');
 
         expect(response.status).toBe(200);
     });
 
-    it('should respond with status code 400 for title that doesn\'t exist', async () => {
+    it('should respond with status code 200 with type', async () => {
         const response: Response = await request
-            .get('/movies/search?query=x-men');
+            .get('/movies/top?type=movie');
+
+        expect(response.status).toBe(200);
+    });
+
+    it('should respond with status code 400 with type that doesn\'t exist', async () => {
+        const response: Response = await request
+            .get('/movies/top?type=series');
 
         expect(response.status).toBe(400);
     });
 });
 
-describe('GET /movies/count/:type', () => {
+describe('Basics - movies count', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -148,8 +163,7 @@ describe('GET /movies/count/:type', () => {
             await repository.save(movie);
             await repository.save(movie2);
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while connecting to database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -158,8 +172,7 @@ describe('GET /movies/count/:type', () => {
             await connection.dropDatabase();
             await connection.close();
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while disconnecting from database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -170,7 +183,7 @@ describe('GET /movies/count/:type', () => {
         expect(response.status).toBe(200);
     });
 
-    it('should match count of movies from database', async () => {
+    it('should match number of movies from database', async () => {
         const response = await request
             .get('/movies/count/all');
 
@@ -183,7 +196,7 @@ describe('GET /movies/count/:type', () => {
         expect(count).toEqual(moviesCount);
     });
 
-    it('should match count of movies from database with specific type', async () => {
+    it('should match number of movies from database with specific type', async () => {
         const response = await request
             .get('/movies/count/movie');
 
@@ -213,7 +226,7 @@ describe('GET /movies/count/:type', () => {
     });
 });
 
-describe('GET /movies/:id', () => {
+describe('Basics - get specific movie', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
 
@@ -224,8 +237,7 @@ describe('GET /movies/:id', () => {
             await repository.save(movie);
             await repository.save(movie2);
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while connecting to database');
+            throw new Error(error.message);
         }
     }, 20000);
 
@@ -234,30 +246,30 @@ describe('GET /movies/:id', () => {
             await connection.dropDatabase();
             await connection.close();
         } catch (error) {
-            console.log(error.message);
-            throw new Error('Error while disconnecting from database');
+            throw new Error(error.message);
         }
     }, 20000);
 
     it('should respond with status code 200', async () => {
-        const id = 1;
+        const id = movie.id;
         const response: Response = await request
             .get(`/movies/${id}`);
 
         expect(response.status).toBe(200);
     });
 
-    it('should match movie in database with same id', async () => {
-        const id = 1;
+    it('should match movie in response with movie in database', async () => {
+        const id = movie.id;
         const response: Response = await request
             .get(`/movies/${id}`);
 
-        const movie = await repository
+        const movieDb = await repository
             .createQueryBuilder('movie')
             .where('movie.id = :id', { id })
             .getOne();
 
-        expect(response.body.title).toEqual(movie.title);
+        expect(response.body.id).toEqual(movieDb.id);
+        expect(response.body.title).toEqual(movieDb.title);
     });
 
     it('should respond with status code 400 for movie that doesn\'t exist', async () => {
