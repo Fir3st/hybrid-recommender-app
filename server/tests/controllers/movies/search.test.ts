@@ -368,3 +368,170 @@ describe('Secured search - search by query', () => {
         expect(movies[0].rating > movies[1].rating).toBeTruthy();
     });
 });
+
+describe('Secured search - search by genre', () => {
+    let connection: Connection = null;
+    let repository: Repository<Movie> = null;
+    let token: string = '';
+
+    beforeAll(async () => {
+        try {
+            connection = await createConnection();
+            repository = getRepository(Movie);
+            const usersRepository = getRepository(User);
+            await usersRepository.save(user);
+            await usersRepository.save(user2);
+            await repository.save(movie);
+            await repository.save(movie2);
+            const response: Response = await request
+                .post('/auth/login')
+                .type('form')
+                .send({ email: user.email, password: 'secret' });
+            if (response.status === 200) {
+                token = response.body.token;
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+        moxios.install();
+    }, 20000);
+
+    afterAll(async () => {
+        try {
+            await connection.dropDatabase();
+            await connection.close();
+        } catch (error) {
+            throw new Error(error.message);
+        }
+        moxios.uninstall();
+    }, 20000);
+
+    it('should respond with status code 200', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        moxios.stubRequest(`${recommenderUrl}/search/1?take=10&skip=0&includeRated=false&genres=1`, {
+            status: 200,
+            response: {
+                userId: 1,
+                ratedItemsCount: 2,
+                ratingsCount: 1,
+                recommendations: [
+                    { id: 1, rating: 0.5, similarity: null, average_rating: 1, ratings_count: 1, penalized: 0 }
+                ]
+            }
+        });
+        const response: Response = await request
+            .get('/movies/secured-search?genres=1')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+    });
+
+    it('should respond with status code 401 without Authorization header', async () => {
+        const response: Response = await request
+            .get('/movies/secured-search?genres=1');
+
+        expect(response.status).toBe(401);
+    });
+
+    it('number of movies in response should match number of movies in database', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        moxios.stubRequest(`${recommenderUrl}/search/1?take=10&skip=0&includeRated=false&genres=1`, {
+            status: 200,
+            response: {
+                userId: 1,
+                ratedItemsCount: 2,
+                ratingsCount: 1,
+                recommendations: [
+                    { id: 1, rating: 0.5, similarity: null, average_rating: 1, ratings_count: 1, penalized: 0 }
+                ]
+            }
+        });
+        const genres = [1];
+        const response: Response = await request
+            .get(`/movies/secured-search?genres=${genres.join(',')}`)
+            .set('Authorization', `Bearer ${token}`);
+        const query = repository
+            .createQueryBuilder('movies')
+            .leftJoin('movies.genres', 'genres')
+            .where('genres.id IN (:genres)', { genres });
+        const count = await query.getCount();
+        const { movies } = response.body;
+
+        expect(movies).toBeDefined();
+        expect(Array.isArray(movies)).toBeTruthy();
+        expect(movies.length).toEqual(count);
+    });
+
+    it('should respond with status code 400 for genre that doesn\'t exist', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        moxios.stubRequest(`${recommenderUrl}/search/1?take=10&skip=0&includeRated=false&genres=5`, {
+            status: 200,
+            response: {
+                userId: 1,
+                ratedItemsCount: 2,
+                ratingsCount: 0,
+                recommendations: [
+                ]
+            }
+        });
+        const response: Response = await request
+            .get('/movies/secured-search?genres=5')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(400);
+    });
+
+    it('response should have stats', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        moxios.stubRequest(`${recommenderUrl}/search/1?take=10&skip=0&includeRated=false&genres=1`, {
+            status: 200,
+            response: {
+                userId: 1,
+                ratedItemsCount: 2,
+                ratingsCount: 1,
+                recommendations: [
+                    { id: 1, rating: 0.5, similarity: null, average_rating: 1, ratings_count: 1, penalized: 0 }
+                ]
+            }
+        });
+        const response: Response = await request
+            .get('/movies/secured-search?genres=1')
+            .set('Authorization', `Bearer ${token}`);
+        const { movies } = response.body;
+        const movie = movies[0];
+
+        expect(movie).toHaveProperty('ratedSimilarity');
+        expect(movie).toHaveProperty('rating');
+        expect(movie).toHaveProperty('avgRating');
+        expect(movie).toHaveProperty('ratingsCount');
+        expect(movie).toHaveProperty('penalized');
+    });
+
+    it('stats from recommender should correspond with stats in response', async () => {
+        const recommenderUrl = config.get('recommenderUrl');
+        const recommendations = [
+            { id: 1, rating: 0.5, similarity: null, average_rating: 1, ratings_count: 1, penalized: 0 }
+        ];
+        moxios.stubRequest(`${recommenderUrl}/search/1?take=10&skip=0&includeRated=false&genres=1`, {
+            status: 200,
+            response: {
+                recommendations,
+                userId: 1,
+                ratedItemsCount: 2,
+                ratingsCount: 1
+            }
+        });
+        const response: Response = await request
+            .get('/movies/secured-search?genres=1')
+            .set('Authorization', `Bearer ${token}`);
+        const { movies } = response.body;
+        const movie = movies[0];
+        const statsForMovie = recommendations.find(item => item.id === movie.id);
+
+        expect(movie.rating).toEqual(statsForMovie.rating);
+        expect(movie.ratedSimilarity).toEqual(statsForMovie.similarity);
+        expect(movie.avgRating).toEqual(statsForMovie.average_rating);
+        expect(movie.ratingsCount).toEqual(statsForMovie.ratings_count);
+        expect(movie.penalized).toEqual(statsForMovie.penalized);
+    });
+});
