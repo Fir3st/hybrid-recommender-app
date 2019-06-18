@@ -54,7 +54,7 @@ userRating2.createdAt = new Date().toString();
 movie.usersRatings.push(userRating);
 movie.usersRatings.push(userRating2);
 
-describe('Ratings', () => {
+describe('Movies - ratings', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
     let token: string = '';
@@ -77,6 +77,7 @@ describe('Ratings', () => {
         } catch (error) {
             throw new Error(error.message);
         }
+        moxios.install();
     }, 20000);
 
     afterAll(async () => {
@@ -86,6 +87,7 @@ describe('Ratings', () => {
         } catch (error) {
             throw new Error(error.message);
         }
+        moxios.uninstall();
     }, 20000);
 
     it('should respond with status code 200', async () => {
@@ -116,8 +118,7 @@ describe('Ratings', () => {
 
     it('should respond with status code 401 without Authorization header', async () => {
         const response: Response = await request
-            .get('/movies/1/ratings')
-            .set('Authorization', `Bearer ${token}`);
+            .get('/movies/1/ratings');
 
         expect(response.status).toBe(401);
     });
@@ -161,8 +162,15 @@ describe('Ratings', () => {
     });
 
     it('should respond with status code 400 for getting user\'s rating without rating it', async () => {
+        const loginResponse: Response = await request
+            .post('/auth/login')
+            .type('form')
+            .send({ email: user.email, password: 'secret' });
+        if (loginResponse.status === 200) {
+            token = loginResponse.body.token;
+        }
         const ratingsRepository = getRepository(UserRating);
-        await ratingsRepository.delete({ userId: 1 });
+        await ratingsRepository.delete({ userId: 1, movieId: 1 });
 
         const response: Response = await request
             .get('/movies/1/rating')
