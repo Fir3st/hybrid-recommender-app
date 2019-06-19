@@ -1,4 +1,5 @@
 import * as config from 'config';
+import * as _ from 'lodash';
 import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../utils/winston';
@@ -49,14 +50,8 @@ router.get('/ratings-distribution', [authenticate, authorize], async (req: Reque
             ratings = ratings.map(item => parseInt(item.count, 10));
             const max = Math.max(...ratings);
             const min = Math.min(...ratings);
-            const bucketsNum = 100;
-            const labels = [];
-
-            for (let i = min; i <= max; i += (max - min) / bucketsNum) {
-                labels.push(Math.floor(i));
-            }
-            labels[labels.length - 1] = labels[labels.length - 1] < max ? max : labels[labels.length - 1];
-            labels.shift();
+            const labels = _.range(min, max, 5);
+            labels.push(max);
             const buckets = Array(labels.length).fill(0);
 
             for (const rating of ratings) {
