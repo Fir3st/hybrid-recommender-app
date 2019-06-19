@@ -59,7 +59,7 @@ describe('Movies - ratings', () => {
     let repository: Repository<Movie> = null;
     let token: string = '';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         try {
             connection = await createConnection();
             repository = getRepository(Movie);
@@ -80,7 +80,7 @@ describe('Movies - ratings', () => {
         moxios.install();
     }, 20000);
 
-    afterAll(async () => {
+    afterEach(async () => {
         try {
             await connection.dropDatabase();
             await connection.close();
@@ -162,13 +162,6 @@ describe('Movies - ratings', () => {
     });
 
     it('should respond with status code 400 for getting user\'s rating without rating it', async () => {
-        const loginResponse: Response = await request
-            .post('/auth/login')
-            .type('form')
-            .send({ email: user.email, password: 'secret' });
-        if (loginResponse.status === 200) {
-            token = loginResponse.body.token;
-        }
         const ratingsRepository = getRepository(UserRating);
         await ratingsRepository.delete({ userId: 1, movieId: 1 });
 
