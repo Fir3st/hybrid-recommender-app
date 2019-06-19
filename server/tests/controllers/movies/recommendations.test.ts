@@ -1,75 +1,62 @@
 import * as moxios from 'moxios';
 import * as config from 'config';
-import * as bcrypt from 'bcrypt';
 import { agent, Response, SuperTest, Test } from 'supertest';
 import { Connection, createConnection, getRepository, Repository } from 'typeorm';
 import app from '../../../src/app';
 import { Movie } from '../../../src/entities/Movie';
-import { Genre } from '../../../src/entities/Genre';
 import { User } from '../../../src/entities/User';
 import { UserRating } from '../../../src/entities/UserRating';
+import { genre, user, user2, movie, userRating, userRating2 } from '../../helpers';
 
 const request: SuperTest<Test> = agent(app);
 
-const genre = new Genre();
-genre.name = 'Animation';
-
-const user = new User();
-user.name = 'Test';
-user.surname = 'Test';
-user.email = 'test@test.co';
-user.password = bcrypt.hashSync('secret', 10);
-user.admin = true;
-
-const user2 = new User();
-user2.name = 'Test2';
-user2.surname = 'Test2';
-user2.email = 'test2@test.co';
-user2.password = bcrypt.hashSync('secret', 10);
-
-const movie = new Movie();
-movie.imdbId = 'tt0001';
-movie.title = 'Test movie';
-movie.year = new Date().getFullYear();
-movie.rating = 'PG-13';
-movie.releaseDate = new Date().toString();
-movie.genres = [];
 movie.genres.push(genre);
-movie.director = 'John Smith';
-movie.plot = 'Some interesting plot';
-movie.poster = 'some poster link';
-movie.type = 'movie';
-movie.production = 'Some production name';
-movie.usersRatings = [];
-
-const userRating = new UserRating();
-userRating.user = user;
-userRating.rating = 1;
-userRating.createdAt = new Date().toString();
-const userRating2 = new UserRating();
-userRating2.user = user2;
-userRating2.rating = 0;
-userRating2.createdAt = new Date().toString();
-
 movie.usersRatings.push(userRating);
 movie.usersRatings.push(userRating2);
+const recommenderUrl = config.get('recommenderUrl');
+const recommendations = [
+    { id: 1, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0 }
+];
+const responseStub = {
+    status: 200,
+    response: {
+        recommendations
+    }
+};
 
 describe('Movies - recommendations', () => {
     let connection: Connection = null;
     let repository: Repository<Movie> = null;
+    let usersRepository: Repository<User> = null;
+    let ratingsRepository: Repository<UserRating> = null;
     let token: string = '';
+
+    beforeAll(async() => {
+        try {
+            connection = await createConnection();
+            usersRepository = getRepository(User);
+            repository = getRepository(Movie);
+            ratingsRepository = getRepository(UserRating);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }, 20000);
+
+    afterAll(async() => {
+        try {
+            await connection.dropDatabase();
+            await connection.close();
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }, 20000);
 
     beforeEach(async () => {
         try {
-            connection = await createConnection();
-            repository = getRepository(Movie);
-            const usersRepository = getRepository(User);
             await usersRepository.save(user);
             await usersRepository.save(user2);
             await repository.save(movie);
-            const response: Response = await request
-                .post('/auth/login')
-                .type('form')
+            const response: Response = await request.post('/auth/login').type('form')
                 .send({ email: user.email, password: 'secret' });
             if (response.status === 200) {
                 token = response.body.token;
@@ -82,8 +69,9 @@ describe('Movies - recommendations', () => {
 
     afterEach(async () => {
         try {
-            await connection.dropDatabase();
-            await connection.close();
+            await ratingsRepository.delete({});
+            await repository.delete({});
+            await usersRepository.delete({});
         } catch (error) {
             throw new Error(error.message);
         }
@@ -91,18 +79,7 @@ describe('Movies - recommendations', () => {
     }, 20000);
 
     it('should respond with status code 200 for getting recommendations', async () => {
-        const recommenderUrl = config.get('recommenderUrl');
-        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, {
-            status: 200,
-            response: {
-                userId: 1,
-                ratedItemsCount: 1,
-                ratingsCount: 1,
-                recommendations: [
-                    { id: 1, similarity: 0.1, average_rating: 1, ratings_count: 1, penalized: 0 }
-                ]
-            }
-        });
+        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, responseStub);
 
         const response: Response = await request
             .get('/movies/1/recommendations')
@@ -112,18 +89,7 @@ describe('Movies - recommendations', () => {
     });
 
     it('response should have stats', async () => {
-        const recommenderUrl = config.get('recommenderUrl');
-        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, {
-            status: 200,
-            response: {
-                userId: 1,
-                ratedItemsCount: 1,
-                ratingsCount: 1,
-                recommendations: [
-                    { id: 1, similarity: 0.2, average_rating: 1, ratings_count: 1, penalized: 0 }
-                ]
-            }
-        });
+        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, responseStub);
 
         const response: Response = await request
             .get('/movies/1/recommendations');
@@ -135,19 +101,7 @@ describe('Movies - recommendations', () => {
     });
 
     it('stats from recommender should correspond with stats in response', async () => {
-        const recommenderUrl = config.get('recommenderUrl');
-        const recommendations = [
-            { id: 1, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0 }
-        ];
-        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, {
-            status: 200,
-            response: {
-                recommendations,
-                userId: 1,
-                ratedItemsCount: 1,
-                ratingsCount: 1
-            }
-        });
+        moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, responseStub);
         const response: Response = await request
             .get('/movies/1/recommendations');
         const movies = response.body;
@@ -161,7 +115,6 @@ describe('Movies - recommendations', () => {
     });
 
     it('should respond with status code 400 for no recommendations', async () => {
-        const recommenderUrl = config.get('recommenderUrl');
         moxios.stubRequest(`${recommenderUrl}/movies/1/recommendations?take=10&skip=0`, {
             status: 200,
             response: {
