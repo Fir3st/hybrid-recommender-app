@@ -5,7 +5,6 @@ import app from '../../../src/app';
 import { user, user2, movie, userRating, genre } from '../../helpers';
 import { Movie } from '../../../src/entities/Movie';
 import { UserRating } from '../../../src/entities/UserRating';
-import { Genre } from '../../../src/entities/Genre';
 
 const request: SuperTest<Test> = agent(app);
 movie.usersRatings.push(userRating);
@@ -16,7 +15,6 @@ describe('Basics for /users', () => {
     let repository: Repository<User> = null;
     let moviesRepository: Repository<Movie> = null;
     let ratingsRepository: Repository<UserRating> = null;
-    let genresRepository: Repository<Genre> = null;
     let token: string = '';
 
     beforeAll(async() => {
@@ -25,7 +23,6 @@ describe('Basics for /users', () => {
             repository = getRepository(User);
             moviesRepository = getRepository(Movie);
             ratingsRepository = getRepository(UserRating);
-            genresRepository = getRepository(Genre);
         } catch (error) {
             throw new Error(error.message);
         }
@@ -60,7 +57,6 @@ describe('Basics for /users', () => {
             await ratingsRepository.delete({});
             await repository.delete({});
             await moviesRepository.delete({});
-            await genresRepository.delete({});
         } catch (error) {
             throw new Error(error.message);
         }
