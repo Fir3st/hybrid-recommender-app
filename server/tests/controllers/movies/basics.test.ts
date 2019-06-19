@@ -2,39 +2,12 @@ import { agent, Response, SuperTest, Test } from 'supertest';
 import { Connection, createConnection, getRepository, Repository } from 'typeorm';
 import app from '../../../src/app';
 import { Movie } from '../../../src/entities/Movie';
-import { Genre } from '../../../src/entities/Genre';
+import { genre, movie, movie2 } from '../../helpers';
 
 const request: SuperTest<Test> = agent(app);
 
-const movie = new Movie();
-movie.imdbId = 'tt0001';
-movie.title = 'Test movie';
-movie.year = new Date().getFullYear();
-movie.rating = 'PG-13';
-movie.releaseDate = new Date().toString();
-movie.genres = [];
-const genre = new Genre();
-genre.name = 'Animation';
 movie.genres.push(genre);
-movie.director = 'John Smith';
-movie.plot = 'Some interesting plot';
-movie.poster = 'some poster link';
-movie.type = 'movie';
-movie.production = 'Some production name';
-
-const movie2 = new Movie();
-movie2.imdbId = 'tt0001';
-movie2.title = 'Test movie';
-movie2.year = new Date().getFullYear();
-movie2.rating = 'PG-13';
-movie2.releaseDate = new Date().toString();
-movie2.genres = [];
 movie2.genres.push(genre);
-movie2.director = 'John Smith';
-movie2.plot = 'Some interesting plot';
-movie2.poster = 'some poster link';
-movie2.type = 'series';
-movie2.production = 'Some production name';
 
 describe('Basics for movies', () => {
     let connection: Connection = null;
