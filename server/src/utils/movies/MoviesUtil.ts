@@ -36,10 +36,10 @@ export default class MoviesUtil {
             if (ratings && ratings.length > 0) {
                 const moviesWithRatings = movies.map((movie) => {
                     const rating = ratings.find(item => item.id === movie.id);
-                    return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity };
+                    return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity, esScore: rating.es_score };
                 });
 
-                return _.orderBy(moviesWithRatings, ['rating'], ['desc']);
+                return _.orderBy(moviesWithRatings, ['rating', 'esScore'], ['desc']);
             }
 
             return movies;
@@ -105,11 +105,13 @@ export default class MoviesUtil {
         const avgRating = item['average_rating'] || null;
         const ratingsCount = item['ratings_count'] || 0;
         const penalized = item['penalized'] || 0;
+        const esScore = item['es_score'] || 0;
 
         return {
             avgRating,
             ratingsCount,
-            penalized
+            penalized,
+            esScore
         };
     }
 }

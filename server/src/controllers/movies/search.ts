@@ -98,7 +98,7 @@ export const securedSearch = async (req: Request, res: any) => {
 
                 if (movies && movies.length > 0) {
                     const moviesWithStats = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                    movies = _.orderBy(moviesWithStats, ['rating'], ['desc']);
+                    movies = _.orderBy(moviesWithStats, ['rating', 'esScore'], ['desc']);
                 } else {
                     movies = recommendations;
                 }
