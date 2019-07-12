@@ -69,6 +69,7 @@
                 <p><strong>Number of ratings: </strong> {{ movie.ratingsCount }}</p>
                 <p><strong>Number of penalizations: </strong> {{ movie.penalized }}</p>
                 <p><strong>Sim. to already rated items: </strong> {{ movie.ratedSimilarity || '-' }}</p>
+                <p><strong>Expert system score: </strong> {{ movie.esScore || 0 }}</p>
             </div>
         </b-popover>
     </b-col>

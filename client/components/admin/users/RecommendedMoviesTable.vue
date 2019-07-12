@@ -16,7 +16,7 @@
             label="Predicted rating"
         >
             <template slot-scope="scope">
-                {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : '' }}
+                {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : 0 }}
             </template>
         </el-table-column>
         <el-table-column
@@ -24,7 +24,7 @@
             label="Average rating"
         >
             <template slot-scope="scope">
-                {{ scope.row.avgRating ? Number.parseFloat(scope.row.avgRating).toFixed(2) : '' }}
+                {{ scope.row.avgRating ? Number.parseFloat(scope.row.avgRating).toFixed(2) : 0 }}
             </template>
         </el-table-column>
         <el-table-column
@@ -32,7 +32,7 @@
             label="Number of ratings"
         >
             <template slot-scope="scope">
-                {{ scope.row.ratingsCount ? Number.parseInt(scope.row.ratingsCount) : '' }}
+                {{ scope.row.ratingsCount ? Number.parseInt(scope.row.ratingsCount) : 0 }}
             </template>
         </el-table-column>
         <el-table-column
@@ -40,7 +40,7 @@
             label="Number of penalizations"
         >
             <template slot-scope="scope">
-                {{ scope.row.penalized ? Number.parseInt(scope.row.penalized) : '' }}
+                {{ scope.row.penalized ? Number.parseInt(scope.row.penalized) : 0 }}
             </template>
         </el-table-column>
         <el-table-column
@@ -48,7 +48,15 @@
             label="Similarity to already rated items"
         >
             <template slot-scope="scope">
-                {{ scope.row.ratedSimilarity ? Number.parseFloat(scope.row.ratedSimilarity) : '' }}
+                {{ scope.row.ratedSimilarity ? Number.parseFloat(scope.row.ratedSimilarity) : 0 }}
+            </template>
+        </el-table-column>
+        <el-table-column
+            v-if="additionalInfo"
+            label="ES Score"
+        >
+            <template slot-scope="scope">
+                {{ scope.row.esScore ? Number.parseFloat(scope.row.esScore) : 0 }}
             </template>
         </el-table-column>
         <el-table-column

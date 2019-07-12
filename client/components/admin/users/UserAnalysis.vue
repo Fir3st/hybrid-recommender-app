@@ -179,7 +179,8 @@
                                 average_rating: item.avgRating,
                                 count: parseInt(item.ratingsCount, 10),
                                 penalized: parseInt(item.penalized, 10),
-                                rated_similarity: item.ratedSimilarity || '-'
+                                rated_similarity: item.ratedSimilarity || 0,
+                                es_score: item.esScore || 0
                             };
                         });
 
@@ -202,7 +203,8 @@
                                 average_rating: item.avgRating,
                                 count: parseInt(item.ratingsCount, 10),
                                 penalized: parseInt(item.penalized, 10),
-                                rated_similarity: item.ratedSimilarity || '-'
+                                rated_similarity: item.ratedSimilarity || 0,
+                                es_score: item.esScore || 0
                             };
                         });
 
