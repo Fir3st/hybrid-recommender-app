@@ -17,11 +17,11 @@ movie.usersRatings.push(userRating2);
 
 const recommenderUrl = config.get('recommenderUrl');
 const ratings = [
-    { id: 1, rating: 0.5, similarity: 0.05 },
-    { id: 2, rating: 1.5, similarity: 0.15 }
+    { id: 1, rating: 0.5, similarity: 0.05, es_score: 1 },
+    { id: 2, rating: 1.5, similarity: 0.15, es_score: 0.1 }
 ];
 const recommendations = [
-    { id: 1, rating: 0.5, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0 }
+    { id: 1, rating: 0.5, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0, es_score: 0.5 }
 ];
 const responseStub = {
     status: 200,
@@ -322,6 +322,7 @@ describe('Secured search - search by query', () => {
         expect(movie).toHaveProperty('avgRating');
         expect(movie).toHaveProperty('ratingsCount');
         expect(movie).toHaveProperty('penalized');
+        expect(movie).toHaveProperty('esScore');
     });
 
     it('stats from recommender should correspond with stats in response', async () => {
@@ -466,6 +467,7 @@ describe('Secured search - search by genre', () => {
         expect(movie).toHaveProperty('avgRating');
         expect(movie).toHaveProperty('ratingsCount');
         expect(movie).toHaveProperty('penalized');
+        expect(movie).toHaveProperty('esScore');
     });
 
     it('stats from recommender should correspond with stats in response', async () => {
@@ -482,5 +484,6 @@ describe('Secured search - search by genre', () => {
         expect(movie.avgRating).toEqual(statsForMovie.average_rating);
         expect(movie.ratingsCount).toEqual(statsForMovie.ratings_count);
         expect(movie.penalized).toEqual(statsForMovie.penalized);
+        expect(movie.esScore).toEqual(statsForMovie.es_score);
     });
 });

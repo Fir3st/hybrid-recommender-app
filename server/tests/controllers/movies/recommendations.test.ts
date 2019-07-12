@@ -15,7 +15,7 @@ movie.usersRatings.push(userRating);
 movie.usersRatings.push(userRating2);
 const recommenderUrl = config.get('recommenderUrl');
 const recommendations = [
-    { id: 1, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0 }
+    { id: 1, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0, es_score: 0.1 }
 ];
 const responseStub = {
     status: 200,
@@ -98,6 +98,7 @@ describe('Movies - recommendations', () => {
         expect(movie).toHaveProperty('avgRating');
         expect(movie).toHaveProperty('ratingsCount');
         expect(movie).toHaveProperty('penalized');
+        expect(movie).toHaveProperty('esScore');
     });
 
     it('stats from recommender should correspond with stats in response', async () => {
@@ -112,6 +113,7 @@ describe('Movies - recommendations', () => {
         expect(movie.avgRating).toEqual(recForMovie.average_rating);
         expect(movie.ratingsCount).toEqual(recForMovie.ratings_count);
         expect(movie.penalized).toEqual(recForMovie.penalized);
+        expect(movie.esScore).toEqual(recForMovie.es_score);
     });
 
     it('should respond with status code 400 for no recommendations', async () => {

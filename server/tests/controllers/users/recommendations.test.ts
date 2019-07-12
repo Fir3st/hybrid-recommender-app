@@ -17,7 +17,7 @@ movie.usersRatings.push(userRating2);
 
 const recommenderUrl = config.get('recommenderUrl');
 const recommendations = [
-    { id: 1, rating: 0.5, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0 }
+    { id: 1, rating: 0.5, similarity: 0.3, average_rating: 1, ratings_count: 1, penalized: 0, es_score: 0.1 }
 ];
 const responseStub = {
     status: 200,
@@ -130,6 +130,7 @@ describe('Users - recommendations', () => {
         expect(movie).toHaveProperty('avgRating');
         expect(movie).toHaveProperty('ratingsCount');
         expect(movie).toHaveProperty('penalized');
+        expect(movie).toHaveProperty('esScore');
     });
 
     it('response should have stats corresponding to response from recommender', async () => {
@@ -147,5 +148,6 @@ describe('Users - recommendations', () => {
         expect(movie.avgRating).toEqual(statsForMovie.average_rating);
         expect(movie.ratingsCount).toEqual(statsForMovie.ratings_count);
         expect(movie.penalized).toEqual(statsForMovie.penalized);
+        expect(movie.esScore).toEqual(statsForMovie.es_score);
     });
 });
