@@ -98,7 +98,7 @@ export const securedSearch = async (req: Request, res: any) => {
 
                 if (movies && movies.length > 0) {
                     const moviesWithStats = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                    movies = _.orderBy(moviesWithStats, ['rating', 'esScore'], ['desc']);
+                    movies = _.orderBy(moviesWithStats, ['rating', 'esScore'], ['desc', 'desc']);
                 } else {
                     movies = recommendations;
                 }
@@ -116,8 +116,6 @@ export const securedSearch = async (req: Request, res: any) => {
             if (movies && movies.length > 0) {
                 movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, user));
                 movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
-                movies = await MoviesUtil.getStats(movies);
-                movies = _.sortBy(movies, ['isPenalized']);
             }
             count = await query.getCount();
         }

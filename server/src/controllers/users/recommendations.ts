@@ -33,7 +33,7 @@ export const getRecommendations = async (req: Request, res: any) => {
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                return res.send(_.orderBy(moviesWithInfo, ['rating', 'esScore'], ['desc']));
+                return res.send(_.orderBy(moviesWithInfo, ['rating', 'esScore'], ['desc', 'desc']));
             }
 
             return res.send(recommendations.data);

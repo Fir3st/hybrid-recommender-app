@@ -36,10 +36,11 @@ export default class MoviesUtil {
             if (ratings && ratings.length > 0) {
                 const moviesWithRatings = movies.map((movie) => {
                     const rating = ratings.find(item => item.id === movie.id);
-                    return { ...movie, rating: rating.rating, ratedSimilarity: rating.similarity, esScore: rating.es_score };
+                    const stats = MoviesUtil.getStatsFromRec(rating);
+                    return { ...movie, ...stats, rating: rating.rating, ratedSimilarity: rating.similarity, esScore: rating.es_score };
                 });
 
-                return _.orderBy(moviesWithRatings, ['rating', 'esScore'], ['desc']);
+                return _.orderBy(moviesWithRatings, ['isPenalized', 'rating', 'esScore'], ['asc', 'desc', 'desc']);
             }
 
             return movies;
