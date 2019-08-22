@@ -1,6 +1,6 @@
-# Hybrid recommender app
+# Predictory - app
 
-> Simple real world platform for watching movies with built-in hybrid recommender
+> Simple real world platform for watching movies with built-in recommender
 
 ## Installation
 
@@ -71,7 +71,7 @@ This command will take some time. Also, you need to be registered at least on OM
 
 ### Training recommender API
 
-If you want to use recommender abilities, you need to download and install [recommender API](https://github.com/Fir3st/hybrid-recommender-api) first.
+If you want to use recommender abilities, you need to download and install [API](https://github.com/predictory/predictory-api) first.
 With recommender API downloaded and running, run command
 
 ``` bash
