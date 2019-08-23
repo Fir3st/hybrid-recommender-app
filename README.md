@@ -21,11 +21,13 @@ More information about config package is [here](http://lorenwest.github.io/node-
 
 This project uses MySQL database and MongoDB (on Recommender API).
 If you want to use PostgresSQL, change `mysql2` dependency in `package.json` to `pg`.
-Also change `dialect` in database config.
+Also change `dialect` and `port` in database config.
+
+Example of database config:
 
 ``` bash
 "dbConfig": {
-    "dialect": "postgres",
+    "dialect": "mysql",
     "host": "localhost",
     "port": 3306,
     "name": "recommender",
