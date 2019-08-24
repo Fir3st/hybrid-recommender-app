@@ -79,7 +79,7 @@ export const getAvgRating = async (req: Request, res: any) => {
 };
 
 export const rateMovie = async (req: Request, res: any) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
     const userId = parseInt(req.user.id, 10);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(UserRating);
