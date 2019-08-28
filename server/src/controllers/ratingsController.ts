@@ -24,7 +24,7 @@ router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
     }
 });
 
-router.get('/count', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/count', async (req: Request, res: any) => {
     const repository = getRepository(UserRating);
 
     try {

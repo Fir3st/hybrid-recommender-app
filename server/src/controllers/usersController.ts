@@ -9,7 +9,7 @@ router.get('/', [authenticate, authorize], getUsers);
 
 router.post('/', createUser);
 
-router.get('/count', [authenticate, authorize], countUsers);
+router.get('/count', countUsers);
 
 router.get('/me', authenticate, getUser);
 
