@@ -9,7 +9,11 @@
         <b-container>
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
             <b-navbar-brand to="/">
-                <span class="name">Recommender</span>
+                <img
+                    src="../../assets/images/logo-blue.png"
+                    alt="Logo"
+                    width="120"
+                />
             </b-navbar-brand>
             <b-collapse
                 id="nav_collapse"

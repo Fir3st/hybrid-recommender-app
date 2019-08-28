@@ -10,7 +10,7 @@ module.exports = {
      ** Headers of the page
      */
     head: {
-        titleTemplate: '%s | Hybrid recommender app',
+        titleTemplate: '%s | Predictory',
         meta: [
             {
             charset: 'utf-8'
