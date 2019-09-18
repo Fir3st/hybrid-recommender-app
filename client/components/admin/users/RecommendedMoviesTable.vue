@@ -16,7 +16,7 @@
             label="Predicted rating"
         >
             <template slot-scope="scope">
-                {{ scope.row.rating ? Number.parseFloat(scope.row.rating).toFixed(2) : 0 }}
+                {{ round(scope.row.rating, 2) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -24,7 +24,7 @@
             label="Average rating"
         >
             <template slot-scope="scope">
-                {{ scope.row.avgRating ? Number.parseFloat(scope.row.avgRating).toFixed(2) : 0 }}
+                {{ round(scope.row.avgRating, 2) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -32,7 +32,7 @@
             label="Number of ratings"
         >
             <template slot-scope="scope">
-                {{ scope.row.ratingsCount ? Number.parseInt(scope.row.ratingsCount) : 0 }}
+                {{ round(scope.row.ratingsCount, 0) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -40,7 +40,7 @@
             label="Number of penalizations"
         >
             <template slot-scope="scope">
-                {{ scope.row.penalized ? Number.parseInt(scope.row.penalized) : 0 }}
+                {{ round(scope.row.penalized, 0) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -48,7 +48,7 @@
             label="Similarity to already rated items"
         >
             <template slot-scope="scope">
-                {{ scope.row.ratedSimilarity ? Number.parseFloat(scope.row.ratedSimilarity) : 0 }}
+                {{ round(scope.row.ratedSimilarity) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -56,7 +56,7 @@
             label="ES Score"
         >
             <template slot-scope="scope">
-                {{ scope.row.esScore ? Number.parseFloat(scope.row.esScore) : 0 }}
+                {{ round(scope.row.esScore) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -85,6 +85,11 @@
                 type: Boolean,
                 required: false,
                 default: false
+            }
+        },
+        methods: {
+            round(num, to = 4) {
+                return num ? Number.parseFloat(num).toFixed(to) : 0;
             }
         }
     };
