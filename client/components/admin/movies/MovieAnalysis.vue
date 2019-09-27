@@ -29,6 +29,34 @@
                 </b-col>
             </b-row>
             <RecommendedMoviesTable :recommendations="recommendations" />
+            <b-row>
+                <b-col>
+                    <h2>Recommendations for specific algorithm</h2>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-select
+                        v-model="recType"
+                        :options="recTypes"
+                    ></b-form-select>
+                </b-col>
+            </b-row>
+            <b-row v-if="recType !== null">
+                <b-col>
+                    <b-button
+                        class="btn-rec"
+                        variant="info"
+                        @click="getCBRecommendations"
+                    >
+                        Show recommendations
+                    </b-button>
+                </b-col>
+            </b-row>
+            <RecommendedMoviesTable
+                v-if="contentBasedRecs"
+                :recommendations="contentBasedRecs"
+            />
         </b-col>
     </b-row>
 </template>
@@ -58,7 +86,31 @@
                 required: true
             }
         },
+        data() {
+            return {
+                recType: null,
+                recTypes: [
+                    { value: null, text: 'Select recommender type (LDA or TF-IDF)' },
+                    { value: 'lda', text: 'LDA' },
+                    { value: 'tf-idf', text: 'TF-IDF' }
+                ],
+                contentBasedRecs: null
+            };
+        },
         methods: {
+            async getCBRecommendations() {
+                this.contentBasedRecs =  null;
+                try {
+                    const url = `/movies/${this.movie.id}/recommendations?type=${this.recType}`;
+                    const recommendations = await this.$axios.$get(url);
+
+                    if (recommendations && recommendations.length > 0) {
+                        this.contentBasedRecs = recommendations;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
+            },
             async downloadSimilaritiesCSV() {
                 try {
                     const url = `/movies/${this.movie.id}/recommendations?take=100`;
@@ -84,3 +136,10 @@
         }
     };
 </script>
+
+<style lang="sass">
+    h2
+        margin: 20px 0
+    .btn-rec
+        margin-top: 20px
+</style>
