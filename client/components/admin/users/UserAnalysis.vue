@@ -93,6 +93,42 @@
                     </b-row>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col>
+                    <h2>Recommendations for specific movie</h2>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-input
+                        v-model.number="movieId"
+                        type="number"
+                        placeholder="Enter movie's ID"
+                    ></b-form-input>
+                </b-col>
+                <b-col>
+                    <b-form-select
+                        v-model="recType"
+                        :options="recTypes"
+                    ></b-form-select>
+                </b-col>
+            </b-row>
+            <b-row v-if="movieId !== null && recType !== null">
+                <b-col>
+                    <b-button
+                        class="btn-rec"
+                        variant="info"
+                        @click="getCBRecommendations"
+                    >
+                        Show recommendations
+                    </b-button>
+                </b-col>
+            </b-row>
+            <b-row v-if="contentBasedRecs">
+                <b-col>
+                    <ContentBasedMoviesTable :recommendations="contentBasedRecs" />
+                </b-col>
+            </b-row>
         </b-col>
     </b-row>
 </template>
@@ -101,11 +137,13 @@
     import { mapGetters } from 'vuex';
     import UserPreferencesChart from '~/components/admin/users/UserPreferencesChart';
     import RecommendedMoviesTable from '~/components/admin/users/RecommendedMoviesTable';
+    import ContentBasedMoviesTable from '~/components/admin/movies/RecommendedMoviesTable';
 
     export default {
         components: {
             UserPreferencesChart,
-            RecommendedMoviesTable
+            RecommendedMoviesTable,
+            ContentBasedMoviesTable
         },
         props: {
             ratings: {
@@ -128,7 +166,15 @@
         data() {
             return {
                 genreId: null,
-                genreRecommendations: null
+                genreRecommendations: null,
+                movieId: null,
+                recType: null,
+                recTypes: [
+                    { value: null, text: 'Select recommender type (LDA or TF-IDF)' },
+                    { value: 'lda', text: 'LDA' },
+                    { value: 'tf-idf', text: 'TF-IDF' }
+                ],
+                contentBasedRecs: null
             };
         },
         computed: {
@@ -162,6 +208,19 @@
 
                     if (recommendations && recommendations.length > 0) {
                         this.genreRecommendations = recommendations;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
+            },
+            async getCBRecommendations() {
+                this.contentBasedRecs =  null;
+                try {
+                    const url = `/movies/${this.movieId}/recommendations?type=${this.recType}`;
+                    const recommendations = await this.$axios.$get(url);
+
+                    if (recommendations && recommendations.length > 0) {
+                        this.contentBasedRecs = recommendations;
                     }
                 } catch (error) {
                     console.log(error.message);

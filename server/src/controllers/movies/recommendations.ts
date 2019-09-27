@@ -13,9 +13,15 @@ export const getRecommendations = async (req: Request, res: any) => {
     const repository = getRepository(Movie);
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
+    const type = req.query.type || null;
 
     try {
-        const url = `${recommender}/movies/${id}/recommendations?take=${take}&skip=${skip}`;
+        let url = `${recommender}/movies/${id}/recommendations?take=${take}&skip=${skip}`;
+
+        if (type) {
+            url = `${url}&type=${type}`;
+        }
+
         const recsResponse = await axios.get(url);
         const { recommendations } = recsResponse.data;
 
