@@ -1,21 +1,28 @@
-import axios from 'axios';
-import * as _ from 'lodash';
 import * as config from 'config';
-import { Request } from 'express';
+import * as _ from 'lodash';
+import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
-import winston from '../../utils/winston';
-import { Movie } from '../../entities/Movie';
-import MoviesUtil from '../../utils/movies/MoviesUtil';
+import winston from '../utils/winston';
+import { authenticate, authorize } from '../middleware/auth';
+import axios from 'axios';
+import { Movie } from '../entities/Movie';
+import MoviesUtil from '../utils/movies/MoviesUtil';
+const router = Router();
 
-export const getRecommendations = async (req: Request, res: any) => {
+router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: any) => {
     const id = req.params.id;
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
+    const type = req.query.type || null;
 
     try {
-        const url = `${recommender}/movies/${id}/recommendations?take=${take}&skip=${skip}`;
+        let url = `${recommender}/movies-playground/${id}?take=${take}&skip=${skip}`;
+
+        if (type) {
+            url = `${url}&type=${type}`;
+        }
 
         const recsResponse = await axios.get(url);
         const { recommendations } = recsResponse.data;
@@ -30,7 +37,7 @@ export const getRecommendations = async (req: Request, res: any) => {
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'similarity');
-                return res.send(_.orderBy(moviesWithInfo, ['similarity', 'esScore'], ['desc', 'desc']));
+                return res.send(_.orderBy(moviesWithInfo, ['similarity'], ['desc']));
             }
 
             return res.send(recommendations);
@@ -41,4 +48,6 @@ export const getRecommendations = async (req: Request, res: any) => {
         winston.error(error.message);
         return res.boom.internal();
     }
-};
+});
+
+export default router;
