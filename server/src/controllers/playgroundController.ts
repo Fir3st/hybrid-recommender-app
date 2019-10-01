@@ -50,4 +50,66 @@ router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: a
     }
 });
 
+router.get('/users/:id', [authenticate, authorize], async (req: Request, res: any) => {
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(Movie);
+
+    const id = parseInt(req.params.id, 10);
+    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
+    const type = req.query.type || 'all';
+    const take = req.query.take || 10;
+    const skip = req.query.skip || 0;
+    const recommenderType = req.query.rec_type || null;
+    const similarityType = req.query.sim_type || null;
+    const similaritySource = req.query.sim_source || null;
+
+    let url = `${recommender}/users-playground/${id}?take=${take}&skip=${skip}`;
+
+    if (genres && genres.length > 0) {
+        url = `${url}&genres=${genres}`;
+    }
+
+    if (type !== 'all') {
+        url = `${url}&type=${type}`;
+    }
+
+    if (recommenderType) {
+        url = `${url}&rec_type=${recommenderType}`;
+    }
+
+    if (similarityType) {
+        url = `${url}&sim_type=${similarityType}`;
+    }
+
+    if (similaritySource) {
+        url = `${url}&sim_source=${similaritySource}`;
+    }
+
+    try {
+        const recsResponse = await axios.get(url);
+        const { recommendations } = recsResponse.data;
+
+        if (recommendations && recommendations.length > 0) {
+            const moviesIds = recommendations.map(item => item.id);
+            const movies = await repository
+                .createQueryBuilder('movies')
+                .leftJoinAndSelect('movies.genres', 'genres')
+                .where('movies.id IN (:ids)', { ids: moviesIds })
+                .getMany();
+
+            if (movies && movies.length > 0) {
+                const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
+                return res.send(_.orderBy(moviesWithInfo, ['rating', 'esScore'], ['desc', 'desc']));
+            }
+
+            return res.send(recommendations.data);
+        }
+
+        return res.boom.badRequest(`No recommendations for user ${id}.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 export default router;
