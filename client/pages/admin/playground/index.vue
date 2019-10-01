@@ -6,15 +6,21 @@
                 <h1>{{ pageTitle }}</h1>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <PlaygroundTab />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
+    import PlaygroundTab from '~/components/admin/playground/PlaygroundTab';
 
     export default {
         components: {
+            PlaygroundTab
         },
         extends: AdminPage,
         data() {
