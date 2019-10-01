@@ -10,11 +10,21 @@ export default class MoviesUtil {
             let movie = {
                 ...item
             };
-            if (key) {
+            if (key && key !== 'both') {
                 movie[key] = (rec && key) ? rec[key] : null;
             }
-            if (key && key === 'rating' && rec && 'similarity' in rec) {
+            if (key && key === 'rating' && rec && 'similarity' in rec && 'rating' in rec) {
                 movie['ratedSimilarity'] = rec.similarity;
+            }
+            if (rec && key && key === 'both') {
+                if ('rating' in rec && 'similarity' in rec) {
+                    movie['rating'] = rec.rating;
+                    movie['ratedSimilarity'] = rec.similarity;
+                    movie['recType'] = 1;
+                } else if (!('rating' in rec) && 'similarity' in rec) {
+                    movie['similarity'] = rec.similarity;
+                    movie['recType'] = 2;
+                }
             }
             const stats = MoviesUtil.getStatsFromRec(rec);
 
