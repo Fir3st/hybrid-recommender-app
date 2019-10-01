@@ -7,7 +7,7 @@
     >
         <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
         <b-navbar-brand to="/admin">
-            Recommender
+            Predictory
         </b-navbar-brand>
         <b-collapse
             id="nav_collapse"
@@ -31,6 +31,12 @@
                     exact
                 >
                     Analytics
+                </b-nav-item>
+                <b-nav-item
+                    to="/admin/playground"
+                    exact
+                >
+                    Playground
                 </b-nav-item>
             </b-navbar-nav>
             <menu-user
