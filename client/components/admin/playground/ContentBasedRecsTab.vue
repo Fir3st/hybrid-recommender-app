@@ -3,7 +3,7 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <h2>Content-Based recs</h2>
+                    <h2>Content-Based recommendations</h2>
                 </b-col>
             </b-row>
             <b-row>
