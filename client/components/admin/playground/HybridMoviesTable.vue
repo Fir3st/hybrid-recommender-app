@@ -66,7 +66,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="Type of rating"
+                            label="Type of rec"
                         >
                             <template slot-scope="scope">
                                 {{ scope.row.recType === 1 ? 'Collaborative' : 'Content-based' }}

@@ -136,7 +136,8 @@
                     </b-form>
                 </b-col>
             </b-row>
-            <b-row v-if="recommendations.length">
+            <Loading v-if="loading" />
+            <b-row v-if="recommendations.length && !loading">
                 <b-col>
                     <MoviesTable :recommendations="recommendations" />
                 </b-col>
@@ -148,13 +149,16 @@
 <script>
     import { mapGetters } from 'vuex';
     import MoviesTable from '~/components/admin/playground/HybridMoviesTable';
+    import Loading from '~/components/default/search/Loading';
 
     export default {
         components: {
-            MoviesTable
+            MoviesTable,
+            Loading
         },
         data() {
             return {
+                loading: false,
                 take: 10,
                 userId: 1,
                 movieId: 1,
@@ -225,6 +229,8 @@
             },
             async showRecommendations() {
                 this.recommendations = [];
+                this.loading = true;
+
                 try {
                     let url = `/playground/hybrid/${this.userId}/${this.movieId}?take=${this.take}`;
 
@@ -253,6 +259,8 @@
                     }
                 } catch (error) {
                     console.log(error.message);
+                } finally {
+                    this.loading = false;
                 }
             },
             async downloadRecommendations() {
