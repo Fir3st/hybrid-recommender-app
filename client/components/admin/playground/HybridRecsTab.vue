@@ -166,6 +166,7 @@
                 hybridTypes: [
                     { value: null, text: 'Please select a hybrid hype' },
                     { value: 'weighted', text: 'Weighted' },
+                    { value: 'switched', text: 'Switched' }
                 ],
                 recommenderType: null,
                 recommenderTypes: [
