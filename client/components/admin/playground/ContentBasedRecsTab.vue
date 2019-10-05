@@ -48,8 +48,19 @@
                                 :options="options"
                             ></b-form-select>
                         </b-form-group>
+                        <b-form-group
+                            id="orderBy"
+                            label="Order by"
+                            label-for="orderBy"
+                        >
+                            <b-form-select
+                                id="orderBy"
+                                v-model="orderBy"
+                                :options="orderByOptions"
+                            ></b-form-select>
+                        </b-form-group>
                         <b-button
-                            :disabled="(take < 1) || (movieId < 1) || (selectedAlg === null)"
+                            :disabled="isButtonDisabled"
                             type="submit"
                             variant="primary"
                         >
@@ -95,8 +106,24 @@
                     { value: 'tf-idf', text: 'TF-IDF (default)' },
                     { value: 'lda', text: 'LDA' },
                 ],
+                orderBy: null,
+                orderByOptions: [
+                    { value: null, text: 'Please select columns for sorting and their order' },
+                    { value: 'similarity', text: 'Only Similarity' },
+                    { value: 'es_score', text: 'Only Expert system score' },
+                    { value: 'similarity,es_score', text: 'Similarity, Expert system score (default)' },
+                    { value: 'es_score,similarity', text: 'Expert system score, Similarity' },
+                ],
                 recommendations: []
             };
+        },
+        computed: {
+            isButtonDisabled() {
+                return (this.take < 1) ||
+                    (this.movieId < 1) ||
+                    (this.selectedAlg === null) ||
+                    (this.orderBy === null);
+            }
         },
         methods: {
             async showRecommendations() {
@@ -110,7 +137,11 @@
                         url = `${url}&type=${this.selectedAlg}`;
                     }
 
-                    const response = await this.$axios.$get(url);
+                    if (this.orderBy) {
+                        url = `${url}&order_by=${this.orderBy}`;
+                    }
+
+                    const response = await this.$axios.$get(url, { timeout: 60 * 40 * 1000 });
                     if (response && response.length > 0) {
                         this.recommendations = response;
                     }

@@ -176,7 +176,7 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     }
 
     try {
-        const recsResponse = await axios.get(url, { timeout: 60 * 20 * 1000 });
+        const recsResponse = await axios.get(url, { timeout: 60 * 40 * 1000 });
         const { recommendations } = recsResponse.data;
 
         if (recommendations && recommendations.length > 0) {
@@ -191,7 +191,9 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'both');
                 const index = orderByColumns.indexOf('es_score');
                 if (index !== -1) orderByColumns[index] = 'esScore';
-                return res.send(_.orderBy(moviesWithInfo, ['rec_type', ...orderByColumns], ['asc', ...Array(orderByColumns.length).fill('desc')]));
+                console.log(['rec_type', ...orderByColumns]);
+                console.log(['asc', ...Array(orderByColumns.length).fill('desc')]);
+                return res.send(_.orderBy(moviesWithInfo, ['recType', ...orderByColumns], ['asc', ...Array(orderByColumns.length).fill('desc')]));
             }
 
             return res.send(recommendations.data);

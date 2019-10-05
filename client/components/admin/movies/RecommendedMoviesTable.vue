@@ -19,6 +19,10 @@
                     label="Similarity"
                 />
                 <el-table-column
+                    prop="esScore"
+                    label="Expert system score"
+                />
+                <el-table-column
                     label="Actions"
                 >
                     <template slot-scope="scope">

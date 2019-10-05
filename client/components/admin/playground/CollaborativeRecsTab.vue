@@ -74,13 +74,15 @@
                         </b-form-group>
                         <b-form-group
                             id="genre"
-                            label="Specific genre (optional)"
+                            label="Specific genres (optional)"
                             label-for="genre"
                         >
                             <b-form-select
                                 id="genre"
                                 v-model="genre"
                                 :options="genres"
+                                :select-size="4"
+                                multiple
                             ></b-form-select>
                         </b-form-group>
                         <b-form-group
@@ -92,6 +94,17 @@
                                 id="movieType"
                                 v-model="movieType"
                                 :options="movieTypes"
+                            ></b-form-select>
+                        </b-form-group>
+                        <b-form-group
+                            id="orderBy"
+                            label="Order by"
+                            label-for="orderBy"
+                        >
+                            <b-form-select
+                                id="orderBy"
+                                v-model="orderBy"
+                                :options="orderByOptions"
                             ></b-form-select>
                         </b-form-group>
                         <b-button
@@ -166,6 +179,14 @@
                     { value: 'movie', text: 'Movie' },
                     { value: 'series', text: 'Series' },
                 ],
+                orderBy: null,
+                orderByOptions: [
+                    { value: null, text: 'Please select columns for sorting and their order' },
+                    { value: 'rating', text: 'Only predicted rating' },
+                    { value: 'es_score', text: 'Only Expert system score' },
+                    { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
+                    { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
+                ],
                 recommendations: []
             };
         },
@@ -180,12 +201,16 @@
                 });
 
                 return [
-                    { value: null, text: 'Please select a genre' },
+                    { value: null, text: 'Please select a genre(s)' },
                     ...options
                 ];
             },
             isButtonDisabled() {
-                return (this.take < 1) || (this.userId < 1) || (this.recommenderType === null) || (this.similaritySource === null);
+                return (this.take < 1) ||
+                    (this.userId < 1) ||
+                    (this.recommenderType === null) ||
+                    (this.similaritySource === null) ||
+                    (this.orderBy === null);
             }
         },
         methods: {
@@ -214,10 +239,14 @@
                         url = `${url}&type=${this.movieType}`;
                     }
                     if (this.genre) {
-                        url = `${url}&genres=${this.genre}`;
+                        url = `${url}&genres=${this.genre.join(',')}`;
                     }
 
-                    const response = await this.$axios.$get(url);
+                    if (this.orderBy) {
+                        url = `${url}&order_by=${this.orderBy}`;
+                    }
+
+                    const response = await this.$axios.$get(url, { timeout: 60 * 40 * 1000 });
                     if (response && response.length > 0) {
                         this.recommendations = response;
                     }
