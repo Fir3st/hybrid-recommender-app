@@ -16,12 +16,18 @@ router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: a
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const type = req.query.type || null;
+    const orderBy = req.query.order_by || 'similarity';
+    const orderByColumns = orderBy.split(',');
 
     try {
         let url = `${recommender}/movies-playground/${id}?take=${take}&skip=${skip}`;
 
         if (type) {
             url = `${url}&type=${type}`;
+        }
+
+        if (orderBy) {
+            url = `${url}&order_by=${orderBy}`;
         }
 
         const recsResponse = await axios.get(url);
@@ -37,7 +43,9 @@ router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: a
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'similarity');
-                return res.send(_.orderBy(moviesWithInfo, ['similarity'], ['desc']));
+                const index = orderByColumns.indexOf('es_score');
+                if (index !== -1) orderByColumns[index] = 'esScore';
+                return res.send(_.orderBy(moviesWithInfo, [...orderByColumns], Array(orderByColumns.length).fill('desc')));
             }
 
             return res.send(recommendations);
@@ -62,6 +70,8 @@ router.get('/users/:id', [authenticate, authorize], async (req: Request, res: an
     const recommenderType = req.query.rec_type || null;
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
+    const orderBy = req.query.order_by || 'rating';
+    const orderByColumns = orderBy.split(',');
 
     let url = `${recommender}/users-playground/${id}?take=${take}&skip=${skip}`;
 
@@ -85,6 +95,10 @@ router.get('/users/:id', [authenticate, authorize], async (req: Request, res: an
         url = `${url}&sim_source=${similaritySource}`;
     }
 
+    if (orderBy) {
+        url = `${url}&order_by=${orderBy}`;
+    }
+
     try {
         const recsResponse = await axios.get(url);
         const { recommendations } = recsResponse.data;
@@ -99,7 +113,9 @@ router.get('/users/:id', [authenticate, authorize], async (req: Request, res: an
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                return res.send(_.orderBy(moviesWithInfo, ['rating'], ['desc']));
+                const index = orderByColumns.indexOf('es_score');
+                if (index !== -1) orderByColumns[index] = 'esScore';
+                return res.send(_.orderBy(moviesWithInfo, [...orderByColumns], Array(orderByColumns.length).fill('desc')));
             }
 
             return res.send(recommendations.data);
@@ -126,6 +142,8 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     const hybridType = req.query.hybrid_type || null;
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
+    const orderBy = req.query.order_by || 'rating';
+    const orderByColumns = orderBy.split(',');
 
     let url = `${recommender}/hybrid-playground/${userId}/${movieId}?take=${take}&skip=${skip}`;
 
@@ -153,8 +171,12 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
         url = `${url}&sim_source=${similaritySource}`;
     }
 
+    if (orderBy) {
+        url = `${url}&order_by=${orderBy}`;
+    }
+
     try {
-        const recsResponse = await axios.get(url);
+        const recsResponse = await axios.get(url, { timeout: 60 * 20 * 1000 });
         const { recommendations } = recsResponse.data;
 
         if (recommendations && recommendations.length > 0) {
@@ -167,7 +189,9 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'both');
-                return res.send(_.orderBy(moviesWithInfo, ['recType', 'similarity', 'rating'], ['asc', 'desc', 'desc']));
+                const index = orderByColumns.indexOf('es_score');
+                if (index !== -1) orderByColumns[index] = 'esScore';
+                return res.send(_.orderBy(moviesWithInfo, ['rec_type', ...orderByColumns], ['asc', ...Array(orderByColumns.length).fill('desc')]));
             }
 
             return res.send(recommendations.data);
