@@ -191,8 +191,6 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'both');
                 const index = orderByColumns.indexOf('es_score');
                 if (index !== -1) orderByColumns[index] = 'esScore';
-                console.log(['rec_type', ...orderByColumns]);
-                console.log(['asc', ...Array(orderByColumns.length).fill('desc')]);
                 return res.send(_.orderBy(moviesWithInfo, ['recType', ...orderByColumns], ['asc', ...Array(orderByColumns.length).fill('desc')]));
             }
 
