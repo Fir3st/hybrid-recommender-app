@@ -142,7 +142,7 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     const hybridType = req.query.hybrid_type || null;
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
-    const orderBy = req.query.order_by || 'rating';
+    const orderBy = req.query.order_by || 'similarity,rating';
     const orderByColumns = orderBy.split(',');
 
     let url = `${recommender}/hybrid-playground/${userId}/${movieId}?take=${take}&skip=${skip}`;
