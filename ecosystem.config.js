@@ -2,7 +2,7 @@ module.exports = {
     apps: [
         {
             name: 'API',
-            instances: 'max',
+            instances: '1',
             exec_mode: 'cluster',
             script: 'npm',
             args: 'run server:start',
