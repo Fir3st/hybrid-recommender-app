@@ -207,14 +207,14 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     }
 });
 
-router.post('/search/:id', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/search/:id', [authenticate, authorize], async (req: Request, res: any) => {
     req.socket.setTimeout(3600e3);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
 
     const id = parseInt(req.params.id, 10);
     const searchQuery = req.query.query || '';
-    const recommenderType = req.query.rec_type || null;
+    const recommenderType = req.query.rec_type || 'svd';
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
     const orderBy = req.query.order_by || 'rating,es_score';
@@ -235,7 +235,7 @@ router.post('/search/:id', [authenticate, authorize], async (req: Request, res: 
             let url = `${recommender}/search-playground/${id}`;
 
             if (recommenderType) {
-                url = `${url}&rec_type=${recommenderType}`;
+                url = `${url}?rec_type=${recommenderType}`;
             }
 
             if (similarityType) {

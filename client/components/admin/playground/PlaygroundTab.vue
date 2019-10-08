@@ -16,6 +16,11 @@
         >
             <HybridRecsTab />
         </b-tab>
+        <b-tab
+            title="Query search"
+        >
+            <QuerySearchTab />
+        </b-tab>
     </b-tabs>
 </template>
 
@@ -23,12 +28,14 @@
     import ContentBasedRecsTab from '~/components/admin/playground/ContentBasedRecsTab';
     import CollaborativeRecsTab from '~/components/admin/playground/CollaborativeRecsTab';
     import HybridRecsTab from '~/components/admin/playground/HybridRecsTab';
+    import QuerySearchTab from "~/components/admin/playground/QuerySearchTab";
 
     export default {
         components: {
             ContentBasedRecsTab,
             CollaborativeRecsTab,
-            HybridRecsTab
+            HybridRecsTab,
+            QuerySearchTab
         }
     };
 </script>
