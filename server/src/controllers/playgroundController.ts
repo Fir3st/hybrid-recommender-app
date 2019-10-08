@@ -207,4 +207,71 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     }
 });
 
+router.post('/search/:id', [authenticate, authorize], async (req: Request, res: any) => {
+    req.socket.setTimeout(3600e3);
+    const recommender = config.get('recommenderUrl');
+    const repository = getRepository(Movie);
+
+    const id = parseInt(req.params.id, 10);
+    const searchQuery = req.query.query || '';
+    const recommenderType = req.query.rec_type || null;
+    const similarityType = req.query.sim_type || null;
+    const similaritySource = req.query.sim_source || null;
+    const orderBy = req.query.order_by || 'rating,es_score';
+    const orderByColumns = orderBy.split(',');
+
+    try {
+        const query = repository
+            .createQueryBuilder('movies')
+            .leftJoinAndSelect('movies.genres', 'genres')
+            .leftJoinAndSelect('movies.usersRatings', 'usersRatings')
+            .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
+            .orderBy('movies.year', 'DESC');
+
+        let movies = await query.getMany();
+        if (movies && movies.length > 0) {
+            movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, { id }));
+
+            let url = `${recommender}/search-playground/${id}`;
+
+            if (recommenderType) {
+                url = `${url}&rec_type=${recommenderType}`;
+            }
+
+            if (similarityType) {
+                url = `${url}&sim_type=${similarityType}`;
+            }
+
+            if (similaritySource) {
+                url = `${url}&sim_source=${similaritySource}`;
+            }
+
+            const ratingsResponse = await axios.post(url, { movies: movies.map(item => item.id) });
+            const { ratings } = ratingsResponse.data;
+            if (ratings && ratings.length > 0) {
+                const moviesWithRatings = movies.map((movie) => {
+                    const rating = ratings.find(item => item.id === movie.id);
+                    const stats = MoviesUtil.getStatsFromRec(rating);
+                    return { ...movie, ...stats, rating: rating.rating, ratedSimilarity: rating.similarity, esScore: rating.es_score };
+                });
+
+                const index = orderByColumns.indexOf('es_score');
+                if (index !== -1) orderByColumns[index] = 'esScore';
+                return res.send(_.orderBy(
+                    moviesWithRatings,
+                    ['isPenalized', ...orderByColumns],
+                    ['asc', ...Array(orderByColumns.length).fill('desc')]
+                ));
+            }
+
+            return res.send(movies);
+        }
+
+        return res.boom.badRequest(`No recommendations for user ${id}.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 export default router;
