@@ -24,6 +24,12 @@
                 >
                     Return to front page
                 </b-dropdown-item>
+                <b-dropdown-item
+                    to="/questionnaire"
+                    exact
+                >
+                    Questionnaire
+                </b-dropdown-item>
                 <b-dropdown-item @click="handleLogout">
                     Log out
                 </b-dropdown-item>
