@@ -103,6 +103,7 @@
                     });
                 }
                 this.selectedItem = null;
+                this.searchTerm = '';
             }
         }
     };

@@ -3,7 +3,7 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <h2>Selected movies</h2>
+                    <h2>Selected items</h2>
                 </b-col>
             </b-row>
             <MovieGridItem
