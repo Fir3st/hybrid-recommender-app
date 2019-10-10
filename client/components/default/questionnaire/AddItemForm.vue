@@ -102,6 +102,7 @@
                         rating: 2.5
                     });
                 }
+                this.selectedItem = null;
             }
         }
     };

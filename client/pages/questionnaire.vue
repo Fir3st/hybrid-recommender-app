@@ -93,10 +93,13 @@
                 }
             },
             addItem(item) {
-                this.movies = [
-                    item,
-                    ...this.movies
-                ];
+                const movieIndex = this.movies.findIndex(movie => movie.id === item.id);
+                if (movieIndex === -1) {
+                    this.movies = [
+                        item,
+                        ...this.movies
+                    ];
+                }
             }
         },
     };
