@@ -6,7 +6,7 @@
                     <h2>Add new item</h2>
                 </b-col>
             </b-row>
-            <b-row v-if="movies.length >= maxItems">
+            <b-row v-if="movies.length >= numOfItems">
                 <b-col>
                     <p>You already have enough selected items.</p>
                 </b-col>
@@ -51,12 +51,15 @@
             addItemHandler: {
                 type: Function,
                 required: true
+            },
+            numOfItems: {
+                type: Number,
+                required: true
             }
         },
         data() {
             return {
                 source: CancelToken.source(),
-                maxItems: 20,
                 minLength: 3,
                 selectedItem: null,
                 searchTerm: '',
@@ -115,5 +118,5 @@
     p
         margin: 0 0 40px 0
     .autocomplete-form
-        margin-bottom: 40px;
+        margin-bottom: 40px
 </style>
