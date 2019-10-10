@@ -16,7 +16,7 @@
             label="Predicted rating"
         >
             <template slot-scope="scope">
-                {{ round(scope.row.rating, 2) }}
+                {{ round(scope.row.rating, numOfDecPlaces) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -48,7 +48,7 @@
             label="Similarity to already rated items"
         >
             <template slot-scope="scope">
-                {{ round(scope.row.ratedSimilarity) }}
+                {{ round(scope.row.ratedSimilarity, numOfDecPlaces) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -56,7 +56,7 @@
             label="ES Score"
         >
             <template slot-scope="scope">
-                {{ round(scope.row.esScore) }}
+                {{ round(scope.row.esScore, numOfDecPlaces) }}
             </template>
         </el-table-column>
         <el-table-column
@@ -85,6 +85,10 @@
                 type: Boolean,
                 required: false,
                 default: false
+            },
+            numOfDecPlaces: {
+                type: Number,
+                default: 4
             }
         },
         methods: {

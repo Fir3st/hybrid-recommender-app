@@ -17,6 +17,11 @@
             <HybridRecsTab />
         </b-tab>
         <b-tab
+            title="Expert system recommendations"
+        >
+            <ExpertBasedRecsTab />
+        </b-tab>
+        <b-tab
             title="Query search"
         >
             <QuerySearchTab />
@@ -29,13 +34,15 @@
     import CollaborativeRecsTab from '~/components/admin/playground/CollaborativeRecsTab';
     import HybridRecsTab from '~/components/admin/playground/HybridRecsTab';
     import QuerySearchTab from "~/components/admin/playground/QuerySearchTab";
+    import ExpertBasedRecsTab from "~/components/admin/playground/ExpertBasedRecsTab";
 
     export default {
         components: {
             ContentBasedRecsTab,
             CollaborativeRecsTab,
             HybridRecsTab,
-            QuerySearchTab
+            QuerySearchTab,
+            ExpertBasedRecsTab
         }
     };
 </script>

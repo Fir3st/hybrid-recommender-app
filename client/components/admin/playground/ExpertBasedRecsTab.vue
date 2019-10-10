@@ -3,7 +3,7 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <h2>Collaborative recommendations</h2>
+                    <h2>Expert system recommendations</h2>
                 </b-col>
             </b-row>
             <b-row>
@@ -183,10 +183,9 @@
                 orderBy: null,
                 orderByOptions: [
                     { value: null, text: 'Please select columns for sorting and their order' },
-                    { value: 'rating', text: 'Only predicted rating' },
                     { value: 'es_score', text: 'Only Expert system score' },
-                    { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
-                    { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
+                    { value: 'es_score,rating', text: 'Expert system score, Predicted rating (default)' },
+                    { value: 'rating,es_score', text: 'Predicted rating, Expert system score' },
                 ],
                 recommendations: []
             };
