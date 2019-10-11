@@ -1,11 +1,15 @@
 import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
+import * as config from 'config';
+import * as moment from 'moment';
 import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../../utils/winston';
 import { validateRegister } from '../../utils/validations/user';
 import { User } from '../../entities/User';
 import { Movie } from '../../entities/Movie';
+import { UserRating } from '../../entities/UserRating';
+import { FavGenre } from '../../entities/FavGenre';
 
 export const getUsers = async (req: Request, res: any) => {
     const take = req.query.take || 10;
@@ -184,6 +188,82 @@ export const getPreferences = async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
+export const sendQuestionnaire = async (req: Request, res: any) => {
+    const recommender = config.get('recommenderUrl');
+    const ratingsRepository = getRepository(UserRating);
+    const favGenresRepository = getRepository(FavGenre);
+    const userId = parseInt(req.user.id, 10);
+    const favouriteGenres = req.body.favouriteGenres || [];
+    const notFavouriteGenres = req.body.notFavouriteGenres || [];
+    const ratedMovies = req.body.ratings || [];
+
+    try {
+        if (favouriteGenres.length > 0 && notFavouriteGenres.length > 0 && ratedMovies.length > 0) {
+            const userRatings = await ratingsRepository
+                .createQueryBuilder('ratings')
+                .where('ratings.userId = :userId', { userId })
+                .getMany();
+
+            if (userRatings && userRatings.length > 0) {
+                await ratingsRepository
+                    .createQueryBuilder()
+                    .delete()
+                    .from(UserRating)
+                    .where('id IN (:ids)', { ids: userRatings.map(item => item.id) })
+                    .execute();
+            }
+
+            const favGenres = await favGenresRepository
+                .createQueryBuilder('genres')
+                .where('genres.userId = :userId', { userId })
+                .getMany();
+
+            if (favGenres && favGenres.length > 0) {
+                await favGenresRepository
+                    .createQueryBuilder()
+                    .delete()
+                    .from(FavGenre)
+                    .where('id IN (:ids)', { ids: favGenres.map(item => item.id) })
+                    .execute();
+            }
+
+            for (const ratedMovie of ratedMovies) {
+                const rating = new UserRating();
+                rating.movieId = ratedMovie.id;
+                rating.userId = userId;
+                rating.rating = ratedMovie.rating;
+                rating.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+                await ratingsRepository.save(rating);
+            }
+
+            for (const favGenre of favouriteGenres) {
+                const genre = new FavGenre();
+                genre.genreId = favGenre;
+                genre.userId = userId;
+                genre.type = 1;
+                await favGenresRepository.save(genre);
+            }
+
+            for (const favGenre of notFavouriteGenres) {
+                const genre = new FavGenre();
+                genre.genreId = favGenre;
+                genre.userId = userId;
+                genre.type = -1;
+                await favGenresRepository.save(genre);
+            }
+
+            // TODO: retrain
+
+            return res.send({ message: 'Questionnaire sent successfully.' });
+        }
+
+        return res.boom.badRequest('Not enough data.');
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

@@ -10,6 +10,12 @@ export class FavGenre {
     @Column()
     type: number;
 
+    @Column()
+    genreId: number;
+
+    @Column()
+    userId: number;
+
     @ManyToOne(type => User, user => user.favouriteGenres)
     user: User;
 

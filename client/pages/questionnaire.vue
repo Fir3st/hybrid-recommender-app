@@ -92,9 +92,13 @@
                             rating: item.rating
                         };
                     });
+                    const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
+                    const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
                     return {
                         movies,
-                        user
+                        user,
+                        favouriteGenres,
+                        notFavouriteGenres
                     };
                 }
             } catch (error) {
