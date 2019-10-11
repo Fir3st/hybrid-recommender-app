@@ -28,7 +28,7 @@
                 :not-favourite-genres="notFavouriteGenres"
                 :delete-genre-handler="deleteGenre"
             />
-            <b-row>
+            <b-row v-if="!sent">
                 <b-col>
                     <b-button
                         variant="info"
@@ -37,6 +37,16 @@
                     >
                         Send questionnaire
                     </b-button>
+                </b-col>
+            </b-row>
+            <b-row v-else>
+                <b-col>
+                    <nuxt-link
+                        to="/results"
+                        class="btn btn-info"
+                    >
+                        Continue to next part
+                    </nuxt-link>
                 </b-col>
             </b-row>
         </b-col>
@@ -68,7 +78,9 @@
                 favouriteGenres: [],
                 notFavouriteGenres: [],
                 numOfGenres: 3,
-                numOfItems: 20
+                numOfItems: 20,
+                sent: false,
+                loading: false
             };
         },
         computed: {
@@ -78,7 +90,8 @@
             isButtonDisabled() {
                 return this.movies.length < this.numOfItems
                 || this.favouriteGenres.length < this.numOfGenres
-                || this.notFavouriteGenres.length < this.numOfGenres;
+                || this.notFavouriteGenres.length < this.numOfGenres
+                || this.loading;
             }
         },
         async asyncData ({ app }) {
@@ -89,7 +102,8 @@
                     const movies = user.ratings.map((item) => {
                         return {
                             ...item.movie,
-                            rating: item.rating
+                            rating: item.rating,
+                            penalized: item.rating === 0
                         };
                     });
                     const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
@@ -121,7 +135,12 @@
             penalizeHandler(id) {
                 const movieIndex = this.movies.findIndex(item => item.id === id);
                 if (movieIndex > -1) {
-                    this.movies[movieIndex].rating = 0;
+                    if (this.movies[movieIndex].penalized) {
+                        this.movies[movieIndex].rating = 2.5;
+                    } else {
+                        this.movies[movieIndex].rating = 0;
+                    }
+                    this.movies[movieIndex].penalized = !this.movies[movieIndex].penalized;
                 }
             },
             addItem(item) {
@@ -171,18 +190,20 @@
                     };
                 });
                 const userId = this.user.id;
+                this.loading = true;
                 try {
-                    await this.$axios.$post(`/users/${userId}/questionnaire`, {
-                        ratings,
-                        favouriteGenres: this.favouriteGenres,
-                        notFavouriteGenres: this.notFavouriteGenres
-                    });
                     this.$notify({
                         title: 'Success',
                         message: `You have successfully sent Questionnaire.`,
                         type: 'success',
                         position: 'bottom-right'
                     });
+                    await this.$axios.$post(`/users/${userId}/questionnaire`, {
+                        ratings,
+                        favouriteGenres: this.favouriteGenres,
+                        notFavouriteGenres: this.notFavouriteGenres
+                    });
+                    this.sent = true;
                 } catch (error) {
                     console.log(error.message);
                     this.$notify({
@@ -191,6 +212,8 @@
                         type: 'error',
                         position: 'bottom-right'
                     });
+                } finally {
+                    this.loading = false;
                 }
             }
         },

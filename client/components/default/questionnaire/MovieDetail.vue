@@ -23,6 +23,12 @@
             >
                 Add to selected movies
             </b-button>
+            <b-button
+                variant="info"
+                @click="addPenalizedItemHandler"
+            >
+                Add to selected movies as penalized
+            </b-button>
         </b-col>
     </b-row>
 </template>
@@ -35,6 +41,10 @@
                 required: true
             },
             addItemHandler: {
+                type: Function,
+                required: true
+            },
+            addPenalizedItemHandler: {
                 type: Function,
                 required: true
             }

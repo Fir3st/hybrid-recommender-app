@@ -259,7 +259,7 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
                 await favGenresRepository.save(genre);
             }
 
-            axios.put(`${recommender}/train/users/${userId}`);
+            await axios.put(`${recommender}/train/users/${userId}`);
 
             return res.send({ message: 'Questionnaire sent successfully.' });
         }

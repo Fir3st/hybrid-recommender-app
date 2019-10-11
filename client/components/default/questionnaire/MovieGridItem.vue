@@ -21,6 +21,7 @@
         </b-col>
         <b-col class="align-self-center">
             <el-rate
+                v-if="!movie.penalized"
                 :value="rating"
                 :allow-half="true"
                 show-score
@@ -31,9 +32,10 @@
         </b-col>
         <b-col class="align-self-center">
             <el-button
-                type="danger"
+                :type="movie.penalized ? 'success' : 'danger'"
                 icon="el-icon-close"
                 circle
+                :title="movie.penalized ? 'Cancel the penalty' : 'Penalize'"
                 @click="penalize"
             />
             <el-button

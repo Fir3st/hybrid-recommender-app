@@ -28,6 +28,7 @@
                 v-if="selectedItem"
                 :movie="selectedItem"
                 :add-item-handler="addItem"
+                :add-penalized-item-handler="addPenalizedItem"
             />
         </b-col>
     </b-row>
@@ -102,7 +103,19 @@
                 if (this.selectedItem) {
                     this.addItemHandler({
                         ...this.selectedItem,
-                        rating: 2.5
+                        rating: 2.5,
+                        penalized: false
+                    });
+                }
+                this.selectedItem = null;
+                this.searchTerm = '';
+            },
+            addPenalizedItem() {
+                if (this.selectedItem) {
+                    this.addItemHandler({
+                        ...this.selectedItem,
+                        rating: 0,
+                        penalized: true
                     });
                 }
                 this.selectedItem = null;
