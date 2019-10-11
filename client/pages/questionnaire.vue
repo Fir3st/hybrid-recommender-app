@@ -59,6 +59,7 @@
     import AddItemForm from '~/components/default/questionnaire/AddItemForm';
     import AddGenreForm from "~/components/default/questionnaire/AddGenreForm";
     import SelectedGenresGrid from "~/components/default/questionnaire/SelectedGenresGrid";
+    import { numOfGenres, numOfItems } from '~/utils/constants';
 
     export default {
         components: {
@@ -77,8 +78,8 @@
                 pageTitle: 'Questionnaire',
                 favouriteGenres: [],
                 notFavouriteGenres: [],
-                numOfGenres: 3,
-                numOfItems: 20,
+                numOfGenres: numOfGenres,
+                numOfItems: numOfItems,
                 sent: false,
                 loading: false
             };
