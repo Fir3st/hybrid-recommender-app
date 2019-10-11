@@ -164,8 +164,34 @@
                 }
             },
             async submit() {
-                // TODO: Finish submitting
-                console.log('submitting');
+                const ratings = this.movies.map((item) => {
+                    return {
+                        id: item.id,
+                        rating: item.rating
+                    };
+                });
+                const userId = this.user.id;
+                try {
+                    await this.$axios.$post(`/users/${userId}/questionnaire`, {
+                        ratings,
+                        favouriteGenres: this.favouriteGenres,
+                        notFavouriteGenres: this.notFavouriteGenres
+                    });
+                    this.$notify({
+                        title: 'Success',
+                        message: `You have successfully sent Questionnaire.`,
+                        type: 'success',
+                        position: 'bottom-right'
+                    });
+                } catch (error) {
+                    console.log(error.message);
+                    this.$notify({
+                        title: 'Error',
+                        message: `Something went wrong with sending Questionnaire. Please try it again.`,
+                        type: 'error',
+                        position: 'bottom-right'
+                    });
+                }
             }
         },
     };

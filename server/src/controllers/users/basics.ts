@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
 import * as config from 'config';
 import * as moment from 'moment';
+import axios from 'axios';
 import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import winston from '../../utils/winston';
@@ -258,7 +259,7 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
                 await favGenresRepository.save(genre);
             }
 
-            // TODO: retrain
+            axios.put(`${recommender}/train/users/${userId}`);
 
             return res.send({ message: 'Questionnaire sent successfully.' });
         }
