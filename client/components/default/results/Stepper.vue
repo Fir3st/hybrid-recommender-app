@@ -8,24 +8,38 @@
                         align-center
                     >
                         <el-step
-                            title="Content-based options"
+                            title="General settings"
                         />
                         <el-step
-                            title="Collaborative options"
+                            title="Content-based settings"
                         />
                         <el-step
-                            title="Hybrid options"
+                            title="Collaborative settings"
                         />
                         <el-step
-                            title="Expert system options"
+                            title="Hybrid settings"
+                        />
+                        <el-step
+                            title="Expert system settings"
                         />
                     </el-steps>
                 </b-col>
             </b-row>
+            <GeneralSettings
+                v-if="activeTab === getIndex('general')"
+                :settings="settings.general"
+                :change-settings-handler="changeSettingsHandler"
+            />
             <CBSettings
-                v-if="activeTab === 0"
+                v-if="activeTab === getIndex('cb')"
                 :settings="settings.cb"
                 :change-settings-handler="changeSettingsHandler"
+            />
+            <CBFSettings
+                v-if="activeTab === getIndex('cbf')"
+                :settings="settings.cbf"
+                :change-settings-handler="changeSettingsHandler"
+                :genres="genres"
             />
             <b-row class="btns">
                 <b-col class="text-center">
@@ -48,11 +62,15 @@
 </template>
 
 <script>
-    import CBSettings from "./CBSettings";
+    import CBSettings from './CBSettings';
+    import GeneralSettings from './GeneralSettings';
+    import CBFSettings from './CBFSettings';
 
     export default {
         components: {
-            CBSettings
+            CBSettings,
+            GeneralSettings,
+            CBFSettings
         },
         props: {
             activeTab: {
@@ -74,6 +92,16 @@
             changeSettingsHandler: {
                 type: Function,
                 required: true
+            },
+            genres: {
+                type: Array,
+                required: true
+            }
+        },
+        methods: {
+            getIndex(type) {
+                const keys = Object.keys(this.settings);
+                return keys.findIndex(item => item === type);
             }
         }
     };

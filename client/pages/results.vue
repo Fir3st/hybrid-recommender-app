@@ -25,6 +25,7 @@
                         :next-tab-handler="nextTab"
                         :previous-tab-handler="previousTab"
                         :change-settings-handler="changeSettings"
+                        :genres="genres"
                     />
                 </b-col>
             </b-row>
@@ -33,7 +34,8 @@
 </template>
 
 <script>
-    import { numOfGenres, numOfItems } from '~/utils/constants';
+    import { mapGetters } from 'vuex';
+    import { numOfGenres, numOfItems, cbRecTypes, cbfRecTypes, similarityTypes, movieTypes } from '~/utils/constants';
     import Stepper from "~/components/default/results/Stepper";
 
     export default {
@@ -52,14 +54,15 @@
                 numOfItems: numOfItems,
                 activeTab: 0,
                 settings: {
-                    cb: {
-                        id: 1,
+                    general: {
+                        movieId: 1,
                         take: 50,
+                    },
+                    cb: {
                         recType: null,
                         recTypes: [
                             { value: null, text: 'Please select an algorithm' },
-                            { value: 'tf-idf', text: 'TF-IDF (default)' },
-                            { value: 'lda', text: 'LDA' },
+                            ...cbRecTypes
                         ],
                         orderBy: null,
                         orderByOptions: [
@@ -69,11 +72,56 @@
                             { value: 'similarity,es_score', text: 'Similarity, Expert system score (default)' },
                             { value: 'es_score,similarity', text: 'Expert system score, Similarity' },
                         ]
+                    },
+                    cbf: {
+                        recType: null,
+                        recTypes: [
+                            { value: null, text: 'Please select an algorithm' },
+                            ...cbfRecTypes
+                        ],
+                        similarityType: null,
+                        similarityTypes: [
+                            { value: null, text: 'Please select a similarity function' },
+                            ...similarityTypes
+                        ],
+                        similaritySource: null,
+                        similaritySources: [
+                            { value: null, text: 'Please select an algorithm' },
+                            ...cbRecTypes
+                        ],
+                        genre: null,
+                        movieType: null,
+                        movieTypes:  [
+                            { value: null, text: 'Please select a movie type' },
+                            ...movieTypes
+                        ],
+                        orderBy: null,
+                        orderByOptions: [
+                            { value: null, text: 'Please select columns for sorting and their order' },
+                            { value: 'rating', text: 'Only predicted rating' },
+                            { value: 'es_score', text: 'Only Expert system score' },
+                            { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
+                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
+                        ]
                     }
                 }
             };
         },
         computed: {
+            ...mapGetters({
+                allGenres: 'genres/genres'
+            }),
+            genres() {
+                const genres = this.allGenres.filter(item => item.name !== 'N/A');
+                const options = genres.map((item) => {
+                    return { value: item.id, text: item.name };
+                });
+
+                return [
+                    { value: null, text: 'Please select a genre(s)' },
+                    ...options
+                ];
+            }
         },
         async asyncData ({ app }) {
             try {
@@ -102,7 +150,7 @@
         },
         methods: {
             nextTab() {
-                if (this.activeTab <= 3) this.activeTab++;
+                if (this.activeTab <= Object.keys(this.settings).length) this.activeTab++;
             },
             previousTab() {
                 if (this.activeTab > 0) this.activeTab--;
