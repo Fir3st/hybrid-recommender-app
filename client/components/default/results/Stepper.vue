@@ -47,6 +47,12 @@
                 :change-settings-handler="changeSettingsHandler"
                 :genres="genres"
             />
+            <ExpertSettings
+                v-if="activeTab === getIndex('expert')"
+                :settings="settings.expert"
+                :change-settings-handler="changeSettingsHandler"
+                :genres="genres"
+            />
             <b-row class="btns">
                 <b-col class="text-center">
                     <b-button
@@ -72,13 +78,15 @@
     import GeneralSettings from './GeneralSettings';
     import CBFSettings from './CBFSettings';
     import HybridSettings from './HybridSettings';
+    import ExpertSettings from './ExpertSettings';
 
     export default {
         components: {
             CBSettings,
             GeneralSettings,
             CBFSettings,
-            HybridSettings
+            HybridSettings,
+            ExpertSettings
         },
         props: {
             activeTab: {

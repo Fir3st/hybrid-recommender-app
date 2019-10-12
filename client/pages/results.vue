@@ -139,7 +139,37 @@
                             { value: 'similarity,rating,es_score', text: 'Predicted rating/Similarity, Expert system score (default)' },
                             { value: 'es_score,similarity,rating', text: 'Expert system score, Predicted rating/Similarity' },
                         ],
-                    }
+                    },
+                    expert: {
+                        recType: null,
+                        recTypes: [
+                            { value: null, text: 'Please select an algorithm' },
+                            ...cbfRecTypes
+                        ],
+                        similarityType: null,
+                        similarityTypes: [
+                            { value: null, text: 'Please select a similarity function' },
+                            ...similarityTypes
+                        ],
+                        similaritySource: null,
+                        similaritySources: [
+                            { value: null, text: 'Please select an algorithm' },
+                            ...cbRecTypes
+                        ],
+                        genre: null,
+                        movieType: null,
+                        movieTypes:  [
+                            { value: null, text: 'Please select a movie type' },
+                            ...movieTypes
+                        ],
+                        orderBy: null,
+                        orderByOptions: [
+                            { value: null, text: 'Please select columns for sorting and their order' },
+                            { value: 'es_score', text: 'Only Expert system score' },
+                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating (default)' },
+                            { value: 'rating,es_score', text: 'Predicted rating, Expert system score' },
+                        ]
+                    },
                 }
             };
         },
