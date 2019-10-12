@@ -115,7 +115,12 @@
 
                 const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
-                    this.cbResults = response;
+                    this.cbResults = response.map((item) => {
+                        return {
+                            ...item,
+                            relevance: null
+                        };
+                    });
                 }
             },
             async getCBFResults() {
@@ -143,7 +148,12 @@
 
                 const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
-                    this.cbfResults = response;
+                    this.cbfResults = response.map((item) => {
+                        return {
+                            ...item,
+                            relevance: null
+                        };
+                    });
                 }
             },
             async getHybridResults() {
@@ -173,7 +183,12 @@
 
                 const response = await this.$axios.$get(url, this.timeout);
                 if (response && response.length > 0) {
-                    this.hybridResults = response;
+                    this.hybridResults = response.map((item) => {
+                        return {
+                            ...item,
+                            relevance: null
+                        };
+                    });
                 }
             },
             async getExpertResults() {
@@ -201,7 +216,12 @@
 
                 const response = await this.$axios.$get(url, this.timeout);
                 if (response && response.length > 0) {
-                    this.expertResults = response;
+                    this.expertResults = response.map((item) => {
+                        return {
+                            ...item,
+                            relevance: null
+                        };
+                    });
                 }
             }
         }
