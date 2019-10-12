@@ -9,7 +9,7 @@
                         :disabled="loading"
                         @click="showResults"
                     >
-                        Show results
+                        Compute results
                     </b-button>
                 </b-col>
             </b-row>
@@ -21,7 +21,45 @@
             <Loading v-if="loading" />
             <b-row v-if="hasResults">
                 <b-col>
-                    Results
+                    <b-tabs class="results">
+                        <b-tab
+                            title="Content-based results"
+                            active
+                        >
+                            <Tab
+                                :recommendations="cbResults"
+                                rec-type="cbResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                        <b-tab
+                            title="Collaborative results"
+                        >
+                            <Tab
+                                :recommendations="cbfResults"
+                                rec-type="cbfResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                        <b-tab
+                            title="Hybrid results"
+                        >
+                            <Tab
+                                :recommendations="hybridResults"
+                                rec-type="hybridResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                        <b-tab
+                            title="Expert system results"
+                        >
+                            <Tab
+                                :recommendations="expertResults"
+                                rec-type="expertResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                    </b-tabs>
                 </b-col>
             </b-row>
         </b-col>
@@ -30,10 +68,12 @@
 
 <script>
     import Loading from '~/components/default/search/Loading';
+    import Tab from './Tab';
 
     export default {
         components: {
-            Loading
+            Loading,
+            Tab
         },
         props: {
             settings: {
@@ -223,12 +263,20 @@
                         };
                     });
                 }
+            },
+            setRelevance(type, id, relevance) {
+                const movieIndex = this[type].findIndex(item => item.id === id);
+                if (movieIndex > -1) {
+                    this[type][movieIndex].relevance = relevance;
+                }
             }
         }
     };
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
     h3
         margin-bottom: 20px
+    .results
+        margin-top: 40px
 </style>
