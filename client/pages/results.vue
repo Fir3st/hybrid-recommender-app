@@ -49,13 +49,14 @@
         },
         data() {
             return {
-                pageTitle: 'Results',
+                pageTitle: 'Results page',
                 numOfGenres: numOfGenres,
                 numOfItems: numOfItems,
                 activeTab: 0,
                 settings: {
                     general: {
                         movieId: 1,
+                        selectedItem: null,
                         take: 50,
                     },
                     cb: {
@@ -223,9 +224,6 @@
             },
             changeSettings(type, name, value) {
                 this.settings[type][name] = value;
-            },
-            async showResults() {
-                console.log('showing results');
             }
         }
     };

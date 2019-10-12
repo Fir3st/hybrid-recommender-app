@@ -22,6 +22,9 @@
                         <el-step
                             title="Expert system settings"
                         />
+                        <el-step
+                            title="Results"
+                        />
                     </el-steps>
                 </b-col>
             </b-row>
@@ -53,16 +56,22 @@
                 :change-settings-handler="changeSettingsHandler"
                 :genres="genres"
             />
+            <Results
+                v-if="activeTab === settingsLength"
+                :settings="settings"
+            />
             <b-row class="btns">
                 <b-col class="text-center">
                     <b-button
                         variant="info"
+                        :disabled="activeTab === 0"
                         @click="previousTabHandler"
                     >
                         Back
                     </b-button>
                     <b-button
                         variant="info"
+                        :disabled="activeTab === settingsLength"
                         @click="nextTabHandler"
                     >
                         Next
@@ -79,6 +88,8 @@
     import CBFSettings from './CBFSettings';
     import HybridSettings from './HybridSettings';
     import ExpertSettings from './ExpertSettings';
+    import Results from './Results';
+
 
     export default {
         components: {
@@ -86,7 +97,8 @@
             GeneralSettings,
             CBFSettings,
             HybridSettings,
-            ExpertSettings
+            ExpertSettings,
+            Results
         },
         props: {
             activeTab: {
@@ -112,6 +124,11 @@
             genres: {
                 type: Array,
                 required: true
+            }
+        },
+        computed: {
+            settingsLength() {
+                return Object.keys(this.settings).length;
             }
         },
         methods: {
