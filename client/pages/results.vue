@@ -35,7 +35,7 @@
 
 <script>
     import { mapGetters } from 'vuex';
-    import { numOfGenres, numOfItems, cbRecTypes, cbfRecTypes, similarityTypes, movieTypes } from '~/utils/constants';
+    import { numOfGenres, numOfItems, cbRecTypes, cbfRecTypes, similarityTypes, movieTypes, hybridTypes } from '~/utils/constants';
     import Stepper from "~/components/default/results/Stepper";
 
     export default {
@@ -103,6 +103,42 @@
                             { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
                             { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
                         ]
+                    },
+                    hybrid: {
+                        hybridType: null,
+                        hybridTypes: [
+                            { value: null, text: 'Please select a hybrid hype' },
+                            ...hybridTypes
+                        ],
+                        recType: null,
+                        recTypes: [
+                            { value: null, text: 'Please select a collaborative algorithm' },
+                            ...cbfRecTypes
+                        ],
+                        similarityType: null,
+                        similarityTypes: [
+                            { value: null, text: 'Please select a similarity function for collaborative filtering' },
+                            ...similarityTypes
+                        ],
+                        similaritySource: null,
+                        similaritySources: [
+                            { value: null, text: 'Please select a content-based algorithm' },
+                            ...cbRecTypes
+                        ],
+                        genre: null,
+                        movieType: null,
+                        movieTypes:  [
+                            { value: null, text: 'Please select a movie type' },
+                            ...movieTypes
+                        ],
+                        orderBy: null,
+                        orderByOptions: [
+                            { value: null, text: 'Please select columns for sorting and their order' },
+                            { value: 'similarity,rating', text: 'Only predicted rating/similarity' },
+                            { value: 'es_score', text: 'Only Expert system score' },
+                            { value: 'similarity,rating,es_score', text: 'Predicted rating/Similarity, Expert system score (default)' },
+                            { value: 'es_score,similarity,rating', text: 'Expert system score, Predicted rating/Similarity' },
+                        ],
                     }
                 }
             };

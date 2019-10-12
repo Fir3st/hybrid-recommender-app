@@ -18,3 +18,7 @@ export const movieTypes = [
     { value: 'movie', text: 'Movie' },
     { value: 'series', text: 'Series' }
 ];
+export const hybridTypes = [
+    { value: 'weighted', text: 'Weighted' },
+    { value: 'switched', text: 'Switched' }
+];

@@ -41,6 +41,12 @@
                 :change-settings-handler="changeSettingsHandler"
                 :genres="genres"
             />
+            <HybridSettings
+                v-if="activeTab === getIndex('hybrid')"
+                :settings="settings.hybrid"
+                :change-settings-handler="changeSettingsHandler"
+                :genres="genres"
+            />
             <b-row class="btns">
                 <b-col class="text-center">
                     <b-button
@@ -65,12 +71,14 @@
     import CBSettings from './CBSettings';
     import GeneralSettings from './GeneralSettings';
     import CBFSettings from './CBFSettings';
+    import HybridSettings from './HybridSettings';
 
     export default {
         components: {
             CBSettings,
             GeneralSettings,
-            CBFSettings
+            CBFSettings,
+            HybridSettings
         },
         props: {
             activeTab: {
