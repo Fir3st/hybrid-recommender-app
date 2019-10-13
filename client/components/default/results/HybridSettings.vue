@@ -4,7 +4,7 @@
             <b-form>
                 <b-form-group
                     id="hybridType"
-                    label="Hybrid type"
+                    label="Hybrid type (required)"
                     label-for="hybridType"
                 >
                     <b-form-select
@@ -16,7 +16,7 @@
                 </b-form-group>
                 <b-form-group
                     id="algorithm"
-                    label="Algorithm"
+                    label="Algorithm (required)"
                     label-for="algorithm"
                 >
                     <b-form-select
@@ -28,7 +28,7 @@
                 </b-form-group>
                 <b-form-group
                     id="similarityType"
-                    label="Similarity function"
+                    label="Similarity function (optional)"
                     label-for="similarityType"
                 >
                     <b-form-select
@@ -41,7 +41,7 @@
                 </b-form-group>
                 <b-form-group
                     id="similaritySource"
-                    label="Algorithm used for similarity with already rated movies"
+                    label="Algorithm used for similarity with already rated movies (required)"
                     label-for="similaritySource"
                 >
                     <b-form-select
@@ -79,7 +79,7 @@
                 </b-form-group>
                 <b-form-group
                     id="orderBy"
-                    label="Order by"
+                    label="Order by (required)"
                     label-for="orderBy"
                 >
                     <b-form-select

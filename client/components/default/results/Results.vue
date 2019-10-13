@@ -9,7 +9,14 @@
                         :disabled="loading"
                         @click="showResults"
                     >
-                        Compute results
+                        {{ !hasResults ? 'Compute results' : 'Re-compute results' }}
+                    </b-button>
+                    <b-button
+                        variant="info"
+                        :disabled="!isFilled"
+                        @click="submit"
+                    >
+                        Send
                     </b-button>
                 </b-col>
             </b-row>
@@ -119,6 +126,14 @@
                     && this.cbfResults.length > 0
                     && this.hybridResults.length > 0
                     && this.expertResults.length > 0;
+            },
+            isFilled() {
+                const cbFilled = this.cbResults.every(item => item.relevance !== null);
+                const cbfFilled = this.cbfResults.every(item => item.relevance !== null);
+                const hybridFilled = this.hybridResults.every(item => item.relevance !== null);
+                const expertFilled = this.expertResults.every(item => item.relevance !== null);
+
+                return this.hasResults && cbFilled && cbfFilled && hybridFilled && expertFilled;
             }
         },
         methods: {
@@ -178,7 +193,7 @@
                 if (this.settings.cbf.movieType) {
                     url = `${url}&type=${this.settings.cbf.movieType}`;
                 }
-                if (this.settings.cbf.genre) {
+                if (this.settings.cbf.genre.length > 0) {
                     url = `${url}&genres=${this.settings.cbf.genre.join(',')}`;
                 }
 
@@ -214,7 +229,7 @@
                 if (this.settings.hybrid.movieType) {
                     url = `${url}&type=${this.settings.hybrid.movieType}`;
                 }
-                if (this.settings.hybrid.genre) {
+                if (this.settings.hybrid.genre.length > 0) {
                     url = `${url}&genres=${this.settings.hybrid.genre.join(',')}`;
                 }
                 if (this.settings.hybrid.orderBy) {
@@ -246,8 +261,8 @@
                 if (this.settings.expert.movieType) {
                     url = `${url}&type=${this.settings.expert.movieType}`;
                 }
-                if (this.settings.expert.genre) {
-                    url = `${url}&genres=${this.genre.join(',')}`;
+                if (this.settings.expert.genre.length > 0) {
+                    url = `${url}&genres=${this.settings.expert.genre.join(',')}`;
                 }
 
                 if (this.settings.expert.orderBy) {
@@ -269,6 +284,10 @@
                 if (movieIndex > -1) {
                     this[type][movieIndex].relevance = relevance;
                 }
+            },
+            submit() {
+                // TODO: Finish
+                console.log('sending results');
             }
         }
     };

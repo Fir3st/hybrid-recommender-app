@@ -4,7 +4,7 @@
             <b-form>
                 <b-form-group
                     id="algorithm"
-                    label="Algorithm"
+                    label="Algorithm (required)"
                     label-for="algorithm"
                 >
                     <b-form-select
@@ -16,7 +16,7 @@
                 </b-form-group>
                 <b-form-group
                     id="orderBy"
-                    label="Order by"
+                    label="Order by (required)"
                     label-for="orderBy"
                 >
                     <b-form-select

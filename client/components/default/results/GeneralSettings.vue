@@ -3,7 +3,7 @@
         <b-col>
             <b-form>
                 <b-form-group
-                    label="Item"
+                    label="Item (required)"
                 >
                     <p><strong>Selected item:</strong> {{ settings.selectedItem ? settings.selectedItem.title : 'Nothing selected' }}</p>
                     <SearchInput
@@ -15,7 +15,7 @@
                 </b-form-group>
                 <b-form-group
                     id="take"
-                    label="Number of results"
+                    label="Number of results (required)"
                     label-for="take"
                 >
                     <b-form-input

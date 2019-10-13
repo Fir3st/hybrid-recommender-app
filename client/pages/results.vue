@@ -29,6 +29,7 @@
                     />
                 </b-col>
             </b-row>
+            <el-backtop />
         </b-col>
     </b-row>
 </template>
@@ -90,7 +91,7 @@
                             { value: null, text: 'Please select an algorithm' },
                             ...cbRecTypes
                         ],
-                        genre: null,
+                        genre: [],
                         movieType: null,
                         movieTypes:  [
                             { value: null, text: 'Please select a movie type' },
@@ -126,7 +127,7 @@
                             { value: null, text: 'Please select a content-based algorithm' },
                             ...cbRecTypes
                         ],
-                        genre: null,
+                        genre: [],
                         movieType: null,
                         movieTypes:  [
                             { value: null, text: 'Please select a movie type' },
@@ -157,7 +158,7 @@
                             { value: null, text: 'Please select an algorithm' },
                             ...cbRecTypes
                         ],
-                        genre: null,
+                        genre: [],
                         movieType: null,
                         movieTypes:  [
                             { value: null, text: 'Please select a movie type' },
