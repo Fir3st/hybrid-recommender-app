@@ -11,7 +11,7 @@
                 <b-row>
                     <b-col>
                         <p><strong>ID:</strong> {{ result.id }}</p>
-                        <p><strong>Posted:</strong> {{ result.createdAt }}</p>
+                        <p><strong>Posted:</strong> {{ formatDate(result.createdAt) }}</p>
                         <p><strong>User:</strong> {{ result.user.name }} {{ result.user.surname }}</p>
                     </b-col>
                 </b-row>
@@ -159,6 +159,7 @@
 </template>
 
 <script>
+    import moment from 'moment';
     import AdminPage from '~/components/admin/AdminPage';
 
     export default {
@@ -200,7 +201,10 @@
                         return !item.relevance ? count + 1 : count;
                     }, 0);
                 }
-            }
+            },
+            formatDate(date) {
+                return moment(date).format('DD. MM. YYYY HH:mm');
+            },
         }
     };
 </script>
