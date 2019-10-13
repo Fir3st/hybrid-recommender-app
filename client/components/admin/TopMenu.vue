@@ -38,6 +38,12 @@
                 >
                     Playground
                 </b-nav-item>
+                <b-nav-item
+                    to="/admin/results"
+                    exact
+                >
+                    Questionnaire results
+                </b-nav-item>
             </b-navbar-nav>
             <menu-user
                 :user-full-name="userFullName"
