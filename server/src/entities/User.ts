@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { UserRating } from './UserRating';
 import { FavGenre } from './FavGenre';
+import { Result } from './Result';
 
 @Entity({ name: 'users' })
 export class User {
@@ -37,4 +38,9 @@ export class User {
         cascade: true
     })
     favouriteGenres: FavGenre[];
+
+    @OneToMany(type => Result, result => result.user, {
+        cascade: true
+    })
+    results: Result[];
 }

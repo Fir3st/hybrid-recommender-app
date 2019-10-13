@@ -59,6 +59,9 @@
             <Results
                 v-if="activeTab === settingsLength"
                 :settings="settings"
+                :movies="movies"
+                :favourite-genres="favouriteGenres"
+                :not-favourite-genres="notFavouriteGenres"
             />
             <b-row class="btns">
                 <b-col class="text-center">
@@ -122,6 +125,18 @@
                 required: true
             },
             genres: {
+                type: Array,
+                required: true
+            },
+            movies: {
+                type: Array,
+                required: true
+            },
+            favouriteGenres: {
+                type: Array,
+                required: true
+            },
+            notFavouriteGenres: {
                 type: Array,
                 required: true
             }

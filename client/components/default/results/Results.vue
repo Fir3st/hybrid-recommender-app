@@ -86,6 +86,18 @@
             settings: {
                 type: Object,
                 required: true
+            },
+            movies: {
+                type: Array,
+                required: true
+            },
+            favouriteGenres: {
+                type: Array,
+                required: true
+            },
+            notFavouriteGenres: {
+                type: Array,
+                required: true
             }
         },
         data() {
@@ -285,9 +297,63 @@
                     this[type][movieIndex].relevance = relevance;
                 }
             },
-            submit() {
-                // TODO: Finish
-                console.log('sending results');
+            async submit() {
+                const data = {
+                    user: {
+                        id: this.$auth.user.id,
+                        items: this.movies,
+                        favouriteGenres: this.favouriteGenres,
+                        notFavouriteGenres: this.notFavouriteGenres
+                    },
+                    settings: this.settings,
+                    results: {
+                        cbResults: this.cbResults.map((item) => {
+                            return {
+                                id: item.id,
+                                title: item.title,
+                                relevance: item.relevance
+                            };
+                        }),
+                        cbfResults: this.cbfResults.map((item) => {
+                            return {
+                                id: item.id,
+                                title: item.title,
+                                relevance: item.relevance
+                            };
+                        }),
+                        hybridResults: this.hybridResults.map((item) => {
+                            return {
+                                id: item.id,
+                                title: item.title,
+                                relevance: item.relevance
+                            };
+                        }),
+                        expertResults: this.expertResults.map((item) => {
+                            return {
+                                id: item.id,
+                                title: item.title,
+                                relevance: item.relevance
+                            };
+                        })
+                    }
+                };
+                try {
+                    await this.$axios.$post(`/users/${this.$auth.user.id}/results`, data);
+                    this.$notify({
+                        title: 'Success',
+                        message: `You have successfully sent the results.`,
+                        type: 'success',
+                        position: 'bottom-right'
+                    });
+                } catch (error) {
+                    console.log(error.message);
+                    this.$notify({
+                        title: 'Error',
+                        message: `Something went wrong with sending the results. Please try it again.`,
+                        type: 'error',
+                        position: 'bottom-right'
+                    });
+                }
             }
         }
     };

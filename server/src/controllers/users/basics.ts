@@ -11,6 +11,7 @@ import { User } from '../../entities/User';
 import { Movie } from '../../entities/Movie';
 import { UserRating } from '../../entities/UserRating';
 import { FavGenre } from '../../entities/FavGenre';
+import { Result } from '../../entities/Result';
 
 export const getUsers = async (req: Request, res: any) => {
     const take = req.query.take || 10;
@@ -265,6 +266,34 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest('Not enough data.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
+export const sendResults = async (req: Request, res: any) => {
+    const repository = getRepository(Result);
+    const userId = parseInt(req.user.id, 10);
+    const settings = req.body.settings;
+    const user = req.body.user;
+    const results = req.body.results;
+    const { favouriteGenres, notFavouriteGenres, items } = user;
+
+    try {
+        const result = new Result();
+        result.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+        result.userId = userId;
+        const data = {
+            settings,
+            favouriteGenres,
+            notFavouriteGenres,
+            items,
+            results
+        };
+        result.data = JSON.stringify(data);
+        await repository.save(result);
+        return res.send({ message: `Results for user ${userId} saved in database.` });
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

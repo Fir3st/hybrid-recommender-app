@@ -26,6 +26,9 @@
                         :previous-tab-handler="previousTab"
                         :change-settings-handler="changeSettings"
                         :genres="genres"
+                        :movies="movies"
+                        :favourite-genres="favouriteGenres"
+                        :not-favourite-genres="notFavouriteGenres"
                     />
                 </b-col>
             </b-row>
@@ -199,8 +202,7 @@
                     const movies = user.ratings.map((item) => {
                         return {
                             ...item.movie,
-                            rating: item.rating,
-                            penalized: item.rating === 0
+                            rating: item.rating
                         };
                     });
                     const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
