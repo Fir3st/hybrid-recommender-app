@@ -7,6 +7,7 @@ import analyticsController from './analyticsController';
 import ratingsController from './ratingsController';
 import dataController from './dataController';
 import playgroundController from './playgroundController';
+import resultsController from './resultsController';
 
 export default (app: Application) => {
     app.use('/auth', authenticationController);
@@ -17,4 +18,5 @@ export default (app: Application) => {
     app.use('/data', dataController);
     app.use('/ratings', ratingsController);
     app.use('/playground', playgroundController);
+    app.use('/results', resultsController);
 };
