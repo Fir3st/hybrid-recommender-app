@@ -9,7 +9,7 @@ import { Movie } from '../entities/Movie';
 import MoviesUtil from '../utils/movies/MoviesUtil';
 const router = Router();
 
-router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/movies/:id', [authenticate], async (req: Request, res: any) => {
     req.socket.setTimeout(3600e3);
     const id = req.params.id;
     const recommender = config.get('recommenderUrl');
@@ -59,7 +59,7 @@ router.get('/movies/:id', [authenticate, authorize], async (req: Request, res: a
     }
 });
 
-router.get('/users/:id', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
     req.socket.setTimeout(3600e3);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
@@ -130,7 +130,7 @@ router.get('/users/:id', [authenticate, authorize], async (req: Request, res: an
     }
 });
 
-router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/hybrid/:userId/:movieId', [authenticate], async (req: Request, res: any) => {
     req.socket.setTimeout(3600e3);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
@@ -207,7 +207,7 @@ router.get('/hybrid/:userId/:movieId', [authenticate, authorize], async (req: Re
     }
 });
 
-router.get('/search/:id', [authenticate, authorize], async (req: Request, res: any) => {
+router.get('/search/:id', [authenticate], async (req: Request, res: any) => {
     req.socket.setTimeout(3600e3);
     const recommender = config.get('recommenderUrl');
     const repository = getRepository(Movie);
