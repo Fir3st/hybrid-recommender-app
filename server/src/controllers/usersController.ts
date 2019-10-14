@@ -19,9 +19,9 @@ router.delete('/:id', [authenticate, authorize], deleteUser);
 
 router.get('/:id/recommendations', [authenticate, authorizedOrCurrentUser], getRecommendations);
 
-router.post('/:id/questionnaire', authenticate, sendQuestionnaire);
+router.post('/:id/questionnaire', [authenticate, authorizedOrCurrentUser], sendQuestionnaire);
 
-router.post('/:id/results', authenticate, sendResults);
+router.post('/:id/results', [authenticate, authorizedOrCurrentUser], sendResults);
 
 router.get('/:id/preferences', [authenticate, authorize], getPreferences);
 
