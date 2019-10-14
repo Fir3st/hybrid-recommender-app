@@ -22,7 +22,7 @@
             </b-row>
             <b-row v-else>
                 <b-col>
-                    <p>Some settings are not filled. Please go back and fill required inputs.</p>
+                    <p>Some settings are not completed. Please fill all required inputs.</p>
                 </b-col>
             </b-row>
             <Loading v-if="loading" />

@@ -103,7 +103,7 @@
                 if (this.selectedItem) {
                     this.addItemHandler({
                         ...this.selectedItem,
-                        rating: 2.5,
+                        rating: 5,
                         penalized: false
                     });
                 }

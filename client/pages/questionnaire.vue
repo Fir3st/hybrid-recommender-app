@@ -35,7 +35,11 @@
                         :disabled="isButtonDisabled"
                         @click="submit"
                     >
-                        Send questionnaire
+                        <i
+                            v-if="loading"
+                            class="el-icon-loading"
+                        ></i>
+                        <span v-else>Send questionnaire</span>
                     </b-button>
                 </b-col>
             </b-row>
@@ -45,7 +49,7 @@
                         to="/results"
                         class="btn btn-info"
                     >
-                        Continue to next part
+                        Continue to the next part
                     </nuxt-link>
                 </b-col>
             </b-row>
@@ -193,18 +197,21 @@
                 const userId = this.user.id;
                 this.loading = true;
                 try {
-                    this.$notify({
-                        title: 'Success',
-                        message: `You have successfully sent Questionnaire.`,
-                        type: 'success',
-                        position: 'bottom-right'
-                    });
                     await this.$axios.$post(`/users/${userId}/questionnaire`, {
                         ratings,
                         favouriteGenres: this.favouriteGenres,
                         notFavouriteGenres: this.notFavouriteGenres
                     });
-                    this.sent = true;
+                    setTimeout(async() => {
+                        this.$notify({
+                            title: 'Success',
+                            message: `You have successfully sent Questionnaire.`,
+                            type: 'success',
+                            position: 'bottom-right'
+                        });
+                        this.sent = true;
+                        this.loading = false;
+                    }, 15000);
                 } catch (error) {
                     console.log(error.message);
                     this.$notify({
@@ -213,7 +220,6 @@
                         type: 'error',
                         position: 'bottom-right'
                     });
-                } finally {
                     this.loading = false;
                 }
             }
