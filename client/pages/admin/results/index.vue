@@ -8,6 +8,16 @@
         </b-row>
         <b-row>
             <b-col>
+                <nuxt-link
+                    class="btn btn-info"
+                    to="/admin/results/settings"
+                >
+                    Go to settings
+                </nuxt-link>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <el-table
                     :data="results"
                     stripe

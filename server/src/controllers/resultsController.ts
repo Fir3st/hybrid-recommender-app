@@ -11,7 +11,7 @@ const router = Router();
 router.get('/settings', [authenticate], async (req: Request, res: any) => {
     const repository = getRepository(Setting);
     const defaultSettings = {
-        general: { movieId: null, selectedItem: null },
+        general: {},
         cb: {},
         cbf: {},
         hybrid: {},
@@ -37,6 +37,37 @@ router.get('/settings', [authenticate], async (req: Request, res: any) => {
     }
 });
 
+router.post('/settings', [authenticate, authorize], async (req: Request, res: any) => {
+    const repository = getRepository(Setting);
+    const sentSettings = req.body.settings;
+    const types = Object.keys(sentSettings);
+
+    for (const type of types) {
+        const typeSettings = Object.keys(sentSettings[type]);
+        for (const typeSetting of typeSettings) {
+            const value = sentSettings[type][typeSetting];
+
+            const setting = await repository
+                .createQueryBuilder('setting')
+                .where('type = :type', { type })
+                .andWhere('name = :name ', { name: typeSetting })
+                .getOne();
+
+            if (setting) {
+                setting.value = typeSetting === 'genre' ? JSON.stringify(value) : value;
+                await repository.save(setting);
+            }
+        }
+    }
+
+    try {
+        return res.send({ message: 'Settings changed.' });
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
 router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
     const repository = getRepository(Result);
 
@@ -45,6 +76,7 @@ router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
             .createQueryBuilder('results')
             .leftJoinAndSelect('results.user', 'user')
             .select(['results.id', 'results.createdAt', 'user.name', 'user.surname'])
+            .orderBy('createdAt', 'DESC')
             .getMany();
 
         if (results && results.length > 0) {

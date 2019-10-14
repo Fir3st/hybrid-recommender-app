@@ -97,6 +97,8 @@
                     });
                     const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
                     const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
+                    settings.general.selectedItem = null;
+                    settings.general.movieId = null;
                     return {
                         movies,
                         user,
