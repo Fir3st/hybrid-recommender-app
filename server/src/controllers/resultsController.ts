@@ -5,7 +5,37 @@ import winston from '../utils/winston';
 import { authenticate, authorize } from '../middleware/auth';
 import { Result } from '../entities/Result';
 import { Genre } from '../entities/Genre';
+import { Setting } from '../entities/Setting';
 const router = Router();
+
+router.get('/settings', [authenticate], async (req: Request, res: any) => {
+    const repository = getRepository(Setting);
+    const defaultSettings = {
+        general: { movieId: null, selectedItem: null },
+        cb: {},
+        cbf: {},
+        hybrid: {},
+        expert: {}
+    };
+
+    try {
+        const settings = await repository
+            .createQueryBuilder('settings')
+            .getMany();
+
+        if (settings && settings.length > 0) {
+            for (const setting of settings) {
+                defaultSettings[setting.type][setting.name] = setting.name === 'genre' ? JSON.parse(setting.value) : setting.value;
+            }
+            return res.send(defaultSettings);
+        }
+
+        return res.boom.badRequest('No settings found.');
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
 
 router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
     const repository = getRepository(Result);

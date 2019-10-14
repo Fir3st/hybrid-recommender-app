@@ -91,7 +91,7 @@
     import CBFSettings from './CBFSettings';
     import HybridSettings from './HybridSettings';
     import ExpertSettings from './ExpertSettings';
-    import Results from './Results';
+    import Results from './ResultsTab';
 
 
     export default {

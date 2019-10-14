@@ -19,13 +19,15 @@
             </b-row>
             <b-row v-else>
                 <b-col>
-                    <Stepper
-                        :active-tab="activeTab"
+                    <p><strong>Selected item:</strong> {{ settings.general.selectedItem ? settings.general.selectedItem.title : 'Nothing selected' }}</p>
+                    <SearchInput
+                        :search-term="searchTerm"
+                        :on-change="search"
+                        :suggestions="suggestions"
+                        :on-select="selectItem"
+                    />
+                    <ResultsTab
                         :settings="settings"
-                        :next-tab-handler="nextTab"
-                        :previous-tab-handler="previousTab"
-                        :change-settings-handler="changeSettings"
-                        :genres="genres"
                         :movies="movies"
                         :favourite-genres="favouriteGenres"
                         :not-favourite-genres="notFavouriteGenres"
@@ -38,13 +40,16 @@
 </template>
 
 <script>
+    import { CancelToken } from 'axios';
     import { mapGetters } from 'vuex';
-    import { numOfGenres, numOfItems, cbRecTypes, cbfRecTypes, similarityTypes, movieTypes, hybridTypes } from '~/utils/constants';
-    import Stepper from "~/components/default/results/Stepper";
+    import { numOfGenres, numOfItems } from '~/utils/constants';
+    import ResultsTab from '~/components/default/results/ResultsTab';
+    import SearchInput from '~/components/default/questionnaire/Input';
 
     export default {
         components: {
-            Stepper
+            ResultsTab,
+            SearchInput
         },
         head() {
             return {
@@ -54,128 +59,12 @@
         data() {
             return {
                 pageTitle: 'Results page',
+                searchTerm: '',
+                suggestions: [],
+                source: CancelToken.source(),
+                minLength: 3,
                 numOfGenres: numOfGenres,
-                numOfItems: numOfItems,
-                activeTab: 0,
-                settings: {
-                    general: {
-                        movieId: 1,
-                        selectedItem: null,
-                        take: 50,
-                    },
-                    cb: {
-                        recType: null,
-                        recTypes: [
-                            { value: null, text: 'Please select an algorithm' },
-                            ...cbRecTypes
-                        ],
-                        orderBy: null,
-                        orderByOptions: [
-                            { value: null, text: 'Please select columns for sorting and their order' },
-                            { value: 'similarity', text: 'Only Similarity' },
-                            { value: 'es_score', text: 'Only Expert system score' },
-                            { value: 'similarity,es_score', text: 'Similarity, Expert system score (default)' },
-                            { value: 'es_score,similarity', text: 'Expert system score, Similarity' },
-                        ]
-                    },
-                    cbf: {
-                        recType: null,
-                        recTypes: [
-                            { value: null, text: 'Please select an algorithm' },
-                            ...cbfRecTypes
-                        ],
-                        similarityType: null,
-                        similarityTypes: [
-                            { value: null, text: 'Please select a similarity function' },
-                            ...similarityTypes
-                        ],
-                        similaritySource: null,
-                        similaritySources: [
-                            { value: null, text: 'Please select an algorithm' },
-                            ...cbRecTypes
-                        ],
-                        genre: [],
-                        movieType: null,
-                        movieTypes:  [
-                            { value: null, text: 'Please select a movie type' },
-                            ...movieTypes
-                        ],
-                        orderBy: null,
-                        orderByOptions: [
-                            { value: null, text: 'Please select columns for sorting and their order' },
-                            { value: 'rating', text: 'Only predicted rating' },
-                            { value: 'es_score', text: 'Only Expert system score' },
-                            { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
-                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
-                        ]
-                    },
-                    hybrid: {
-                        hybridType: null,
-                        hybridTypes: [
-                            { value: null, text: 'Please select a hybrid hype' },
-                            ...hybridTypes
-                        ],
-                        recType: null,
-                        recTypes: [
-                            { value: null, text: 'Please select a collaborative algorithm' },
-                            ...cbfRecTypes
-                        ],
-                        similarityType: null,
-                        similarityTypes: [
-                            { value: null, text: 'Please select a similarity function for collaborative filtering' },
-                            ...similarityTypes
-                        ],
-                        similaritySource: null,
-                        similaritySources: [
-                            { value: null, text: 'Please select a content-based algorithm' },
-                            ...cbRecTypes
-                        ],
-                        genre: [],
-                        movieType: null,
-                        movieTypes:  [
-                            { value: null, text: 'Please select a movie type' },
-                            ...movieTypes
-                        ],
-                        orderBy: null,
-                        orderByOptions: [
-                            { value: null, text: 'Please select columns for sorting and their order' },
-                            { value: 'similarity,rating', text: 'Only predicted rating/similarity' },
-                            { value: 'es_score', text: 'Only Expert system score' },
-                            { value: 'similarity,rating,es_score', text: 'Predicted rating/Similarity, Expert system score (default)' },
-                            { value: 'es_score,similarity,rating', text: 'Expert system score, Predicted rating/Similarity' },
-                        ],
-                    },
-                    expert: {
-                        recType: null,
-                        recTypes: [
-                            { value: null, text: 'Please select an algorithm' },
-                            ...cbfRecTypes
-                        ],
-                        similarityType: null,
-                        similarityTypes: [
-                            { value: null, text: 'Please select a similarity function' },
-                            ...similarityTypes
-                        ],
-                        similaritySource: null,
-                        similaritySources: [
-                            { value: null, text: 'Please select an algorithm' },
-                            ...cbRecTypes
-                        ],
-                        genre: [],
-                        movieType: null,
-                        movieTypes:  [
-                            { value: null, text: 'Please select a movie type' },
-                            ...movieTypes
-                        ],
-                        orderBy: null,
-                        orderByOptions: [
-                            { value: null, text: 'Please select columns for sorting and their order' },
-                            { value: 'es_score', text: 'Only Expert system score' },
-                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating (default)' },
-                            { value: 'rating,es_score', text: 'Predicted rating, Expert system score' },
-                        ]
-                    },
-                }
+                numOfItems: numOfItems
             };
         },
         computed: {
@@ -197,8 +86,9 @@
         async asyncData ({ app }) {
             try {
                 const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
+                const settings = await app.$axios.$get('/results/settings');
 
-                if (user) {
+                if (user && settings) {
                     const movies = user.ratings.map((item) => {
                         return {
                             ...item.movie,
@@ -211,7 +101,8 @@
                         movies,
                         user,
                         favouriteGenres,
-                        notFavouriteGenres
+                        notFavouriteGenres,
+                        settings
                     };
                 }
             } catch (error) {
@@ -219,14 +110,38 @@
             }
         },
         methods: {
-            nextTab() {
-                if (this.activeTab <= Object.keys(this.settings).length) this.activeTab++;
+            requestReset() {
+                this.source.cancel('Request cancelled.');
+                this.source = CancelToken.source();
             },
-            previousTab() {
-                if (this.activeTab > 0) this.activeTab--;
+            stateReset() {
+                this.suggestions = [];
+                this.requestReset();
             },
-            changeSettings(type, name, value) {
-                this.settings[type][name] = value;
+            async search(event) {
+                this.searchTerm = event.target.value;
+                this.stateReset();
+                if (this.searchTerm && this.searchTerm.length > this.minLength) {
+                    try {
+                        const url = `/movies/search?query=${this.searchTerm}&take=100`;
+                        const response = await this.$axios.$get(url, { cancelToken: this.source.token });
+                        const { movies } = response;
+                        if (movies && movies.length > 0) {
+                            this.suggestions = movies;
+                        }
+                    } catch (error) {
+                        console.log(error.message);
+                    }
+                }
+            },
+            selectItem(id) {
+                const movieIndex = this.suggestions.findIndex(item => item.id === id);
+                if (movieIndex > -1) {
+                    this.settings.general.selectedItem = this.suggestions[movieIndex];
+                    this.settings.general.movieId = this.suggestions[movieIndex].id;
+                }
+                this.stateReset();
+                this.searchTerm = '';
             }
         }
     };
