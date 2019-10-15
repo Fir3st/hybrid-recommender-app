@@ -280,6 +280,12 @@
                 if (this.settings.expert.orderBy) {
                     url = `${url}&order_by=${this.settings.expert.orderBy}`;
                 }
+                if (this.favouriteGenres) {
+                    url = `${url}&fav_genres=${this.favouriteGenres.join(',')}`;
+                }
+                if (this.notFavouriteGenres) {
+                    url = `${url}&not_fav_genres=${this.notFavouriteGenres.join(',')}`;
+                }
 
                 const response = await this.$axios.$get(url, this.timeout);
                 if (response && response.length > 0) {

@@ -66,6 +66,8 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
 
     const id = parseInt(req.params.id, 10);
     const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
+    const favGenres = req.query.fav_genres ? req.query.fav_genres.split(',').map(item => parseInt(item, 10)) : [];
+    const notFavGenres = req.query.not_fav_genres ? req.query.not_fav_genres.split(',').map(item => parseInt(item, 10)) : [];
     const type = req.query.type || 'all';
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
@@ -99,6 +101,14 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
 
     if (orderBy) {
         url = `${url}&order_by=${orderBy}`;
+    }
+
+    if (favGenres && favGenres.length > 0) {
+        url = `${url}&fav_genres=${favGenres}`;
+    }
+
+    if (notFavGenres && notFavGenres.length > 0) {
+        url = `${url}&not_fav_genres=${notFavGenres}`;
     }
 
     try {
