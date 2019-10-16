@@ -114,6 +114,7 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
+                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
                             </li>
                         </ul>
 
@@ -124,6 +125,7 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
+                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
                             </li>
                         </ul>
 
@@ -134,6 +136,7 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
+                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
                             </li>
                         </ul>
 
@@ -144,6 +147,7 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
+                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
                             </li>
                         </ul>
                     </b-col>

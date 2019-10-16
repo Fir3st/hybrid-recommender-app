@@ -314,32 +314,20 @@
                     settings: this.settings,
                     results: {
                         cbResults: this.cbResults.map((item) => {
-                            return {
-                                id: item.id,
-                                title: item.title,
-                                relevance: item.relevance
-                            };
+                            const { id, title, relevance, genres } = item;
+                            return { id, title, relevance, genres };
                         }),
                         cbfResults: this.cbfResults.map((item) => {
-                            return {
-                                id: item.id,
-                                title: item.title,
-                                relevance: item.relevance
-                            };
+                            const { id, title, relevance, genres } = item;
+                            return { id, title, relevance, genres };
                         }),
                         hybridResults: this.hybridResults.map((item) => {
-                            return {
-                                id: item.id,
-                                title: item.title,
-                                relevance: item.relevance
-                            };
+                            const { id, title, relevance, genres } = item;
+                            return { id, title, relevance, genres };
                         }),
                         expertResults: this.expertResults.map((item) => {
-                            return {
-                                id: item.id,
-                                title: item.title,
-                                relevance: item.relevance
-                            };
+                            const { id, title, relevance, genres } = item;
+                            return { id, title, relevance, genres };
                         })
                     }
                 };
