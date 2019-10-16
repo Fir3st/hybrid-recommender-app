@@ -97,6 +97,30 @@
                             ></b-form-select>
                         </b-form-group>
                         <b-form-group
+                            label="Favourite genres (optional)"
+                            label-for="favGenres"
+                        >
+                            <b-form-select
+                                id="favGenres"
+                                v-model="favouriteGenres"
+                                :options="genres"
+                                :select-size="4"
+                                multiple
+                            ></b-form-select>
+                        </b-form-group>
+                        <b-form-group
+                            label="Not favourite genres (optional)"
+                            label-for="notFavGenres"
+                        >
+                            <b-form-select
+                                id="notFavGenres"
+                                v-model="notFavouriteGenres"
+                                :options="genres"
+                                :select-size="4"
+                                multiple
+                            ></b-form-select>
+                        </b-form-group>
+                        <b-form-group
                             id="orderBy"
                             label="Order by"
                             label-for="orderBy"
@@ -173,7 +197,9 @@
                     { value: 'tf-idf', text: 'TF-IDF (default)' },
                     { value: 'lda', text: 'LDA' },
                 ],
-                genre: null,
+                genre: [],
+                favouriteGenres: [],
+                notFavouriteGenres: [],
                 movieType: null,
                 movieTypes:  [
                     { value: null, text: 'Please select a movie type' },
@@ -244,6 +270,12 @@
 
                     if (this.orderBy) {
                         url = `${url}&order_by=${this.orderBy}`;
+                    }
+                    if (this.favouriteGenres) {
+                        url = `${url}&fav_genres=${this.favouriteGenres.join(',')}`;
+                    }
+                    if (this.notFavouriteGenres) {
+                        url = `${url}&not_fav_genres=${this.notFavouriteGenres.join(',')}`;
                     }
 
                     const response = await this.$axios.$get(url, { timeout: 60 * 40 * 1000 });
