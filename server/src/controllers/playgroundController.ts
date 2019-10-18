@@ -125,8 +125,10 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                const index = orderByColumns.indexOf('es_score');
+                let index = orderByColumns.indexOf('es_score');
                 if (index !== -1) orderByColumns[index] = 'esScore';
+                index = orderByColumns.indexOf('augmented_rating');
+                if (index !== -1) orderByColumns[index] = 'augmentedRating';
                 return res.send(_.orderBy(moviesWithInfo, [...orderByColumns], Array(orderByColumns.length).fill('desc')));
             }
 

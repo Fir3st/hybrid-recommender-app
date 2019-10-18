@@ -375,8 +375,9 @@
                         orderByOptions: [
                             { value: null, text: 'Please select columns for sorting and their order' },
                             { value: 'es_score', text: 'Only Expert system score' },
-                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating (default)' },
+                            { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
                             { value: 'rating,es_score', text: 'Predicted rating, Expert system score' },
+                            { value: 'augmented_rating', text: 'Augmented rating by Expert system score' }
                         ]
                     }
                 }

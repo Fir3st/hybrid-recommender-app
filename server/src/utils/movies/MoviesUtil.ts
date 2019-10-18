@@ -26,6 +26,9 @@ export default class MoviesUtil {
                     movie['recType'] = 2;
                 }
             }
+            if (rec && rec['augmented_rating']) {
+                movie['augmentedRating'] = rec['augmented_rating'];
+            }
             const stats = MoviesUtil.getStatsFromRec(rec);
 
             if (stats) {
