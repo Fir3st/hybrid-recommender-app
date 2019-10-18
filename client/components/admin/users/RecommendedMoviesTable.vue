@@ -20,6 +20,14 @@
             </template>
         </el-table-column>
         <el-table-column
+            v-if="recommendations && recommendations.length > 0 && recommendations[0].augmentedRating"
+            label="Augmented rating"
+        >
+            <template slot-scope="scope">
+                {{ round(scope.row.augmentedRating, numOfDecPlaces) }}
+            </template>
+        </el-table-column>
+        <el-table-column
             v-if="additionalInfo"
             label="Average rating"
         >
