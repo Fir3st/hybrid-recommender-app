@@ -19,8 +19,9 @@
             </b-row>
             <b-row v-else>
                 <b-col>
-                    <p><strong>Selected item:</strong> {{ settings.general.selectedItem ? settings.general.selectedItem.title : 'Nothing selected' }}</p>
+                    <p><strong>Item for content-based recs:</strong> {{ settings.general.selectedItem ? settings.general.selectedItem.title : 'Nothing selected' }}</p>
                     <SearchInput
+                        v-if="!settings.general.movieId"
                         :search-term="searchTerm"
                         :on-change="search"
                         :suggestions="suggestions"
@@ -97,8 +98,23 @@
                     });
                     const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
                     const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
-                    settings.general.selectedItem = null;
-                    settings.general.movieId = null;
+
+                    const highestRatedItems = movies.filter(item => item.rating === Math.max(...movies.map(movie => movie.rating)));
+                    if (highestRatedItems.length === 1) {
+                        settings.general.selectedItem = highestRatedItems[0];
+                        settings.general.movieId = highestRatedItems[0].id;
+                    } else {
+                        const numOfFavGenres = highestRatedItems.map((item) => {
+                            return item.genres.map(item => item.id).filter(item => favouriteGenres.includes(item)).length;
+                        });
+                        let index = numOfFavGenres.indexOf(Math.max(...numOfFavGenres));
+                        if (index === -1) {
+                            index = Math.floor(Math.random()*highestRatedItems.length);
+                        }
+                        settings.general.selectedItem = highestRatedItems[index];
+                        settings.general.movieId = highestRatedItems[index].id;
+                    }
+
                     return {
                         movies,
                         user,

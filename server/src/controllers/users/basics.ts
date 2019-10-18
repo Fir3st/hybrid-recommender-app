@@ -113,6 +113,7 @@ export const getUserByID = async (req: Request, res: any) => {
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.ratings', 'ratings')
             .leftJoinAndSelect('ratings.movie', 'movie')
+            .leftJoinAndSelect('movie.genres', 'genres')
             .leftJoinAndSelect('user.favouriteGenres', 'favGenres')
             .leftJoinAndSelect('favGenres.genre', 'genre')
             .where('user.id = :id', { id })
