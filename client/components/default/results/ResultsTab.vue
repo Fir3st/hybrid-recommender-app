@@ -30,8 +30,17 @@
                 <b-col>
                     <b-tabs class="results">
                         <b-tab
-                            title="Content-based results"
+                            title="Expert system results"
                             active
+                        >
+                            <Tab
+                                :recommendations="expertResults"
+                                rec-type="expertResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                        <b-tab
+                            title="Content-based results"
                         >
                             <Tab
                                 :recommendations="cbResults"
@@ -54,15 +63,6 @@
                             <Tab
                                 :recommendations="hybridResults"
                                 rec-type="hybridResults"
-                                :set-relevance-handler="setRelevance"
-                            />
-                        </b-tab>
-                        <b-tab
-                            title="Expert system results"
-                        >
-                            <Tab
-                                :recommendations="expertResults"
-                                rec-type="expertResults"
                                 :set-relevance-handler="setRelevance"
                             />
                         </b-tab>
