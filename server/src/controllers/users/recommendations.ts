@@ -13,8 +13,9 @@ export const getRecommendations = async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const recommender = config.get('recommenderUrl');
+    const orderBy = config.get('CFOrderBy');
     const repository = getRepository(Movie);
-    let url = `${recommender}/users/${id}/recommendations?take=${take}&skip=${skip}`;
+    let url = `${recommender}/users/${id}/recommendations?take=${take}&skip=${skip}&order_by=${orderBy}`;
     if (genres && genres.split(',').length > 0) {
         url = `${url}&genres=${genres}`;
     }
@@ -33,7 +34,10 @@ export const getRecommendations = async (req: Request, res: any) => {
 
             if (movies && movies.length > 0) {
                 const moviesWithInfo = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                return res.send(_.orderBy(moviesWithInfo, ['rating', 'esScore'], ['desc', 'desc']));
+                const orderByColumns = orderBy.split(',');
+                const index = orderByColumns.indexOf('augmented_rating');
+                if (index !== -1) orderByColumns[index] = 'augmentedRating';
+                return res.send(_.orderBy(moviesWithInfo, orderByColumns, Array(orderByColumns.length).fill('desc')));
             }
 
             return res.send(recommendations.data);
