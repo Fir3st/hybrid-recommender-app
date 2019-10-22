@@ -5,7 +5,9 @@ import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import { Movie } from '../../entities/Movie';
 import MoviesUtil from '../../utils/movies/MoviesUtil';
+import UsersUtil from '../../utils/users/UsersUtil';
 import winston from '../../utils/winston';
+import {not} from "joi";
 
 export const getRecommendations = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
@@ -14,6 +16,7 @@ export const getRecommendations = async (req: Request, res: any) => {
     const skip = req.query.skip || 0;
     const recommender = config.get('recommenderUrl');
     const orderBy = config.get('CFOrderBy');
+    const includeGenres = config.get('includeGenres');
     const repository = getRepository(Movie);
     let url = `${recommender}/users/${id}/recommendations?take=${take}&skip=${skip}&order_by=${orderBy}`;
     if (genres && genres.split(',').length > 0) {
@@ -21,6 +24,15 @@ export const getRecommendations = async (req: Request, res: any) => {
     }
 
     try {
+        if (includeGenres) {
+            const { favGenres, notFavGenres } = await UsersUtil.getUserGenres(id);
+            if (favGenres.length > 0) {
+                url = `${url}&fav_genres=${favGenres.join(',')}`;
+            }
+            if (notFavGenres.length > 0) {
+                url = `${url}&not_fav_genres=${notFavGenres.join(',')}`;
+            }
+        }
         const recsResponse = await axios.get(url);
         const { recommendations } = recsResponse.data;
 
