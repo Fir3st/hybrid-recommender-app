@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as _ from 'lodash';
 import { Movie } from '../../entities/Movie';
 import { getRepository } from 'typeorm';
+import UsersUtil from '../users/UsersUtil';
 
 export default class MoviesUtil {
     public static getMoviesInfo(movies, recommendations = [], key = null) {
@@ -42,18 +43,38 @@ export default class MoviesUtil {
         });
     }
 
-    public static async getQueriedMoviesRatings(movies, user, recommenderUrl) {
+    public static async getQueriedMoviesRatings(movies, user, recommenderUrl, orderBy = 'rating,es_score', includeGenres = false) {
         try {
-            const ratingsResponse = await axios.post(`${recommenderUrl}/search/${user.id}`, { movies: movies.map(item => item.id) });
+            let url = `${recommenderUrl}/search/${user.id}?order_by=${orderBy}`;
+            if (includeGenres) {
+                const { favGenres, notFavGenres } = await UsersUtil.getUserGenres(user.id);
+                if (favGenres.length > 0) {
+                    url = `${url}&fav_genres=${favGenres.join(',')}`;
+                }
+                if (notFavGenres.length > 0) {
+                    url = `${url}&not_fav_genres=${notFavGenres.join(',')}`;
+                }
+            }
+            const ratingsResponse = await axios.post(url, { movies: movies.map(item => item.id) });
             const { ratings } = ratingsResponse.data;
             if (ratings && ratings.length > 0) {
                 const moviesWithRatings = movies.map((movie) => {
                     const rating = ratings.find(item => item.id === movie.id);
                     const stats = MoviesUtil.getStatsFromRec(rating);
-                    return { ...movie, ...stats, rating: rating.rating, ratedSimilarity: rating.similarity, esScore: rating.es_score };
+                    return {
+                        ...movie,
+                        ...stats,
+                        rating: rating.rating,
+                        ratedSimilarity: rating.similarity,
+                        esScore: rating.es_score,
+                        augmentedRating: rating.augmented_rating
+                    };
                 });
 
-                return _.orderBy(moviesWithRatings, ['isPenalized', 'rating', 'esScore'], ['asc', 'desc', 'desc']);
+                const orderByColumns = orderBy.split(',');
+                const index = orderByColumns.indexOf('augmented_rating');
+                if (index !== -1) orderByColumns[index] = 'augmentedRating';
+                return _.orderBy(moviesWithRatings, ['isPenalized', ...orderByColumns], ['asc', ...Array(orderByColumns.length).fill('desc')]);
             }
 
             return movies;

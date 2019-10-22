@@ -65,6 +65,7 @@
             <div v-if="isAdmin && analytics">
                 <p><strong>Analytics</strong></p>
                 <p><strong>Predicated rating for curr. user: </strong> {{ movie.rating }}</p>
+                <p><strong>Predicated augmented rating: </strong> {{ movie.augmentedRating || 0 }}</p>
                 <p><strong>Average rating: </strong> {{ movie.avgRating }}</p>
                 <p><strong>Number of ratings: </strong> {{ movie.ratingsCount }}</p>
                 <p><strong>Number of penalizations: </strong> {{ movie.penalized }}</p>

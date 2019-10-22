@@ -7,6 +7,7 @@ import { Movie } from '../../entities/Movie';
 import MoviesUtil from '../../utils/movies/MoviesUtil';
 import SearchUtil from '../../utils/search/SearchUtil';
 import winston from '../../utils/winston';
+import UsersUtil from '../../utils/users/UsersUtil';
 
 export const search = async (req: Request, res: any) => {
     const repository = getRepository(Movie);
@@ -70,6 +71,8 @@ export const securedSearch = async (req: Request, res: any) => {
     const user = req.user;
     const repository = getRepository(Movie);
     const recommender = config.get('recommenderUrl');
+    const orderBy = config.get('CFOrderBy');
+    const includeGenres = config.get('includeGenres');
     const { searchQuery, genres, type, take, skip, includeRated } = SearchUtil.getQueryArgs(req.query);
 
     try {
@@ -77,12 +80,21 @@ export const securedSearch = async (req: Request, res: any) => {
         let count = 0;
 
         if (genres && genres.length > 0) {
-            let url = `${recommender}/search/${user.id}?take=${take}&skip=${skip}&includeRated=${includeRated}`;
+            let url = `${recommender}/search/${user.id}?take=${take}&skip=${skip}&includeRated=${includeRated}&order_by=${orderBy}`;
             if (genres && genres.length > 0) {
                 url = `${url}&genres=${genres}`;
             }
             if (type !== 'all') {
                 url = `${url}&type=${type}`;
+            }
+            if (includeGenres) {
+                const { favGenres, notFavGenres } = await UsersUtil.getUserGenres(user.id);
+                if (favGenres.length > 0) {
+                    url = `${url}&fav_genres=${favGenres.join(',')}`;
+                }
+                if (notFavGenres.length > 0) {
+                    url = `${url}&not_fav_genres=${notFavGenres.join(',')}`;
+                }
             }
 
             const recsResponse = await axios.get(url);
@@ -98,7 +110,10 @@ export const securedSearch = async (req: Request, res: any) => {
 
                 if (movies && movies.length > 0) {
                     const moviesWithStats = MoviesUtil.getMoviesInfo(movies, recommendations, 'rating');
-                    movies = _.orderBy(moviesWithStats, ['rating', 'esScore'], ['desc', 'desc']);
+                    const orderByColumns = orderBy.split(',');
+                    const index = orderByColumns.indexOf('augmented_rating');
+                    if (index !== -1) orderByColumns[index] = 'augmentedRating';
+                    movies = _.orderBy(moviesWithStats, orderByColumns, Array(orderByColumns.length).fill('desc'));
                 } else {
                     movies = recommendations;
                 }
@@ -115,7 +130,7 @@ export const securedSearch = async (req: Request, res: any) => {
             movies = await query.getMany();
             if (movies && movies.length > 0) {
                 movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, user));
-                movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender);
+                movies = await MoviesUtil.getQueriedMoviesRatings(movies, user, recommender, orderBy, includeGenres);
             }
             count = await query.getCount();
         }
