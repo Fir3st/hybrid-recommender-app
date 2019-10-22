@@ -6,6 +6,7 @@ import { getRepository } from 'typeorm';
 import winston from '../../utils/winston';
 import { UserRating } from '../../entities/UserRating';
 import { Movie } from '../../entities/Movie';
+import UsersUtil from '../../utils/users/UsersUtil';
 
 export const getMovieRatings = async (req: Request, res: any) => {
     const id = req.params.id;
@@ -101,7 +102,8 @@ export const rateMovie = async (req: Request, res: any) => {
             rating.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
         }
         await repository.save(rating);
-        axios.put(`${recommender}/train/users/${userId}`);
+        await UsersUtil.computeUserGenres(userId);
+        await axios.put(`${recommender}/train/users/${userId}`);
 
         return res.send({ message: 'Rating added successfully.' });
     } catch (error) {
