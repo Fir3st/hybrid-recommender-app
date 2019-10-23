@@ -313,22 +313,10 @@
                     },
                     settings: this.settings,
                     results: {
-                        cbResults: this.cbResults.map((item) => {
-                            const { id, title, relevance, genres } = item;
-                            return { id, title, relevance, genres };
-                        }),
-                        cbfResults: this.cbfResults.map((item) => {
-                            const { id, title, relevance, genres } = item;
-                            return { id, title, relevance, genres };
-                        }),
-                        hybridResults: this.hybridResults.map((item) => {
-                            const { id, title, relevance, genres } = item;
-                            return { id, title, relevance, genres };
-                        }),
-                        expertResults: this.expertResults.map((item) => {
-                            const { id, title, relevance, genres } = item;
-                            return { id, title, relevance, genres };
-                        })
+                        cbResults: this.cbResults,
+                        cbfResults: this.cbfResults,
+                        hybridResults: this.hybridResults,
+                        expertResults: this.expertResults
                     }
                 };
                 try {

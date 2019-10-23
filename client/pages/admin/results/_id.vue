@@ -86,18 +86,22 @@
                         <h3>Content-based results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('cbResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('cbResults', 'notRelevant') }}</p>
+                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('cbResults', 'relevant')) }}%</p>
 
                         <h3>Collaborative results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('cbfResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('cbfResults', 'notRelevant') }}</p>
+                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('cbfResults', 'relevant')) }}%</p>
 
                         <h3>Hybrid results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('hybridResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('hybridResults', 'notRelevant') }}</p>
+                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('hybridResults', 'relevant')) }}%</p>
 
                         <h3>Expert results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('expertResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('expertResults', 'notRelevant') }}</p>
+                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('expertResults', 'relevant')) }}%</p>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -114,7 +118,8 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.similarity"> | <strong>similarity</strong>: {{ res.similarity }}</span>
                             </li>
                         </ul>
 
@@ -125,7 +130,8 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.rating"> | <strong>predicated rating</strong>: {{ res.rating }}</span>
                             </li>
                         </ul>
 
@@ -136,7 +142,9 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.rating && typeof res.rating === 'number'"> | <strong>predicated rating</strong>: {{ res.rating }}</span>
+                                <span v-if="res.similarity"> | <strong>similarity</strong>: {{ res.similarity }}</span>
                             </li>
                         </ul>
 
@@ -147,7 +155,8 @@
                                 :key="res.id"
                             >
                                 {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres">genres: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
+                                <span v-if="res.augmentedRating"> | <strong>augmented rating</strong>: {{ res.augmentedRating }}</span>
                             </li>
                         </ul>
                     </b-col>
@@ -209,6 +218,10 @@
             formatDate(date) {
                 return moment(date).format('DD. MM. YYYY HH:mm');
             },
+            getFinalScore(relevant) {
+                const total = this.result.settings.general.take;
+                return (relevant / total) * 100;
+            }
         }
     };
 </script>
