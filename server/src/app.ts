@@ -12,7 +12,7 @@ const app: express.Application = express();
 app.set('port', config.get('port') || 3001);
 
 app.use(morgan(process.env.NODE_ENV !== 'production' ? 'dev' : 'combined', { stream: winston.stream }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({
     extended: false
 }));
