@@ -110,7 +110,7 @@
                         settings.general.selectedItem = highestRatedItems[0];
                         settings.general.movieId = highestRatedItems[0].id;
                     } else {
-                        const index = _.random(0, highestRatedItems.length);
+                        const index = _.random(0, highestRatedItems.length - 1);
                         settings.general.selectedItem = highestRatedItems[index];
                         settings.general.movieId = highestRatedItems[index].id;
                     }
