@@ -31,6 +31,7 @@ export default class UsersUtil {
 
     public static async computeUserGenres(userId: number) {
         const numOfGenres = 3;
+        const minRatingValue = 2.5;
         const ratingsRepository = getRepository(UserRating);
         const genresRepository = getRepository(FavGenre);
 
@@ -43,8 +44,8 @@ export default class UsersUtil {
                 .getMany();
 
             if (userRatings && userRatings.length > 0) {
-                const positiveRatings = userRatings.filter(item => item.rating > 3.5);
-                const negativeRatings = userRatings.filter(item => item.rating <= 3.5);
+                const positiveRatings = userRatings.filter(item => item.rating > minRatingValue);
+                const negativeRatings = userRatings.filter(item => item.rating <= minRatingValue);
                 const positiveGenres = _.flatten(positiveRatings.map(item => item.movie.genres)).map(item => item.id);
                 const negativeGenres = _.flatten(negativeRatings.map(item => item.movie.genres)).map(item => item.id);
 
