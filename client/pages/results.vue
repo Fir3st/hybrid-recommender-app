@@ -6,7 +6,7 @@
                     <h1>{{ pageTitle }}</h1>
                 </b-col>
             </b-row>
-            <b-row v-if="movies.length < numOfItems || favouriteGenres.length < numOfGenres || notFavouriteGenres.length < numOfGenres">
+            <b-row v-if="!hasAllData">
                 <b-col>
                     <p>
                         You don't meet requirements for showing results. Please go back to
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+    import * as _ from 'lodash';
     import { CancelToken } from 'axios';
     import { mapGetters } from 'vuex';
     import { numOfGenres, numOfItems } from '~/utils/constants';
@@ -82,6 +83,11 @@
                     { value: null, text: 'Please select a genre(s)' },
                     ...options
                 ];
+            },
+            hasAllData() {
+                return this.movies.length >= this.numOfItems
+                    && this.favouriteGenres.length >= this.numOfGenres
+                    && this.notFavouriteGenres.length >= this.numOfGenres;
             }
         },
         async asyncData ({ app }) {
@@ -104,13 +110,7 @@
                         settings.general.selectedItem = highestRatedItems[0];
                         settings.general.movieId = highestRatedItems[0].id;
                     } else {
-                        const numOfFavGenres = highestRatedItems.map((item) => {
-                            return item.genres.map(item => item.id).filter(item => favouriteGenres.includes(item)).length;
-                        });
-                        let index = numOfFavGenres.indexOf(Math.max(...numOfFavGenres));
-                        if (index === -1) {
-                            index = Math.floor(Math.random()*highestRatedItems.length);
-                        }
+                        const index = _.random(0, highestRatedItems.length);
                         settings.general.selectedItem = highestRatedItems[index];
                         settings.general.movieId = highestRatedItems[index].id;
                     }
