@@ -85,9 +85,9 @@
                 ];
             },
             hasAllData() {
-                return this.movies.length >= this.numOfItems
-                    && this.favouriteGenres.length >= this.numOfGenres
-                    && this.notFavouriteGenres.length >= this.numOfGenres;
+                return this.movies && this.movies.length >= this.numOfItems
+                    && this.favouriteGenres && this.favouriteGenres.length >= this.numOfGenres
+                    && this.notFavouriteGenres && this.notFavouriteGenres.length >= this.numOfGenres;
             }
         },
         async asyncData ({ app }) {
