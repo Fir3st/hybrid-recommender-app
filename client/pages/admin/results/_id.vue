@@ -22,15 +22,17 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <p><strong>Favourite genres: </strong> {{ result.favouriteGenres.map(item => item.name).join(', ') }}</p>
-                        <p><strong>Not favourite genres: </strong> {{ result.notFavouriteGenres.map(item => item.name).join(', ') }}</p>
+                        <p><strong>User's favourite genres: </strong> {{ result.favouriteGenres.map(item => item.name).join(', ') }}</p>
+                        <p><strong>User's not favourite genres: </strong> {{ result.notFavouriteGenres.map(item => item.name).join(', ') }}</p>
                         <h3>Rated items</h3>
                         <ul>
                             <li
                                 v-for="item in result.items"
                                 :key="item.id"
                             >
-                                {{ item.title }} (rating: {{ item.rating }})
+                                <nuxt-link :to="`/admin/movies/${item.id}`">
+                                    {{ item.title }}
+                                </nuxt-link>(<strong>rating</strong>: {{ item.rating }})
                             </li>
                         </ul>
                     </b-col>
@@ -43,8 +45,13 @@
                 <b-row>
                     <b-col>
                         <h3>General settings</h3>
-                        <p><strong>Movie:</strong> {{ result.settings.general.selectedItem.title }} (ID: {{ result.settings.general.movieId }})</p>
-                        <p><strong>Take:</strong> {{ result.settings.general.take }}</p>
+                        <p>
+                            <strong>Selected movie for content-based recs:</strong>
+                            <nuxt-link :to="`/admin/movies/${result.settings.general.movieId}`">
+                                {{ result.settings.general.selectedItem.title }}
+                            </nuxt-link>(ID: {{ result.settings.general.movieId }})
+                        </p>
+                        <p><strong>Take:</strong> {{ result.settings.general.take }} items</p>
 
                         <h3>Content-based settings</h3>
                         <p><strong>Recommender algorithm:</strong> {{ result.settings.cb.recType }}</p>
@@ -86,22 +93,22 @@
                         <h3>Content-based results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('cbResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('cbResults', 'notRelevant') }}</p>
-                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('cbResults', 'relevant')) }}%</p>
+                        <p><strong>Final relevance: </strong> {{ getFinalScore(countRelevance('cbResults', 'relevant')) }}%</p>
 
                         <h3>Collaborative results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('cbfResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('cbfResults', 'notRelevant') }}</p>
-                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('cbfResults', 'relevant')) }}%</p>
+                        <p><strong>Final relevance: </strong> {{ getFinalScore(countRelevance('cbfResults', 'relevant')) }}%</p>
 
                         <h3>Hybrid results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('hybridResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('hybridResults', 'notRelevant') }}</p>
-                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('hybridResults', 'relevant')) }}%</p>
+                        <p><strong>Final relevance: </strong> {{ getFinalScore(countRelevance('hybridResults', 'relevant')) }}%</p>
 
                         <h3>Expert results</h3>
                         <p><strong>Relevant:</strong> {{ countRelevance('expertResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('expertResults', 'notRelevant') }}</p>
-                        <p><strong>total relevance: </strong> {{ getFinalScore(countRelevance('expertResults', 'relevant')) }}%</p>
+                        <p><strong>Final relevance: </strong> {{ getFinalScore(countRelevance('expertResults', 'relevant')) }}%</p>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -112,53 +119,32 @@
                 <b-row>
                     <b-col>
                         <h3>Content-based results</h3>
-                        <ul>
-                            <li
-                                v-for="res in result.results.cbResults"
-                                :key="res.id"
-                            >
-                                {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
-                                <span v-if="res.similarity"> | <strong>similarity</strong>: {{ res.similarity }}</span>
-                            </li>
-                        </ul>
+                        <b-table
+                            striped
+                            hover
+                            :items="cbData"
+                        />
 
                         <h3>Collaborative results</h3>
-                        <ul>
-                            <li
-                                v-for="res in result.results.cbfResults"
-                                :key="res.id"
-                            >
-                                {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
-                                <span v-if="res.rating"> | <strong>predicated rating</strong>: {{ res.rating }}</span>
-                            </li>
-                        </ul>
+                        <b-table
+                            striped
+                            hover
+                            :items="cbfData"
+                        />
 
                         <h3>Hybrid results</h3>
-                        <ul>
-                            <li
-                                v-for="res in result.results.hybridResults"
-                                :key="res.id"
-                            >
-                                {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
-                                <span v-if="res.rating && typeof res.rating === 'number'"> | <strong>predicated rating</strong>: {{ res.rating }}</span>
-                                <span v-if="res.similarity"> | <strong>similarity</strong>: {{ res.similarity }}</span>
-                            </li>
-                        </ul>
+                        <b-table
+                            striped
+                            hover
+                            :items="hybridData"
+                        />
 
                         <h3>Expert results</h3>
-                        <ul>
-                            <li
-                                v-for="res in result.results.expertResults"
-                                :key="res.id"
-                            >
-                                {{ res.title }} (<strong>relevant:</strong> {{ res.relevance ? 'yes' : 'no' }})
-                                <span v-if="res.genres"> | <strong>genres</strong>: {{ res.genres.map(item => item.name).join(', ') }}</span>
-                                <span v-if="res.augmentedRating"> | <strong>augmented rating</strong>: {{ res.augmentedRating }}</span>
-                            </li>
-                        </ul>
+                        <b-table
+                            striped
+                            hover
+                            :items="expertData"
+                        />
                     </b-col>
                 </b-row>
             </b-col>
@@ -188,6 +174,53 @@
         computed: {
             pageTitle() {
                 return (this.result) ? `Result with ID ${this.result.id}` : 'Result detail';
+            },
+            cbData() {
+                return this.result.results.cbResults.map((item) => {
+                    return {
+                        '#': item.id,
+                        title: item.title,
+                        relevant: item.relevance ? 'yes' : 'no',
+                        genres: item.genres ? item.genres.map(item => item.name).join(', ') : '-',
+                        similarity: item.similarity || '-'
+                    };
+                });
+            },
+            cbfData() {
+                return this.result.results.cbfResults.map((item) => {
+                    return {
+                        '#': item.id,
+                        title: item.title,
+                        relevant: item.relevance ? 'yes' : 'no',
+                        genres: item.genres ? item.genres.map(item => item.name).join(', ') : '-',
+                        predicated_rating: item.rating || '-'
+                    };
+                });
+            },
+            hybridData() {
+                return this.result.results.hybridResults.map((item) => {
+                    return {
+                        '#': item.id,
+                        title: item.title,
+                        relevant: item.relevance ? 'yes' : 'no',
+                        genres: item.genres ? item.genres.map(item => item.name).join(', ') : '-',
+                        predicated_rating: item.rating && typeof item.rating === 'number' ? item.rating : '-',
+                        similarity: item.similarity || '-'
+                    };
+                });
+            },
+            expertData() {
+                return this.result.results.expertResults.map((item) => {
+                    return {
+                        '#': item.id,
+                        title: item.title,
+                        relevant: item.relevance ? 'yes' : 'no',
+                        genres: item.genres ? item.genres.map(item => item.name).join(', ') : '-',
+                        augmented_rating: item.augmentedRating || '-',
+                        predicated_rating: item.rating || '-',
+                        es_score: item.esScore || '-'
+                    };
+                });
             }
         },
         async asyncData ({ app, params }) {
