@@ -12,7 +12,7 @@
                     <b-col>
                         <p><strong>ID:</strong> {{ result.id }}</p>
                         <p><strong>Posted:</strong> {{ formatDate(result.createdAt) }}</p>
-                        <p><strong>User:</strong> {{ result.user.name }} {{ result.user.surname }}</p>
+                        <p><strong>User:</strong> {{ result.user.name }} {{ result.user.surname }} (ID: {{ result.user.id }})</p>
                     </b-col>
                 </b-row>
                 <b-row>
