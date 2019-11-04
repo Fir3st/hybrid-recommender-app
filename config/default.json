@@ -17,5 +17,5 @@
     "recommenderUrl": "http://localhost:3002",
     "defaultUserPassword": "secret",
     "CFOrderBy": "augmented_rating",
-    "includeGenres": false
+    "includeGenres": true
 }
