@@ -16,6 +16,6 @@
     "tmdbApiKey": "secret",
     "recommenderUrl": "http://localhost:3002",
     "defaultUserPassword": "secret",
-    "CFOrderBy": "rating,es_score",
+    "CFOrderBy": "augmented_rating",
     "includeGenres": false
 }

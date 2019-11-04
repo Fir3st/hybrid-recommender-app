@@ -3,7 +3,7 @@
         v-if="similarity"
         class="similarity"
     >
-        Sim: {{ movie.similarity }}
+        Sim: {{ sim }}
     </span>
 </template>
 
@@ -17,6 +17,11 @@
             movie: {
                 type: Object,
                 required: true
+            }
+        },
+        computed: {
+            sim() {
+                return this.movie.similarity ? parseFloat(this.movie.similarity).toFixed(6) : 0;
             }
         }
     };

@@ -5,6 +5,9 @@ const webpack = require('webpack');
 module.exports = {
     mode: 'universal',
     srcDir: 'client/',
+    env: {
+        orderBy: config.get('CFOrderBy')
+    },
 
     /*
      ** Headers of the page
