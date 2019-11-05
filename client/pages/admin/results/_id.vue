@@ -109,8 +109,10 @@
                         <p><strong>Relevant:</strong> {{ countRelevance('expertResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('expertResults', 'notRelevant') }}</p>
                         <p><strong>Precision:</strong> {{ getFinalScore(countRelevance('expertResults', 'relevant')) }}%</p>
-                        <p><strong>Recall:</strong> {{ getRecallScore('expertResults', 15) }}%</p>
-                        <p><strong>F1-Measure:</strong> {{ getFMeasureScore('expertResults', 15) }}%</p>
+                        <p><strong>Recall (TOP 15):</strong> {{ getRecallScore('expertResults', 15) }}%</p>
+                        <p><strong>F1-Measure (TOP 15):</strong> {{ getFMeasureScore('expertResults', 15) }}%</p>
+                        <p><strong>Recall (TOP 10):</strong> {{ getRecallScore('expertResults', 10) }}%</p>
+                        <p><strong>F1-Measure (TOP 10):</strong> {{ getFMeasureScore('expertResults', 10) }}%</p>
                     </b-col>
                 </b-row>
                 <b-row>
