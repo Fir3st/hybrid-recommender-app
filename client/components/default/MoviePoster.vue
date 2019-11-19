@@ -1,10 +1,24 @@
 <template>
-    <div class="crop">
-        <b-img
-            :src="image"
-            :alt="movie.title"
-            fluid
-        />
+    <div>
+        <div class="crop">
+            <b-img
+                v-b-modal.modal-1
+                :src="image"
+                :alt="movie.title"
+                fluid
+            />
+        </div>
+        <b-modal
+            id="modal-1"
+            centered
+            title="Poster detail"
+        >
+            <b-img
+                :src="image"
+                :alt="movie.title"
+                fluid
+            />
+        </b-modal>
     </div>
 </template>
 
@@ -27,6 +41,7 @@
 
 <style lang="sass" scoped>
     .crop
+        cursor: pointer
         height: 350px
         position: relative
         overflow: hidden
