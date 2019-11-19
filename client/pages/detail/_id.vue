@@ -2,13 +2,28 @@
     <div>
         <b-row v-if="movie">
             <b-col>
-                <media-player />
                 <b-row>
-                    <b-col>
-                        <h1>{{ movieTitle }}</h1>
+                    <b-col
+                        sm="5"
+                        md="4"
+                        lg="3"
+                    >
+                        <movie-poster :movie="movie" />
+                    </b-col>
+                    <b-col
+                        sm="7"
+                        md="8"
+                        lg="9"
+                    >
+                        <b-row>
+                            <b-col>
+                                <h1>{{ movieTitle }}</h1>
+                            </b-col>
+                        </b-row>
+                        <movie-stats :movie="movie" />
+                        <movie-info :movie="movie" />
                     </b-col>
                 </b-row>
-                <movie-info :movie="movie" />
                 <movie-description :movie="movie" />
                 <rating
                     :user-rating="userRating"
@@ -46,18 +61,20 @@
 
 <script>
     import MovieList from '~/components/default/MovieList';
-    import MediaPlayer from '~/components/default/MediaPlayer';
     import Rating from '~/components/default/Rating';
+    import MovieStats from '~/components/default/MovieStats';
     import MovieInfo from '~/components/default/MovieInfo';
+    import MoviePoster from '~/components/default/MoviePoster';
     import MovieDescription from '~/components/default/MovieDescription';
 
     export default {
         components: {
             MovieList,
-            MediaPlayer,
             Rating,
+            MovieStats,
+            MovieDescription,
             MovieInfo,
-            MovieDescription
+            MoviePoster
         },
         head() {
             return {
@@ -162,6 +179,8 @@
 </script>
 
 <style lang="sass" scoped>
+    h1
+        margin-top: 0
     h2
         padding: 20px 0
 </style>

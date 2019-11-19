@@ -1,19 +1,9 @@
 <template>
     <b-row>
-        <b-col md="6">
+        <b-col>
             <p class="text-justify">
                 {{ movie.plot }}
             </p>
-        </b-col>
-        <b-col md="6">
-            <div class="info">
-                <p><strong>Type:</strong> {{ movie.type }}</p>
-                <p><strong>Director(s):</strong> {{ movie.director }}</p>
-                <p><strong>Actor(s):</strong> {{ actors }}</p>
-                <p><strong>Country of origin:</strong> {{ countries }}</p>
-                <p><strong>Language(s):</strong> {{ languages }}</p>
-                <p><strong>Production:</strong> {{ movie.production }}</p>
-            </div>
         </b-col>
     </b-row>
 </template>
