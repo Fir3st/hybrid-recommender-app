@@ -43,7 +43,7 @@
             </b-row>
             <b-row v-if="notFavGenres.length">
                 <b-col sm="2">
-                    Favourite genres:
+                    Not favourite genres:
                 </b-col>
                 <b-col sm="10">
                     {{ notFavGenres.join(', ') }}
