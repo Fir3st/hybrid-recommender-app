@@ -24,6 +24,7 @@ export const getUsers = async (req: Request, res: any) => {
         const users = await repository
             .createQueryBuilder('users')
             .orderBy(`users.${orderBy}`, order)
+            .leftJoinAndSelect('users.ratings', 'ratings')
             .take(take)
             .skip(skip)
             .getMany();

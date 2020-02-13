@@ -39,6 +39,13 @@
                         </template>
                     </el-table-column>
                     <el-table-column
+                        label="Number of ratings"
+                    >
+                        <template slot-scope="scope">
+                            {{ scope.row.ratings.length }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                         label="Actions"
                     >
                         <template slot-scope="scope">
