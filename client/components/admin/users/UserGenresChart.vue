@@ -29,7 +29,7 @@
                 return _.sortBy(this.preferences, ['count']).reverse();
             },
             xaxis() {
-                return this.sortedPreferences.map(preference => `${preference.name} (${preference.count} ratings)`);
+                return this.sortedPreferences.map(preference => [preference.name, preference.count]);
             },
             options() {
                 return {
