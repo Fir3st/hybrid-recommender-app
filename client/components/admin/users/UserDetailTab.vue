@@ -17,6 +17,14 @@
                 :user="user"
             />
         </b-tab>
+        <b-tab title="Analysis - genres">
+            <user-analysis-genres
+                :ratings="user.ratings"
+                :recommendations="recommendations"
+                :preferences="preferences"
+                :user="user"
+            />
+        </b-tab>
     </b-tabs>
 </template>
 
@@ -24,12 +32,14 @@
     import UserDetail from '~/components/admin/users/UserDetail';
     import UserRatedMovies from '~/components/admin/users/UserRatedMovies';
     import UserAnalysis from '~/components/admin/users/UserAnalysis';
+    import UserAnalysisGenres from '~/components/admin/users/UserAnalysisGenres';
 
     export default {
         components: {
             UserDetail,
             UserRatedMovies,
-            UserAnalysis
+            UserAnalysis,
+            UserAnalysisGenres,
         },
         props: {
             user: {

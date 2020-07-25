@@ -8,6 +8,17 @@
         </b-row>
         <b-row>
             <b-col>
+                <b-button
+                    variant="info"
+                    class="btn-download"
+                    @click="downloadUsersCSV"
+                >
+                    Export users and genres as CSV
+                </b-button>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <el-table
                     :data="users"
                     stripe
@@ -133,7 +144,32 @@
             },
             setPage() {
                 this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
-            }
+            },
+            async downloadUsersCSV() {
+                const data = await this.$axios.$get('/data/users');
+                const formattedData = data.map((item) => {
+                    const genres = {};
+                    let index = 1;
+
+                    for (const genre of item.genres) {
+                        genres[`name ${index}`] = genre.name;
+                        genres[`count ${index}`] = genre.count;
+                        genres[`avg ${index}`] = genre.avg;
+                        index += 1;
+                    }
+
+                    return {
+                        user: item.user,
+                        ...genres,
+                    };
+                });
+                this.downloadCSV(formattedData, 'users.csv');
+            },
         }
     };
 </script>
+
+<style lang="sass">
+    .btn-download
+        margin-bottom: 20px
+</style>
