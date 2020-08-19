@@ -18,7 +18,7 @@ Vue.mixin({
     methods: {
         downloadCSV(data, name) {
             const parsedData = PapaParse.unparse(data, {
-                delimiter: ',',
+                delimiter: ';',
                 encoding: 'utf8'
             });
             Download(parsedData, name, 'application/csv');
