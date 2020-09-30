@@ -85,6 +85,14 @@
                 ]
             };
         },
+        async fetch({ store }) {
+            await store.dispatch('users/setCount');
+            await store.dispatch('movies/setCount');
+            await store.dispatch('ratings/setCount');
+            await store.dispatch('ratings/setValuesDistribution');
+            await store.dispatch('ratings/setFrequencyDistribution');
+            await store.dispatch('similarities/setDistributions');
+        },
         computed: {
             ...mapGetters({
                 usersCount: 'users/count',
@@ -95,14 +103,6 @@
                 similaritiesDistribution: 'similarities/distribution'
             })
         },
-        async fetch({ store }) {
-            await store.dispatch('users/setCount');
-            await store.dispatch('movies/setCount');
-            await store.dispatch('ratings/setCount');
-            await store.dispatch('ratings/setValuesDistribution');
-            await store.dispatch('ratings/setFrequencyDistribution');
-            await store.dispatch('similarities/setDistributions');
-        }
     };
 </script>
 

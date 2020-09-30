@@ -37,6 +37,19 @@
             MovieDetailTab
         },
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const movie = await app.$axios.$get(`/movies/${params.id}`);
+
+                if (movie) {
+                    return {
+                        movie
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -51,19 +64,6 @@
         computed: {
             pageTitle() {
                 return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
-            }
-        },
-        async asyncData ({ app, params }) {
-            try {
-                const movie = await app.$axios.$get(`/movies/${params.id}`);
-
-                if (movie) {
-                    return {
-                        movie
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         mounted() {

@@ -72,33 +72,6 @@
             AddGenreForm,
             SelectedGenresGrid
         },
-        head() {
-            return {
-                title: this.pageTitle
-            };
-        },
-        data() {
-            return {
-                pageTitle: 'Questionnaire',
-                favouriteGenres: [],
-                notFavouriteGenres: [],
-                numOfGenres: numOfGenres,
-                numOfItems: numOfItems,
-                sent: false,
-                loading: false
-            };
-        },
-        computed: {
-            ...mapGetters({
-                genres: 'genres/genres'
-            }),
-            isButtonDisabled() {
-                return this.movies.length < this.numOfItems
-                || this.favouriteGenres.length < this.numOfGenres
-                || this.notFavouriteGenres.length < this.numOfGenres
-                || this.loading;
-            }
-        },
         async asyncData ({ app }) {
             try {
                 const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
@@ -122,6 +95,33 @@
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        data() {
+            return {
+                pageTitle: 'Questionnaire',
+                favouriteGenres: [],
+                notFavouriteGenres: [],
+                numOfGenres: numOfGenres,
+                numOfItems: numOfItems,
+                sent: false,
+                loading: false
+            };
+        },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
+        computed: {
+            ...mapGetters({
+                genres: 'genres/genres'
+            }),
+            isButtonDisabled() {
+                return this.movies.length < this.numOfItems
+                || this.favouriteGenres.length < this.numOfGenres
+                || this.notFavouriteGenres.length < this.numOfGenres
+                || this.loading;
             }
         },
         methods: {

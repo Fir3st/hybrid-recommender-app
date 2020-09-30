@@ -3,14 +3,14 @@
 
     export default {
         extends: MoviesPage,
-        data() {
-            return {
-                pageTitle: 'Series'
-            };
-        },
         asyncData({ params }) {
             return {
                 genreName: params.slug
+            };
+        },
+        data() {
+            return {
+                pageTitle: 'Series'
             };
         },
         async fetch ({ store, params, query }) {

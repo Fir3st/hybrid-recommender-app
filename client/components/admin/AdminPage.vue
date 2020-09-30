@@ -1,11 +1,11 @@
 <script>
     export default {
+        layout: 'admin',
         head() {
             return {
                 title: this.pageTitle
             };
-        },
-        layout: 'admin'
+        }
     };
 </script>
 

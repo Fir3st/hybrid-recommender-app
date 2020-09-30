@@ -280,6 +280,19 @@
 
     export default {
         extends: AdminPage,
+        async asyncData ({ app }) {
+            try {
+                const settings = await app.$axios.$get('/results/settings');
+
+                if (settings) {
+                    return {
+                        settings
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 pageTitle: 'Results form settings',
@@ -396,19 +409,6 @@
                 return [
                     ...options
                 ];
-            }
-        },
-        async asyncData ({ app }) {
-            try {
-                const settings = await app.$axios.$get('/results/settings');
-
-                if (settings) {
-                    return {
-                        settings
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         methods: {

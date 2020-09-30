@@ -31,10 +31,10 @@
                 ]
             };
         },
+        async fetch({ store }) {
+        },
         computed: {
         },
-        async fetch({ store }) {
-        }
     };
 </script>
 

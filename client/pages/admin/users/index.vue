@@ -100,6 +100,11 @@
                 ]
             };
         },
+        async fetch({ store, query }) {
+            await store.dispatch('users/setPagination', query.page ? parseInt(query.page) : 1);
+            await store.dispatch('users/setUsers');
+            await store.dispatch('users/setCount');
+        },
         computed: {
             ...mapGetters({
                 users: 'users/users',
@@ -108,11 +113,6 @@
                 skip: 'users/skip',
                 currentPage: 'users/currentPage'
             })
-        },
-        async fetch({ store, query }) {
-            await store.dispatch('users/setPagination', query.page ? parseInt(query.page) : 1);
-            await store.dispatch('users/setUsers');
-            await store.dispatch('users/setCount');
         },
         methods: {
             ...mapActions({

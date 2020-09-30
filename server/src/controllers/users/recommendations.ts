@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from 'axios';
 import * as _ from 'lodash';
 import * as config from 'config';
@@ -11,7 +12,7 @@ import {not} from "joi";
 
 export const getRecommendations = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
-    const genres = req.query.genres;
+    const genres: any = req.query.genres;
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const recommender = config.get('recommenderUrl');

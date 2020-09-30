@@ -72,14 +72,6 @@
 
     export default {
         extends: AdminPage,
-        data() {
-            return {
-                pageTitle: 'Questionnaire results',
-                breadcrumbs: [
-                    { index: 0, name: 'results', path: null }
-                ]
-            };
-        },
         async asyncData({ app }) {
             try {
                 const results = await app.$axios.$get(`/results`);
@@ -92,6 +84,14 @@
             } catch (error) {
                 console.log(error.message);
             }
+        },
+        data() {
+            return {
+                pageTitle: 'Questionnaire results',
+                breadcrumbs: [
+                    { index: 0, name: 'results', path: null }
+                ]
+            };
         },
         methods: {
             formatDate(date) {

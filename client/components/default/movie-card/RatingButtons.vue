@@ -42,7 +42,7 @@
                         type: 'success',
                         position: 'bottom-right'
                     });
-                    this.$root.$emit('refreshResults');
+                    this.$root.$emit('refresh-results');
                 } catch (error) {
                     console.log(error.message);
                     this.$notify({

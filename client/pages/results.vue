@@ -53,43 +53,6 @@
             ResultsTab,
             SearchInput
         },
-        head() {
-            return {
-                title: this.pageTitle
-            };
-        },
-        data() {
-            return {
-                pageTitle: 'Results page',
-                searchTerm: '',
-                suggestions: [],
-                source: CancelToken.source(),
-                minLength: 3,
-                numOfGenres: numOfGenres,
-                numOfItems: numOfItems
-            };
-        },
-        computed: {
-            ...mapGetters({
-                allGenres: 'genres/genres'
-            }),
-            genres() {
-                const genres = this.allGenres.filter(item => item.name !== 'N/A');
-                const options = genres.map((item) => {
-                    return { value: item.id, text: item.name };
-                });
-
-                return [
-                    { value: null, text: 'Please select a genre(s)' },
-                    ...options
-                ];
-            },
-            hasAllData() {
-                return this.movies && this.movies.length >= this.numOfItems
-                    && this.favouriteGenres && this.favouriteGenres.length >= this.numOfGenres
-                    && this.notFavouriteGenres && this.notFavouriteGenres.length >= this.numOfGenres;
-            }
-        },
         async asyncData ({ app }) {
             try {
                 const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
@@ -125,6 +88,43 @@
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        data() {
+            return {
+                pageTitle: 'Results page',
+                searchTerm: '',
+                suggestions: [],
+                source: CancelToken.source(),
+                minLength: 3,
+                numOfGenres: numOfGenres,
+                numOfItems: numOfItems
+            };
+        },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
+        computed: {
+            ...mapGetters({
+                allGenres: 'genres/genres'
+            }),
+            genres() {
+                const genres = this.allGenres.filter(item => item.name !== 'N/A');
+                const options = genres.map((item) => {
+                    return { value: item.id, text: item.name };
+                });
+
+                return [
+                    { value: null, text: 'Please select a genre(s)' },
+                    ...options
+                ];
+            },
+            hasAllData() {
+                return this.movies && this.movies.length >= this.numOfItems
+                    && this.favouriteGenres && this.favouriteGenres.length >= this.numOfGenres
+                    && this.notFavouriteGenres && this.notFavouriteGenres.length >= this.numOfGenres;
             }
         },
         methods: {

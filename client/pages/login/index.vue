@@ -54,11 +54,6 @@
 
 <script>
     export default {
-        head() {
-            return {
-                title: this.title
-            };
-        },
         layout: 'auth',
         data() {
             return {
@@ -78,6 +73,11 @@
                         { required: true, message: 'Please input your password', trigger: ['blur', 'change'] }
                     ]
                 }
+            };
+        },
+        head() {
+            return {
+                title: this.title
             };
         },
         methods: {

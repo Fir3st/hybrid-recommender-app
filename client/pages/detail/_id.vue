@@ -76,25 +76,6 @@
             MovieInfo,
             MoviePoster
         },
-        head() {
-            return {
-                title: this.movieTitle
-            };
-        },
-        auth: false,
-        data() {
-            return {
-                movie: null,
-                userRating: 0,
-                similarMovies: [],
-                recommendedMovies: [],
-            };
-        },
-        computed: {
-            movieTitle() {
-                return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
-            }
-        },
         async asyncData ({ app, params }) {
             try {
                 const movie = await app.$axios.$get(`/movies/${params.id}`);
@@ -106,6 +87,25 @@
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        data() {
+            return {
+                movie: null,
+                userRating: 0,
+                similarMovies: [],
+                recommendedMovies: [],
+            };
+        },
+        head() {
+            return {
+                title: this.movieTitle
+            };
+        },
+        auth: false,
+        computed: {
+            movieTitle() {
+                return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
             }
         },
         async mounted() {

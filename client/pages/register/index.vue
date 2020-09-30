@@ -66,13 +66,7 @@
 
 <script>
     export default {
-        head() {
-            return {
-                title: this.title
-            };
-        },
         layout: 'auth',
-        auth: false,
         data() {
             return {
                 form: {
@@ -104,6 +98,12 @@
                 }
             };
         },
+        head() {
+            return {
+                title: this.title
+            };
+        },
+        auth: false,
         methods: {
             async onSubmit() {
                 this.$refs['form'].validate(async (valid) => {

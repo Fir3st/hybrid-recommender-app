@@ -27,7 +27,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): a
     passport.authenticate('jwt', { session: false })(req, res, next);
 }
 
-export function authorize(req: Request, res: any, next: NextFunction): any {
+export function authorize(req: any, res: any, next: NextFunction): any {
     if (!req.user.admin) {
         return res.boom.forbidden('You do not have the required permission for this action.');
     }
@@ -35,7 +35,7 @@ export function authorize(req: Request, res: any, next: NextFunction): any {
     next();
 }
 
-export function authorizedOrCurrentUser(req: Request, res: any, next: NextFunction): any {
+export function authorizedOrCurrentUser(req: any, res: any, next: NextFunction): any {
     const id = parseInt(req.params.id, 10);
     const userId = parseInt(req.user.id, 10);
 

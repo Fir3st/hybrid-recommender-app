@@ -45,11 +45,6 @@
     export default {
         components: { CustomSearch, Results, SearchInput: Input },
         auth: false,
-        head() {
-            return {
-                title: this.pageTitle
-            };
-        },
         data() {
             return {
                 pageTitle: 'Search',
@@ -67,6 +62,11 @@
                 searching: false,
                 customSearching: false,
                 includeRated: true
+            };
+        },
+        head() {
+            return {
+                title: this.pageTitle
             };
         },
         computed: {
@@ -93,7 +93,7 @@
             }
         },
         async created() {
-            this.$root.$on('refreshResults', async () => await this.refreshResults());
+            this.$root.$on('refresh-results', async () => await this.refreshResults());
         },
         methods: {
             onCheckboxChange() {

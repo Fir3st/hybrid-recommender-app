@@ -46,17 +46,17 @@
             MovieList,
             Paginator
         },
+        data() {
+            return {
+                contentType: ''
+            };
+        },
         head() {
             return {
                 title: this.pageTitle
             };
         },
         auth: false,
-        data() {
-            return {
-                contentType: ''
-            };
-        },
         computed: {
             ...mapGetters({
                 movies: 'movies/movies',

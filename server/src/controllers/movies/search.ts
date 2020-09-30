@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from 'axios';
 import * as _ from 'lodash';
 import * as config from 'config';

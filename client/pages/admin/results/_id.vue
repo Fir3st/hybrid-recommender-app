@@ -167,6 +167,19 @@
 
     export default {
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const result = await app.$axios.$get(`/results/${params.id}`);
+
+                if (result) {
+                    return {
+                        result
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -225,19 +238,6 @@
                         es_score: item.esScore || '-'
                     };
                 });
-            }
-        },
-        async asyncData ({ app, params }) {
-            try {
-                const result = await app.$axios.$get(`/results/${params.id}`);
-
-                if (result) {
-                    return {
-                        result
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         methods: {

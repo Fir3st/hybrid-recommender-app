@@ -36,6 +36,19 @@
             UserDetailTab
         },
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const user = await app.$axios.$get(`/users/${params.id}`);
+
+                if (user) {
+                    return {
+                        user
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -49,19 +62,6 @@
         computed: {
             pageTitle() {
                 return (this.user && this.user.name && this.user.surname) ? `${this.user.name} ${this.user.surname}` : 'Detail';
-            }
-        },
-        async asyncData ({ app, params }) {
-            try {
-                const user = await app.$axios.$get(`/users/${params.id}`);
-
-                if (user) {
-                    return {
-                        user
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         mounted() {
