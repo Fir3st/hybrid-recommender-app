@@ -22,13 +22,16 @@ export const getUsers = async (req: Request, res: any) => {
     const repository = getRepository(User);
 
     try {
-        const users = await repository
+        const query = repository
             .createQueryBuilder('users')
             .orderBy(`users.${orderBy}`, order)
-            .leftJoinAndSelect('users.ratings', 'ratings')
-            .take(take)
-            .skip(skip)
-            .getMany();
+            .leftJoinAndSelect('users.ratings', 'ratings');
+
+        if (take && take !== '-1') {
+            query.take(take).skip(skip);
+        }
+
+        const users = await query.getMany();
 
         if (users && users.length > 0) {
             return res.send(users.map(user => _.omit(user, ['password'])));
@@ -190,6 +193,65 @@ export const getPreferences = async (req: Request, res: any) => {
                     avg: avg.toFixed(2)
                 };
             }));
+        }
+
+        return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
+export const analyzeUser = async (req: Request, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const repository = getRepository(Movie);
+
+    try {
+        const ratings = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'ratings')
+            .where('ratings.userId = :id', { id })
+            .orderBy({
+                'ratings.rating': 'DESC',
+                'ratings.createdAt': 'DESC'
+            })
+            .limit(20)
+            .getMany();
+
+        const genres = {};
+        const movies = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'ratings')
+            .leftJoinAndSelect('movie.genres', 'genres')
+            .where('ratings.userId = :id', { id })
+            .getMany();
+
+        if (ratings && ratings.length && movies && movies.length > 0) {
+            for (const movie of movies) {
+                for (const genre of movie.genres) {
+                    if (genres[genre.name]) {
+                        genres[genre.name].count += 1;
+                        genres[genre.name].value += movie.usersRatings[0].rating;
+                    } else {
+                        genres[genre.name] = {
+                            count: 1,
+                            value: movie.usersRatings[0].rating
+                        };
+                    }
+                }
+            }
+
+            return res.send({
+                ratings,
+                genres: Object.keys(genres).map((name) => {
+                    const avg: Number = genres[name].value / genres[name].count;
+                    return {
+                        name,
+                        ...genres[name],
+                        avg: avg.toFixed(2)
+                    };
+                })
+            });
         }
 
         return res.boom.badRequest(`User with id ${id} not found.`);

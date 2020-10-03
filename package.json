@@ -102,6 +102,8 @@
         "moxios": "^0.4.0",
         "node-sass": "^4.11.0",
         "nodemon": "^2.0.4",
+        "pug": "^3.0.0",
+        "pug-plain-loader": "^1.0.0",
         "sass-loader": "^10.0.2",
         "ts-node": "^9.0.0",
         "tslint": "6.1.3",
