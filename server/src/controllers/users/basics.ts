@@ -13,6 +13,7 @@ import { Movie } from '../../entities/Movie';
 import { UserRating } from '../../entities/UserRating';
 import { FavGenre } from '../../entities/FavGenre';
 import { Result } from '../../entities/Result';
+import { Genre } from '../../entities/Genre';
 
 export const getUsers = async (req: Request, res: any) => {
     const take: any = req.query.take || 10;
@@ -205,8 +206,22 @@ export const getPreferences = async (req: Request, res: any) => {
 export const analyzeUser = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
     const repository = getRepository(Movie);
+    const genresRepository = getRepository(Genre);
 
     try {
+        const genres = {};
+        const availableGenres = await genresRepository
+            .createQueryBuilder('genres')
+            .where('genres.name <> "N/A"')
+            .getMany();
+
+        for (const genre of availableGenres) {
+            genres[genre.name] = {
+                count: 0,
+                value: 0
+            };
+        }
+
         const ratings = await repository
             .createQueryBuilder('movie')
             .leftJoinAndSelect('movie.usersRatings', 'ratings')
@@ -218,7 +233,6 @@ export const analyzeUser = async (req: Request, res: any) => {
             .limit(20)
             .getMany();
 
-        const genres = {};
         const movies = await repository
             .createQueryBuilder('movie')
             .leftJoinAndSelect('movie.usersRatings', 'ratings')
@@ -229,22 +243,15 @@ export const analyzeUser = async (req: Request, res: any) => {
         if (ratings && ratings.length && movies && movies.length > 0) {
             for (const movie of movies) {
                 for (const genre of movie.genres) {
-                    if (genres[genre.name]) {
-                        genres[genre.name].count += 1;
-                        genres[genre.name].value += movie.usersRatings[0].rating;
-                    } else {
-                        genres[genre.name] = {
-                            count: 1,
-                            value: movie.usersRatings[0].rating
-                        };
-                    }
+                    genres[genre.name].count += 1;
+                    genres[genre.name].value += movie.usersRatings[0].rating;
                 }
             }
 
             return res.send({
                 ratings,
                 genres: Object.keys(genres).map((name) => {
-                    const avg: Number = genres[name].value / genres[name].count;
+                    const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
                     return {
                         name,
                         ...genres[name],

@@ -17,10 +17,14 @@
                     b-table(striped, hover, :items="favouriteItems", :fields="favouriteItemsFields")
                         template(v-slot:cell(#)="data") {{ data.index + 1 }}
                         template(v-slot:cell(usersRatings[0].createdAt)="data") {{ moment(data.item.usersRatings[0].createdAt).format('DD. MM. YYYY HH:mm:ss') }}
-            b-row(v-if="!loading && analyzedGenres.length", class="mt-2 mb-2")
+            b-row(v-if="!loading && topGenres.length", class="mt-2 mb-2")
                 b-col
-                    h3 Favourite genres
-                    b-table(striped, hover, :items="analyzedGenres.slice(0, 3)")
+                    h3 Most important genres
+                    b-table(striped, hover, :items="topGenres")
+            b-row(v-if="!loading && unimportantGenres.length", class="mt-2 mb-2")
+                b-col
+                    h3 Least important genres
+                    b-table(striped, hover, :items="unimportantGenres")
 
 </template>
 
@@ -54,8 +58,23 @@
             };
         },
         computed: {
-            analyzedGenres() {
-                return _.orderBy(this.genres, ['avg'], ['desc']);
+            topGenres() {
+                const ratedGenres = this.genres.filter((genre) => genre.count);
+
+                if (ratedGenres && ratedGenres.length >= 3) {
+                    return _.orderBy(this.genres, ['count'], ['desc']).slice(0, 3);
+                }
+
+                return [];
+            },
+            unimportantGenres() {
+                const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
+
+                if (notRatedGenres && notRatedGenres.length < 3) {
+                    notRatedGenres.push(..._.orderBy(this.genres, ['count'], ['desc']).slice(Math.max(this.genres.length - (3 - notRatedGenres.length), 0)));
+                }
+
+                return notRatedGenres;
             }
         },
         async mounted() {
@@ -82,11 +101,12 @@
                 this.options = [{ value: null, text: 'User to analyze' }, ...users];
             },
             async analyzeUser() {
+                this.loading = true;
+
                 try {
                     const url = `/users/${this.userId}/analyze`;
 
                     const response = await this.$axios.$get(url);
-                    console.log(response);
 
                     if (response.genres && response.genres.length) {
                         this.genres = response.genres;
@@ -96,6 +116,8 @@
                     }
                 } catch (error) {
                     console.log(error.message);
+                } finally {
+                    this.loading = false;
                 }
             },
         }
