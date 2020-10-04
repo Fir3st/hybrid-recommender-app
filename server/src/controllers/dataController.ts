@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import winston from '../utils/winston';
 import { Movie } from '../entities/Movie';
 import { User } from '../entities/User';
+import { Genre } from '../entities/Genre';
 const router = Router();
 
 router.get('/movies', async (req: Request, res: any) => {
@@ -47,6 +48,7 @@ router.get('/movies', async (req: Request, res: any) => {
 router.get('/users', async (req: Request, res: any) => {
     const repository = getRepository(Movie);
     const usersRepository = getRepository(User);
+    const genresRepository = getRepository(Genre);
 
     try {
         const users = await usersRepository
@@ -59,6 +61,18 @@ router.get('/users', async (req: Request, res: any) => {
 
             for (const user of users) {
                 const genres = {};
+                const availableGenres = await genresRepository
+                    .createQueryBuilder('genres')
+                    .where('genres.name <> "N/A"')
+                    .getMany();
+
+                for (const genre of availableGenres) {
+                    genres[genre.name] = {
+                        count: 0,
+                        value: 0
+                    };
+                }
+
                 const movies = await repository
                     .createQueryBuilder('movie')
                     .leftJoinAndSelect('movie.usersRatings', 'ratings')
@@ -72,27 +86,21 @@ router.get('/users', async (req: Request, res: any) => {
                             if (genres[genre.name]) {
                                 genres[genre.name].count += 1;
                                 genres[genre.name].value += movie.usersRatings[0].rating;
-                            } else {
-                                genres[genre.name] = {
-                                    count: 1,
-                                    value: movie.usersRatings[0].rating
-                                };
                             }
                         }
                     }
 
-                    const orderedGenres = _.orderBy(Object.keys(genres).map((name) => ({
-                        name,
-                        ...genres[name],
-                    })), ['count'], ['desc']);
-        
                     response.push({
                         user: user.id,
-                        genres: _.take(orderedGenres, 3).map((genre: any) => ({
-                            avg: (genre.value / genre.count).toFixed(2),
-                            ...genre,
-                        })),
-                    })
+                        genres: Object.keys(genres).map((name) => {
+                            const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
+                            return {
+                                name,
+                                ...genres[name],
+                                avg: avg.toFixed(2)
+                            };
+                        })
+                    });
                 }
             }
 

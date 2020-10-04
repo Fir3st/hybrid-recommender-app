@@ -86,6 +86,7 @@
     import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
     import Paginator from '~/components/admin/Paginator';
+    import * as _ from "lodash";
 
     export default {
         components: {
@@ -145,24 +146,63 @@
             setPage() {
                 this.$router.push({ path: this.$route.path, query: { page: this.currentPage } });
             },
+            getFormattedGenres(name, data) {
+                const genres = {};
+                let index = 1;
+
+                for (const genre of data) {
+                    genres[`${name} - name ${index}`] = genre.name;
+                    genres[`${name} - count ${index}`] = genre.count;
+                    genres[`${name} - avg ${index}`] = genre.avg;
+                    index += 1;
+                }
+
+                return genres;
+            },
+            getTopGenres(name, data, num = 3) {
+                const ratedGenres = data.filter((genre) => genre.count);
+
+                if (ratedGenres && ratedGenres.length > 0) {
+                    return this.getFormattedGenres(name, _.orderBy(data, ['count'], ['desc']).slice(0, num));
+                }
+
+                return {};
+            },
+            getUnimportantGenres(name, data, num = 3) {
+                const notRatedGenres = data.filter((genre) => genre.count === 0);
+
+                if (notRatedGenres && notRatedGenres.length < num) {
+                    let genres = data.filter((genre) => genre.count);
+                    genres = [
+                        ..._.orderBy(genres, ['count'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
+                        ...notRatedGenres,
+                    ];
+
+                    return this.getFormattedGenres(name, genres);
+                }
+
+                return this.getFormattedGenres(name, notRatedGenres);
+            },
             async downloadUsersCSV() {
                 const data = await this.$axios.$get('/data/users');
                 const formattedData = data.map((item) => {
-                    const genres = {};
-                    let index = 1;
-
-                    for (const genre of item.genres) {
-                        genres[`name ${index}`] = genre.name;
-                        genres[`count ${index}`] = genre.count;
-                        genres[`avg ${index}`] = genre.avg;
-                        index += 1;
-                    }
+                    const importantGenres = this.getTopGenres('imp', item.genres, 3);
+                    const unimportantGenres = this.getUnimportantGenres('unimp', item.genres, 3);
+                    const importantGenresAll = this.getTopGenres('imp all', item.genres, 12);
+                    const unimportantGenresAll = this.getUnimportantGenres('unimp all', item.genres, 12);
 
                     return {
                         user: item.user,
-                        ...genres,
+                        ...importantGenres,
+                        ...unimportantGenres,
+                        ...importantGenresAll,
+                        ...unimportantGenresAll,
                     };
                 });
+                const keys = {};
+                formattedData.forEach(el => Object.keys(el).forEach(k => keys[k] = null));
+                formattedData.forEach((el, ix, a) => a[ix] = Object.assign({}, keys, el));
+
                 this.downloadCSV(formattedData, 'users.csv');
             },
         }

@@ -25,6 +25,14 @@
                 b-col
                     h3 Least important genres
                     b-table(striped, hover, :items="unimportantGenres")
+            b-row(v-if="!loading && topGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Most important genres (12)
+                    b-table(striped, hover, :items="topGenresAll")
+            b-row(v-if="!loading && unimportantGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Least important genres (12)
+                    b-table(striped, hover, :items="unimportantGenresAll")
 
 </template>
 
@@ -59,22 +67,16 @@
         },
         computed: {
             topGenres() {
-                const ratedGenres = this.genres.filter((genre) => genre.count);
-
-                if (ratedGenres && ratedGenres.length >= 3) {
-                    return _.orderBy(this.genres, ['count'], ['desc']).slice(0, 3);
-                }
-
-                return [];
+                return this.getTopGenres();
             },
             unimportantGenres() {
-                const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
-
-                if (notRatedGenres && notRatedGenres.length < 3) {
-                    notRatedGenres.push(..._.orderBy(this.genres, ['count'], ['desc']).slice(Math.max(this.genres.length - (3 - notRatedGenres.length), 0)));
-                }
-
-                return notRatedGenres;
+                return this.getUnimportantGenres();
+            },
+            topGenresAll() {
+                return this.getTopGenres(12);
+            },
+            unimportantGenresAll() {
+                return this.getUnimportantGenres(12);
             }
         },
         async mounted() {
@@ -83,6 +85,30 @@
         methods: {
             moment: function (date = null) {
                 return moment(date);
+            },
+            getTopGenres(num = 3) {
+                const ratedGenres = this.genres.filter((genre) => genre.count);
+
+                if (ratedGenres && ratedGenres.length > 0) {
+                    return _.orderBy(this.genres, ['count'], ['desc']).slice(0, num);
+                }
+
+                return [];
+            },
+            getUnimportantGenres(num = 3) {
+                const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
+
+                if (notRatedGenres && notRatedGenres.length < num) {
+                    let genres = this.genres.filter((genre) => genre.count);
+                    genres = [
+                        ..._.orderBy(genres, ['count'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
+                        ...notRatedGenres,
+                    ];
+
+                    return genres;
+                }
+
+                return notRatedGenres;
             },
             async getUsers() {
                 let users = [];
