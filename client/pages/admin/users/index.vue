@@ -159,7 +159,7 @@
 
                 return genres;
             },
-            getTopGenres(name, data, num = 3) {
+            getMostRatedGenres(name, data, num = 3) {
                 const ratedGenres = data.filter((genre) => genre.count);
 
                 if (ratedGenres && ratedGenres.length > 0) {
@@ -168,7 +168,16 @@
 
                 return {};
             },
-            getUnimportantGenres(name, data, num = 3) {
+            getMostValuedGenres(name, data, num = 3) {
+                const ratedGenres = data.filter((genre) => genre.count);
+
+                if (ratedGenres && ratedGenres.length > 0) {
+                    return this.getFormattedGenres(name, _.orderBy(data, ['value'], ['desc']).slice(0, num));
+                }
+
+                return {};
+            },
+            getLeastRatedGenres(name, data, num = 3) {
                 const notRatedGenres = data.filter((genre) => genre.count === 0);
 
                 if (notRatedGenres && notRatedGenres.length < num) {
@@ -183,20 +192,39 @@
 
                 return this.getFormattedGenres(name, notRatedGenres);
             },
+            getLeastValuedGenres(name, data, num = 3) {
+                const notRatedGenres = data.filter((genre) => genre.count === 0);
+
+                if (notRatedGenres && notRatedGenres.length < num) {
+                    let genres = data.filter((genre) => genre.count);
+                    genres = [
+                        ..._.orderBy(genres, ['value'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
+                        ...notRatedGenres,
+                    ];
+
+                    return this.getFormattedGenres(name, genres);
+                }
+
+                return this.getFormattedGenres(name, notRatedGenres);
+            },
             async downloadUsersCSV() {
                 const data = await this.$axios.$get('/data/users');
                 const formattedData = data.map((item) => {
-                    const importantGenres = this.getTopGenres('imp', item.genres, 3);
-                    const unimportantGenres = this.getUnimportantGenres('unimp', item.genres, 3);
-                    const importantGenresAll = this.getTopGenres('imp all', item.genres, 12);
-                    const unimportantGenresAll = this.getUnimportantGenres('unimp all', item.genres, 12);
+                    const mostRated = this.getMostRatedGenres('most_rated', item.genres, 3);
+                    const mostValued = this.getMostValuedGenres('most_valued', item.genres, 3);
+                    const leastRated = this.getLeastRatedGenres('least_rated', item.genres, 3);
+                    const mostRatedAll = this.getMostRatedGenres('most_rated_all', item.genres, 12);
+                    const mostValuedAll = this.getMostRatedGenres('most_valued_all', item.genres, 12);
+                    const leastRatedAll = this.getLeastRatedGenres('least_rated_all', item.genres, 12);
 
                     return {
                         user: item.user,
-                        ...importantGenres,
-                        ...unimportantGenres,
-                        ...importantGenresAll,
-                        ...unimportantGenresAll,
+                        ...mostRated,
+                        ...mostValued,
+                        ...leastRated,
+                        ...mostRatedAll,
+                        ...mostValuedAll,
+                        ...leastRatedAll,
                     };
                 });
                 const keys = {};

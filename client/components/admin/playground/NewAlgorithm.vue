@@ -17,22 +17,38 @@
                     b-table(striped, hover, :items="favouriteItems", :fields="favouriteItemsFields")
                         template(v-slot:cell(#)="data") {{ data.index + 1 }}
                         template(v-slot:cell(usersRatings[0].createdAt)="data") {{ moment(data.item.usersRatings[0].createdAt).format('DD. MM. YYYY HH:mm:ss') }}
-            b-row(v-if="!loading && topGenres.length", class="mt-2 mb-2")
+            b-row(v-if="!loading && mostRatedGenres.length", class="mt-2 mb-2")
                 b-col
-                    h3 Most important genres
-                    b-table(striped, hover, :items="topGenres")
-            b-row(v-if="!loading && unimportantGenres.length", class="mt-2 mb-2")
+                    h3 Most rated genres
+                    b-table(striped, hover, :items="mostRatedGenres")
+            b-row(v-if="!loading && mostValuedGenres.length", class="mt-2 mb-2")
                 b-col
-                    h3 Least important genres
-                    b-table(striped, hover, :items="unimportantGenres")
-            b-row(v-if="!loading && topGenresAll.length", class="mt-2 mb-2")
+                    h3 Most valued genres
+                    b-table(striped, hover, :items="mostValuedGenres")
+            b-row(v-if="!loading && leastRatedGenres.length", class="mt-2 mb-2")
                 b-col
-                    h3 Most important genres (12)
-                    b-table(striped, hover, :items="topGenresAll")
-            b-row(v-if="!loading && unimportantGenresAll.length", class="mt-2 mb-2")
+                    h3 Least rated genres
+                    b-table(striped, hover, :items="leastRatedGenres")
+            b-row(v-if="!loading && leastValuedGenres.length", class="mt-2 mb-2")
                 b-col
-                    h3 Least important genres (12)
-                    b-table(striped, hover, :items="unimportantGenresAll")
+                    h3 Least valued genres
+                    b-table(striped, hover, :items="leastValuedGenres")
+            b-row(v-if="!loading && mostRatedGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Most rated genres (12)
+                    b-table(striped, hover, :items="mostRatedGenresAll")
+            b-row(v-if="!loading && mostValuedGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Most valued genres (12)
+                    b-table(striped, hover, :items="mostValuedGenresAll")
+            b-row(v-if="!loading && leastRatedGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Least rated genres (12)
+                    b-table(striped, hover, :items="leastRatedGenresAll")
+            b-row(v-if="!loading && leastValuedGenresAll.length", class="mt-2 mb-2")
+                b-col
+                    h3 Least valued genres (12)
+                    b-table(striped, hover, :items="leastValuedGenresAll")
 
 </template>
 
@@ -66,17 +82,29 @@
             };
         },
         computed: {
-            topGenres() {
-                return this.getTopGenres();
+            mostRatedGenres() {
+                return this.getMostRatedGenres();
             },
-            unimportantGenres() {
-                return this.getUnimportantGenres();
+            mostValuedGenres() {
+                return this.getMostValuedGenres();
             },
-            topGenresAll() {
-                return this.getTopGenres(12);
+            leastRatedGenres() {
+                return this.getLeastRatedGenres();
             },
-            unimportantGenresAll() {
-                return this.getUnimportantGenres(12);
+            leastValuedGenres() {
+                return this.getLeastValuedGenres();
+            },
+            mostRatedGenresAll() {
+                return this.getMostRatedGenres(12);
+            },
+            mostValuedGenresAll() {
+                return this.getMostValuedGenres(12);
+            },
+            leastRatedGenresAll() {
+                return this.getLeastRatedGenres(12);
+            },
+            leastValuedGenresAll() {
+                return this.getLeastValuedGenres(12);
             }
         },
         async mounted() {
@@ -86,7 +114,7 @@
             moment: function (date = null) {
                 return moment(date);
             },
-            getTopGenres(num = 3) {
+            getMostRatedGenres(num = 3) {
                 const ratedGenres = this.genres.filter((genre) => genre.count);
 
                 if (ratedGenres && ratedGenres.length > 0) {
@@ -95,13 +123,37 @@
 
                 return [];
             },
-            getUnimportantGenres(num = 3) {
+            getMostValuedGenres(num = 3) {
+                const ratedGenres = this.genres.filter((genre) => genre.count);
+
+                if (ratedGenres && ratedGenres.length > 0) {
+                    return _.orderBy(this.genres, ['value'], ['desc']).slice(0, num);
+                }
+
+                return [];
+            },
+            getLeastRatedGenres(num = 3) {
                 const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
 
                 if (notRatedGenres && notRatedGenres.length < num) {
                     let genres = this.genres.filter((genre) => genre.count);
                     genres = [
                         ..._.orderBy(genres, ['count'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
+                        ...notRatedGenres,
+                    ];
+
+                    return genres;
+                }
+
+                return notRatedGenres;
+            },
+            getLeastValuedGenres(num = 3) {
+                const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
+
+                if (notRatedGenres && notRatedGenres.length < num) {
+                    let genres = this.genres.filter((genre) => genre.count);
+                    genres = [
+                        ..._.orderBy(genres, ['value'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
                         ...notRatedGenres,
                     ];
 
