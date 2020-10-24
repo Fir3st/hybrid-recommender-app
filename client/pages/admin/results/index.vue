@@ -69,21 +69,11 @@
 <script>
     import moment from 'moment';
     import AdminPage from '~/components/admin/AdminPage';
-
     export default {
         extends: AdminPage,
-        data() {
-            return {
-                pageTitle: 'Questionnaire results',
-                breadcrumbs: [
-                    { index: 0, name: 'results', path: null }
-                ]
-            };
-        },
         async asyncData({ app }) {
             try {
                 const results = await app.$axios.$get(`/results`);
-
                 if (results && results.length > 0) {
                     return {
                         results
@@ -92,6 +82,14 @@
             } catch (error) {
                 console.log(error.message);
             }
+        },
+        data() {
+            return {
+                pageTitle: 'Questionnaire results',
+                breadcrumbs: [
+                    { index: 0, name: 'results', path: null }
+                ]
+            };
         },
         methods: {
             formatDate(date) {

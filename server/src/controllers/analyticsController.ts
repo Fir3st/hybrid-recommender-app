@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as config from 'config';
 import * as _ from 'lodash';
 import { Request, Router } from 'express';

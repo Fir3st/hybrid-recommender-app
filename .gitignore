@@ -13,8 +13,6 @@ client/dist
 server/dist
 
 # locks
-package-lock.json
-yarn.lock
 
 # editors config
 /.vscode

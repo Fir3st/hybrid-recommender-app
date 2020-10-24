@@ -69,7 +69,6 @@
     import ValuesDistribution from '~/components/admin/analytics/ValuesDistribution';
     import SimilaritiesDistribution from '~/components/admin/analytics/SimilaritiesDistribution';
     import FrequencyDistribution from '~/components/admin/analytics/FrequencyDistribution';
-
     export default {
         components: {
             ValuesDistribution,
@@ -85,6 +84,14 @@
                 ]
             };
         },
+        async fetch({ store }) {
+            await store.dispatch('users/setCount');
+            await store.dispatch('movies/setCount');
+            await store.dispatch('ratings/setCount');
+            await store.dispatch('ratings/setValuesDistribution');
+            await store.dispatch('ratings/setFrequencyDistribution');
+            await store.dispatch('similarities/setDistributions');
+        },
         computed: {
             ...mapGetters({
                 usersCount: 'users/count',
@@ -95,14 +102,6 @@
                 similaritiesDistribution: 'similarities/distribution'
             })
         },
-        async fetch({ store }) {
-            await store.dispatch('users/setCount');
-            await store.dispatch('movies/setCount');
-            await store.dispatch('ratings/setCount');
-            await store.dispatch('ratings/setValuesDistribution');
-            await store.dispatch('ratings/setFrequencyDistribution');
-            await store.dispatch('similarities/setDistributions');
-        }
     };
 </script>
 

@@ -42,7 +42,7 @@
                         type: 'success',
                         position: 'bottom-right'
                     });
-                    this.$root.$emit('refreshResults');
+                    this.$root.$emit('refresh-results');
                 } catch (error) {
                     console.log(error.message);
                     this.$notify({
@@ -63,8 +63,8 @@
         right: 5px
         bottom: 5px
         padding: 5px
-    .el-button
-        margin: 0
-    .el-button--mini .is-circle
-        padding: 0
+        .el-button
+            margin: 0
+        .el-button--mini .is-circle
+            padding: 0
 </style>

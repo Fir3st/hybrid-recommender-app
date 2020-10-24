@@ -86,7 +86,6 @@
     import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
     import Paginator from '~/components/admin/Paginator';
-
     export default {
         components: {
             Paginator
@@ -100,6 +99,11 @@
                 ]
             };
         },
+        async fetch({ store, query }) {
+            await store.dispatch('users/setPagination', query.page ? parseInt(query.page) : 1);
+            await store.dispatch('users/setUsers');
+            await store.dispatch('users/setCount');
+        },
         computed: {
             ...mapGetters({
                 users: 'users/users',
@@ -108,11 +112,6 @@
                 skip: 'users/skip',
                 currentPage: 'users/currentPage'
             })
-        },
-        async fetch({ store, query }) {
-            await store.dispatch('users/setPagination', query.page ? parseInt(query.page) : 1);
-            await store.dispatch('users/setUsers');
-            await store.dispatch('users/setCount');
         },
         methods: {
             ...mapActions({
@@ -150,14 +149,12 @@
                 const formattedData = data.map((item) => {
                     const genres = {};
                     let index = 1;
-
                     for (const genre of item.genres) {
                         genres[`name ${index}`] = genre.name;
                         genres[`count ${index}`] = genre.count;
                         genres[`avg ${index}`] = genre.avg;
                         index += 1;
                     }
-
                     return {
                         user: item.user,
                         ...genres,

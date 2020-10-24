@@ -46,17 +46,17 @@
             MovieList,
             Paginator
         },
+        data() {
+            return {
+                contentType: ''
+            };
+        },
         head() {
             return {
                 title: this.pageTitle
             };
         },
         auth: false,
-        data() {
-            return {
-                contentType: ''
-            };
-        },
         computed: {
             ...mapGetters({
                 movies: 'movies/movies',
@@ -76,9 +76,9 @@
 <style lang="sass" scoped>
     h1
         margin-bottom: 40px !important
-    h2
-        margin-bottom: 40px !important
-        margin-top: 0
-    .genre
-        text-transform: capitalize
+        h2
+            margin-bottom: 40px !important
+            margin-top: 0
+        .genre
+            text-transform: capitalize
 </style>

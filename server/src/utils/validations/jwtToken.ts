@@ -1,4 +1,4 @@
-import * as Joi from 'joi';
+import * as Joi from '@hapi/joi';
 import { IJwtPayload } from '../types/jwtToken';
 
 export const validate = (payload: any): Joi.ValidationResult<IJwtPayload> => {

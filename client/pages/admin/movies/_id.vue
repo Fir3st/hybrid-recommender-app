@@ -31,12 +31,23 @@
 <script>
     import AdminPage from '~/components/admin/AdminPage';
     import MovieDetailTab from '~/components/admin/movies/MovieDetailTab';
-
     export default {
         components: {
             MovieDetailTab
         },
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const movie = await app.$axios.$get(`/movies/${params.id}`);
+                if (movie) {
+                    return {
+                        movie
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -53,26 +64,12 @@
                 return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
             }
         },
-        async asyncData ({ app, params }) {
-            try {
-                const movie = await app.$axios.$get(`/movies/${params.id}`);
-
-                if (movie) {
-                    return {
-                        movie
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
         mounted() {
             if (this.movie) {
                 const promises = [];
                 promises.push(this.$axios.$get(`/movies/${this.movie.id}/ratings`));
                 promises.push(this.$axios.$get(`/movies/${this.movie.id}/recommendations`));
                 promises.push(this.$axios.$get(`/movies/${this.movie.id}/avg-rating`));
-
                 Promise.all(promises).then((data) => {
                     this.ratings = data[0];
                     this.recommendations = data[1];

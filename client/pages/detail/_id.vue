@@ -66,7 +66,6 @@
     import MovieInfo from '~/components/default/MovieInfo';
     import MoviePoster from '~/components/default/MoviePoster';
     import MovieDescription from '~/components/default/MovieDescription';
-
     export default {
         components: {
             MovieList,
@@ -76,12 +75,18 @@
             MovieInfo,
             MoviePoster
         },
-        head() {
-            return {
-                title: this.movieTitle
-            };
+        async asyncData ({ app, params }) {
+            try {
+                const movie = await app.$axios.$get(`/movies/${params.id}`);
+                if (movie) {
+                    return {
+                        movie
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
         },
-        auth: false,
         data() {
             return {
                 movie: null,
@@ -90,22 +95,15 @@
                 recommendedMovies: [],
             };
         },
+        head() {
+            return {
+                title: this.movieTitle
+            };
+        },
+        auth: false,
         computed: {
             movieTitle() {
                 return (this.movie && this.movie.title) ? this.movie.title : 'Detail';
-            }
-        },
-        async asyncData ({ app, params }) {
-            try {
-                const movie = await app.$axios.$get(`/movies/${params.id}`);
-
-                if (movie) {
-                    return {
-                        movie
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         async mounted() {
@@ -120,7 +118,6 @@
                 const id = this.$route.params.id;
                 try {
                     const recommendations = await this.$axios.$get(`/movies/${id}/recommendations`);
-
                     if (recommendations && recommendations.length > 0) {
                         this.similarMovies = recommendations;
                     }
@@ -132,7 +129,6 @@
                 const id = this.$auth.user.id;
                 try {
                     const recommendations = await this.$axios.$get(`/users/${id}/recommendations`);
-
                     if (recommendations && recommendations.length > 0) {
                         this.recommendedMovies = recommendations;
                     }
@@ -144,7 +140,6 @@
                 try {
                     const movieId = this.$route.params.id;
                     const rating = await this.$axios.$get(`/movies/${movieId}/rating`);
-
                     if (rating) {
                         this.userRating = rating.value;
                     }
@@ -181,6 +176,6 @@
 <style lang="sass" scoped>
     h1
         margin-top: 0
-    h2
-        padding: 20px 0
+        h2
+            padding: 20px 0
 </style>

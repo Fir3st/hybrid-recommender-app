@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
 import * as config from 'config';
@@ -14,10 +15,10 @@ import { FavGenre } from '../../entities/FavGenre';
 import { Result } from '../../entities/Result';
 
 export const getUsers = async (req: Request, res: any) => {
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
+    const take: any = req.query.take || 10;
+    const skip: any = req.query.skip || 0;
     const orderBy = req.query.orderBy || 'id';
-    const order = req.query.order || 'ASC';
+    const order: any = req.query.order || 'ASC';
     const repository = getRepository(User);
 
     try {

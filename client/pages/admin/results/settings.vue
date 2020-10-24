@@ -277,9 +277,20 @@
     import { mapGetters } from 'vuex';
     import { cbRecTypes, cbfRecTypes, similarityTypes, movieTypes, hybridTypes } from '~/utils/constants';
     import AdminPage from '~/components/admin/AdminPage';
-
     export default {
         extends: AdminPage,
+        async asyncData ({ app }) {
+            try {
+                const settings = await app.$axios.$get('/results/settings');
+                if (settings) {
+                    return {
+                        settings
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 pageTitle: 'Results form settings',
@@ -392,23 +403,9 @@
                 const options = genres.map((item) => {
                     return { value: item.id, text: item.name };
                 });
-
                 return [
                     ...options
                 ];
-            }
-        },
-        async asyncData ({ app }) {
-            try {
-                const settings = await app.$axios.$get('/results/settings');
-
-                if (settings) {
-                    return {
-                        settings
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         methods: {

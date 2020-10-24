@@ -164,9 +164,20 @@
 <script>
     import moment from 'moment';
     import AdminPage from '~/components/admin/AdminPage';
-
     export default {
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const result = await app.$axios.$get(`/results/${params.id}`);
+                if (result) {
+                    return {
+                        result
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -227,19 +238,6 @@
                 });
             }
         },
-        async asyncData ({ app, params }) {
-            try {
-                const result = await app.$axios.$get(`/results/${params.id}`);
-
-                if (result) {
-                    return {
-                        result
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
         methods: {
             countRelevance(system, type) {
                 if (type === 'relevant') {
@@ -264,7 +262,6 @@
                 const relevantCount = topN.reduce((count, item) => {
                     return item.relevance ? count + 1 : count;
                 }, 0);
-
                 return Math.round((relevantCount / n) * 100);
             },
             getFMeasureScore(system, n) {

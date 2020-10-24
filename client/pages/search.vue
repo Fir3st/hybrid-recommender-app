@@ -41,15 +41,9 @@
     import CustomSearch from '~/components/default/search/CustomSearch';
     import Results from '~/components/default/search/Results';
     import { containedGenres, containedTypes } from '~/utils/search';
-
     export default {
         components: { CustomSearch, Results, SearchInput: Input },
         auth: false,
-        head() {
-            return {
-                title: this.pageTitle
-            };
-        },
         data() {
             return {
                 pageTitle: 'Search',
@@ -69,6 +63,11 @@
                 includeRated: true
             };
         },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
         computed: {
             ...mapGetters({
                 genres: 'genres/genres'
@@ -78,7 +77,6 @@
                 if (this.searchTypes.length === 1) {
                     text = `${text} ${this.searchTypes[0]}`;
                 }
-
                 return text;
             },
             type() {
@@ -93,7 +91,7 @@
             }
         },
         async created() {
-            this.$root.$on('refreshResults', async () => await this.refreshResults());
+            this.$root.$on('refresh-results', async () => await this.refreshResults());
         },
         methods: {
             onCheckboxChange() {
@@ -104,12 +102,10 @@
                 this.requestReset();
                 this.stateReset();
                 this.showResults = false;
-
                 if (this.searchTerm.length >= this.minLength) {
                     this.showResults = true;
                     this.searchGenres = containedGenres(this.genres, this.searchTerm) || [];
                     this.searchTypes = containedTypes(this.types, this.searchTerm) || [];
-
                     await this.searchByQuery(this.searchTerm, this.take, this.skip);
                 }
             },
@@ -119,7 +115,6 @@
                 this.requestReset();
                 this.stateReset();
                 this.customSearching = true;
-
                 await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip, this.includeRated);
             },
             requestReset() {
@@ -146,16 +141,13 @@
                 } catch (error) {
                     console.log(error.message);
                 }
-
                 this.searching = false;
             },
             async searchByCustomParams(genres, type = 'all', take, skip, includeRated) {
                 let url = `${this.url}?genres=${genres.join(',')}&take=${take}&skip=${skip}&includeRated=${includeRated}`;
-
                 if (type !== 'all') {
                     url = `${url}&type=${type}`;
                 }
-
                 try {
                     const response = await this.$axios.$get(url, { cancelToken: this.source.token });
                     const { movies, count } = response;
@@ -166,7 +158,6 @@
                 } catch (error) {
                     console.log(error.message);
                 }
-
                 this.searching = false;
             },
             async loadMore() {
@@ -176,7 +167,6 @@
                     if (this.customSearching) {
                         const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                         const type = (this.searchTypes.length === 1) ? this.type: 'all';
-
                         await this.searchByCustomParams(genres.map(item => item.id), type, this.take, this.skip, this.includeRated);
                     } else {
                         await this.searchByQuery(this.searchTerm, this.take, this.skip);
@@ -189,11 +179,9 @@
                 const take = this.movies.length;
                 this.movies = [];
                 this.count = 0;
-
                 if (this.customSearching) {
                     const genres = this.genres.filter(item => this.searchGenres.includes(item.name.toLowerCase()));
                     const type = (this.searchTypes.length === 1) ? this.type: 'all';
-
                     await this.searchByCustomParams(genres.map(item => item.id), type, take, skip, this.includeRated);
                 } else {
                     await this.searchByQuery(this.searchTerm, take, skip);
@@ -206,6 +194,6 @@
 <style lang="sass" scoped>
     h1
         margin-bottom: 40px !important
-    h2
-        margin: 20px 0
+        h2
+            margin: 20px 0
 </style>

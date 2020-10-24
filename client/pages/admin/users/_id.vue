@@ -30,12 +30,23 @@
 <script>
     import AdminPage from '~/components/admin/AdminPage';
     import UserDetailTab from '~/components/admin/users/UserDetailTab';
-
     export default {
         components: {
             UserDetailTab
         },
         extends: AdminPage,
+        async asyncData ({ app, params }) {
+            try {
+                const user = await app.$axios.$get(`/users/${params.id}`);
+                if (user) {
+                    return {
+                        user
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
         data() {
             return {
                 breadcrumbs: [
@@ -51,25 +62,11 @@
                 return (this.user && this.user.name && this.user.surname) ? `${this.user.name} ${this.user.surname}` : 'Detail';
             }
         },
-        async asyncData ({ app, params }) {
-            try {
-                const user = await app.$axios.$get(`/users/${params.id}`);
-
-                if (user) {
-                    return {
-                        user
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
-            }
-        },
         mounted() {
             if (this.user) {
                 const promises = [];
                 promises.push(this.$axios.$get(`/users/${this.user.id}/recommendations`));
                 promises.push(this.$axios.$get(`/users/${this.user.id}/preferences`));
-
                 Promise.all(promises).then((data) => {
                     this.recommendations = data[0];
                     this.preferences = data[1];

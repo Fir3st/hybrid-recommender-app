@@ -3,6 +3,10 @@ const config = require('config');
 const webpack = require('webpack');
 
 module.exports = {
+    server: {
+        port: 3300, // default: 3000
+        host: 'localhost' // default: localhost
+    },
     mode: 'universal',
     srcDir: 'client/',
     env: {

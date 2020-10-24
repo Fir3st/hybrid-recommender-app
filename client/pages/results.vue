@@ -47,16 +47,44 @@
     import { numOfGenres, numOfItems } from '~/utils/constants';
     import ResultsTab from '~/components/default/results/ResultsTab';
     import SearchInput from '~/components/default/questionnaire/Input';
-
     export default {
         components: {
             ResultsTab,
             SearchInput
         },
-        head() {
-            return {
-                title: this.pageTitle
-            };
+        async asyncData ({ app }) {
+            try {
+                const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
+                const settings = await app.$axios.$get('/results/settings');
+                if (user && settings) {
+                    const movies = user.ratings.map((item) => {
+                        return {
+                            ...item.movie,
+                            rating: item.rating
+                        };
+                    });
+                    const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
+                    const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
+                    const highestRatedItems = movies.filter(item => item.rating === Math.max(...movies.map(movie => movie.rating)));
+                    if (highestRatedItems.length === 1) {
+                        settings.general.selectedItem = highestRatedItems[0];
+                        settings.general.movieId = highestRatedItems[0].id;
+                    } else {
+                        const index = _.random(0, highestRatedItems.length - 1);
+                        settings.general.selectedItem = highestRatedItems[index];
+                        settings.general.movieId = highestRatedItems[index].id;
+                    }
+                    return {
+                        movies,
+                        user,
+                        favouriteGenres,
+                        notFavouriteGenres,
+                        settings
+                    };
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
         },
         data() {
             return {
@@ -69,6 +97,11 @@
                 numOfItems: numOfItems
             };
         },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
         computed: {
             ...mapGetters({
                 allGenres: 'genres/genres'
@@ -78,7 +111,6 @@
                 const options = genres.map((item) => {
                     return { value: item.id, text: item.name };
                 });
-
                 return [
                     { value: null, text: 'Please select a genre(s)' },
                     ...options
@@ -88,43 +120,6 @@
                 return this.movies && this.movies.length >= this.numOfItems
                     && this.favouriteGenres && this.favouriteGenres.length >= this.numOfGenres
                     && this.notFavouriteGenres && this.notFavouriteGenres.length >= this.numOfGenres;
-            }
-        },
-        async asyncData ({ app }) {
-            try {
-                const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
-                const settings = await app.$axios.$get('/results/settings');
-
-                if (user && settings) {
-                    const movies = user.ratings.map((item) => {
-                        return {
-                            ...item.movie,
-                            rating: item.rating
-                        };
-                    });
-                    const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
-                    const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
-
-                    const highestRatedItems = movies.filter(item => item.rating === Math.max(...movies.map(movie => movie.rating)));
-                    if (highestRatedItems.length === 1) {
-                        settings.general.selectedItem = highestRatedItems[0];
-                        settings.general.movieId = highestRatedItems[0].id;
-                    } else {
-                        const index = _.random(0, highestRatedItems.length - 1);
-                        settings.general.selectedItem = highestRatedItems[index];
-                        settings.general.movieId = highestRatedItems[index].id;
-                    }
-
-                    return {
-                        movies,
-                        user,
-                        favouriteGenres,
-                        notFavouriteGenres,
-                        settings
-                    };
-                }
-            } catch (error) {
-                console.log(error.message);
             }
         },
         methods: {
@@ -168,8 +163,8 @@
 <style lang="sass" scoped>
     h1
         margin-bottom: 40px !important
-    h2
-        margin: 20px 0
-    .btns
-        margin-top: 40px
+        h2
+            margin: 20px 0
+        .btns
+            margin-top: 40px
 </style>

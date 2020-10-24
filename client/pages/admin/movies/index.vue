@@ -79,7 +79,6 @@
     import { mapGetters, mapActions } from 'vuex';
     import AdminPage from '~/components/admin/AdminPage';
     import Paginator from '~/components/admin/Paginator';
-
     export default {
         components: {
             Paginator
@@ -93,6 +92,10 @@
                 ]
             };
         },
+        async fetch({ store, query }) {
+            await store.dispatch('movies/setPagination', query.page ? parseInt(query.page) : 1);
+            await store.dispatch('movies/loadMovies', { genre: null, type: 'all', orderBy: 'id', order: 'ASC' });
+        },
         computed: {
             ...mapGetters({
                 movies: 'movies/movies',
@@ -101,10 +104,6 @@
                 skip: 'movies/skip',
                 currentPage: 'movies/currentPage'
             })
-        },
-        async fetch({ store, query }) {
-            await store.dispatch('movies/setPagination', query.page ? parseInt(query.page) : 1);
-            await store.dispatch('movies/loadMovies', { genre: null, type: 'all', orderBy: 'id', order: 'ASC' });
         },
         methods: {
             ...mapActions({

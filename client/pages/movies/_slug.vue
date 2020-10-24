@@ -1,16 +1,15 @@
 <script>
     import MoviesPage from '~/components/default/MoviesPage';
-
     export default {
         extends: MoviesPage,
-        data() {
-            return {
-                pageTitle: 'Movies'
-            };
-        },
         asyncData({ params }) {
             return {
                 genreName: params.slug
+            };
+        },
+        data() {
+            return {
+                pageTitle: 'Movies'
             };
         },
         async fetch ({ store, params, query }) {

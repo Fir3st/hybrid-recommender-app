@@ -54,11 +54,6 @@
 
 <script>
     export default {
-        head() {
-            return {
-                title: this.title
-            };
-        },
         layout: 'auth',
         data() {
             return {
@@ -78,6 +73,11 @@
                         { required: true, message: 'Please input your password', trigger: ['blur', 'change'] }
                     ]
                 }
+            };
+        },
+        head() {
+            return {
+                title: this.title
             };
         },
         methods: {
@@ -118,15 +118,15 @@
         -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
         -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
         box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75)
-    .title-container
-        width: 100%
-        text-align: center
-        margin-bottom: 20px
-    .el-alert
-        margin-bottom: 20px
-    .button
-        width: 100%
-    .el-button--primary
-        background-color: #17a2b8
-        border-color: #17a2b8
+        .title-container
+            width: 100%
+            text-align: center
+            margin-bottom: 20px
+        .el-alert
+            margin-bottom: 20px
+        .button
+            width: 100%
+        .el-button--primary
+            background-color: #17a2b8
+            border-color: #17a2b8
 </style>

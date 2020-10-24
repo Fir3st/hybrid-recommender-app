@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as config from 'config';
 import * as _ from 'lodash';
 import { Request, Router } from 'express';
@@ -17,7 +18,7 @@ router.get('/movies/:id', [authenticate], async (req: Request, res: any) => {
     const take = req.query.take || 10;
     const skip = req.query.skip || 0;
     const type = req.query.type || null;
-    const orderBy = req.query.order_by || 'similarity';
+    const orderBy: any = req.query.order_by || 'similarity';
     const orderByColumns = orderBy.split(',');
 
     try {
@@ -65,16 +66,16 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
     const repository = getRepository(Movie);
 
     const id = parseInt(req.params.id, 10);
-    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
-    const favGenres = req.query.fav_genres ? req.query.fav_genres.split(',').map(item => parseInt(item, 10)) : [];
-    const notFavGenres = req.query.not_fav_genres ? req.query.not_fav_genres.split(',').map(item => parseInt(item, 10)) : [];
+    const genres = req.query.genres ? (req.query.genres as any).split(',').map(item => parseInt(item, 10)) : [];
+    const favGenres = req.query.fav_genres ? (req.query.fav_genres as any).split(',').map(item => parseInt(item, 10)) : [];
+    const notFavGenres = req.query.not_fav_genres ? (req.query.not_fav_genres as any).split(',').map(item => parseInt(item, 10)) : [];
     const type = req.query.type || 'all';
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
+    const take: any = req.query.take || 10;
+    const skip: any = req.query.skip || 0;
     const recommenderType = req.query.rec_type || null;
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
-    const orderBy = req.query.order_by || 'rating';
+    const orderBy: any = req.query.order_by || 'rating';
     const orderByColumns = orderBy.split(',');
 
     let url = `${recommender}/users-playground/${id}?take=${take}&skip=${skip}`;
@@ -149,15 +150,15 @@ router.get('/hybrid/:userId/:movieId', [authenticate], async (req: Request, res:
 
     const userId = parseInt(req.params.userId, 10);
     const movieId = parseInt(req.params.movieId, 10);
-    const genres = req.query.genres ? req.query.genres.split(',').map(item => parseInt(item, 10)) : [];
-    const type = req.query.type || 'all';
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
+    const genres = req.query.genres ? (req.query.genres as any).split(',').map(item => parseInt(item, 10)) : [];
+    const type: any = req.query.type || 'all';
+    const take: any = req.query.take || 10;
+    const skip: any = req.query.skip || 0;
     const recommenderType = req.query.rec_type || null;
     const hybridType = req.query.hybrid_type || null;
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
-    const orderBy = req.query.order_by || 'similarity,rating';
+    const orderBy: any = req.query.order_by || 'similarity,rating';
     const orderByColumns = orderBy.split(',');
 
     let url = `${recommender}/hybrid-playground/${userId}/${movieId}?take=${take}&skip=${skip}`;
@@ -225,11 +226,11 @@ router.get('/search/:id', [authenticate], async (req: Request, res: any) => {
     const repository = getRepository(Movie);
 
     const id = parseInt(req.params.id, 10);
-    const searchQuery = req.query.query || '';
+    const searchQuery: any = req.query.query || '';
     const recommenderType = req.query.rec_type || 'svd';
     const similarityType = req.query.sim_type || null;
     const similaritySource = req.query.sim_source || null;
-    const orderBy = req.query.order_by || 'rating,es_score';
+    const orderBy: any = req.query.order_by || 'rating,es_score';
     const orderByColumns = orderBy.split(',');
 
     try {
@@ -240,7 +241,7 @@ router.get('/search/:id', [authenticate], async (req: Request, res: any) => {
             .where('LOWER(movies.title) LIKE :query', { query: `%${searchQuery.toLowerCase()}%` })
             .orderBy('movies.year', 'DESC');
 
-        let movies = await query.getMany();
+        let movies: any = await query.getMany();
         if (movies && movies.length > 0) {
             movies = movies.map(movie => MoviesUtil.isPenalizedByUser(movie, { id }));
 

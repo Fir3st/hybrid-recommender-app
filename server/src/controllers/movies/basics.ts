@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request } from 'express';
 import { getRepository } from 'typeorm';
 import { Movie } from '../../entities/Movie';
@@ -5,12 +6,12 @@ import winston from '../../utils/winston';
 import MoviesUtil from '../../utils/movies/MoviesUtil';
 
 export const getMovies = async (req: Request, res: any) => {
-    const take = req.query.take || 10;
-    const skip = req.query.skip || 0;
-    const type = req.query.type || 'all';
-    const genre = req.query.genre || null;
+    const take: any = req.query.take || 10;
+    const skip: any = req.query.skip || 0;
+    const type: any = req.query.type || 'all';
+    const genre: any = req.query.genre || null;
     const orderBy = req.query.orderBy || 'id';
-    const order = req.query.order || 'ASC';
+    const order: any = req.query.order || 'ASC';
     const repository = getRepository(Movie);
 
     try {
@@ -45,7 +46,7 @@ export const getMovies = async (req: Request, res: any) => {
 };
 
 export const getTopMovies = async (req: Request, res: any) => {
-    const limit = req.query.limit || 10;
+    const limit: any = req.query.limit || 10;
     const type = req.query.type || 'all';
     const repository = getRepository(Movie);
 

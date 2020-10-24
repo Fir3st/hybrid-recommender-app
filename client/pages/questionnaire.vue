@@ -64,7 +64,6 @@
     import AddGenreForm from "~/components/default/questionnaire/AddGenreForm";
     import SelectedGenresGrid from "~/components/default/questionnaire/SelectedGenresGrid";
     import { numOfGenres, numOfItems } from '~/utils/constants';
-
     export default {
         components: {
             RatedMoviesGrid,
@@ -72,37 +71,9 @@
             AddGenreForm,
             SelectedGenresGrid
         },
-        head() {
-            return {
-                title: this.pageTitle
-            };
-        },
-        data() {
-            return {
-                pageTitle: 'Questionnaire',
-                favouriteGenres: [],
-                notFavouriteGenres: [],
-                numOfGenres: numOfGenres,
-                numOfItems: numOfItems,
-                sent: false,
-                loading: false
-            };
-        },
-        computed: {
-            ...mapGetters({
-                genres: 'genres/genres'
-            }),
-            isButtonDisabled() {
-                return this.movies.length < this.numOfItems
-                || this.favouriteGenres.length < this.numOfGenres
-                || this.notFavouriteGenres.length < this.numOfGenres
-                || this.loading;
-            }
-        },
         async asyncData ({ app }) {
             try {
                 const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
-
                 if (user) {
                     const movies = user.ratings.map((item) => {
                         return {
@@ -122,6 +93,33 @@
                 }
             } catch (error) {
                 console.log(error.message);
+            }
+        },
+        data() {
+            return {
+                pageTitle: 'Questionnaire',
+                favouriteGenres: [],
+                notFavouriteGenres: [],
+                numOfGenres: numOfGenres,
+                numOfItems: numOfItems,
+                sent: false,
+                loading: false
+            };
+        },
+        head() {
+            return {
+                title: this.pageTitle
+            };
+        },
+        computed: {
+            ...mapGetters({
+                genres: 'genres/genres'
+            }),
+            isButtonDisabled() {
+                return this.movies.length < this.numOfItems
+                    || this.favouriteGenres.length < this.numOfGenres
+                    || this.notFavouriteGenres.length < this.numOfGenres
+                    || this.loading;
             }
         },
         methods: {
@@ -164,7 +162,6 @@
                     if (index === -1 && index2 === -1) {
                         this.favouriteGenres.push(id);
                     }
-
                 } else {
                     const index = this.notFavouriteGenres.findIndex(item => item === id);
                     const index2 = this.favouriteGenres.findIndex(item => item === id);
@@ -179,7 +176,6 @@
                     if (index > -1) {
                         this.favouriteGenres.splice(index, 1);
                     }
-
                 } else {
                     const index = this.notFavouriteGenres.findIndex(item => item === id);
                     if (index > -1) {

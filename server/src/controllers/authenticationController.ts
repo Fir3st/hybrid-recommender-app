@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, Response, Router } from 'express';
 import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcrypt';

@@ -17,7 +17,6 @@
 <script>
     import AdminPage from '~/components/admin/AdminPage';
     import PlaygroundTab from '~/components/admin/playground/PlaygroundTab';
-
     export default {
         components: {
             PlaygroundTab
@@ -31,10 +30,10 @@
                 ]
             };
         },
+        async fetch({ store }) {
+        },
         computed: {
         },
-        async fetch({ store }) {
-        }
     };
 </script>
 
