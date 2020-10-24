@@ -213,18 +213,22 @@
                     const mostRated = this.getMostRatedGenres('most_rated', item.genres, 3);
                     const mostValued = this.getMostValuedGenres('most_valued', item.genres, 3);
                     const leastRated = this.getLeastRatedGenres('least_rated', item.genres, 3);
+                    const leastValued = this.leastValuedGenres('least_valued', item.genres, 3);
                     const mostRatedAll = this.getMostRatedGenres('most_rated_all', item.genres, 12);
                     const mostValuedAll = this.getMostRatedGenres('most_valued_all', item.genres, 12);
                     const leastRatedAll = this.getLeastRatedGenres('least_rated_all', item.genres, 12);
+                    const leastValuedAll = this.getLeastValuedGenres('least_valued_all', item.genres, 12);
 
                     return {
                         user: item.user,
                         ...mostRated,
                         ...mostValued,
                         ...leastRated,
+                        ...leastValued,
                         ...mostRatedAll,
                         ...mostValuedAll,
                         ...leastRatedAll,
+                        ...leastValuedAll,
                     };
                 });
                 const keys = {};
