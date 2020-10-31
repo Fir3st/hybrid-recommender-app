@@ -14,6 +14,8 @@ import { UserRating } from '../../entities/UserRating';
 import { FavGenre } from '../../entities/FavGenre';
 import { Result } from '../../entities/Result';
 import { Genre } from '../../entities/Genre';
+import { TopGenre } from '../../entities/TopGenre';
+import { saveTopGenres } from '../../utils/genres/topGenres';
 
 export const getUsers = async (req: Request, res: any) => {
     const take: any = req.query.take || 10;
@@ -207,6 +209,7 @@ export const analyzeUser = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
     const repository = getRepository(Movie);
     const genresRepository = getRepository(Genre);
+    const topGenresRepository = getRepository(TopGenre);
 
     try {
         const genres = {};
@@ -217,6 +220,7 @@ export const analyzeUser = async (req: Request, res: any) => {
 
         for (const genre of availableGenres) {
             genres[genre.name] = {
+                id: genre.id,
                 count: 0,
                 value: 0
             };
@@ -248,16 +252,26 @@ export const analyzeUser = async (req: Request, res: any) => {
                 }
             }
 
+            const mappedGenres = Object.keys(genres).map((name) => {
+                const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
+                return {
+                    name,
+                    ...genres[name],
+                    avg: avg.toFixed(2)
+                };
+            });
+
+            await topGenresRepository
+                .createQueryBuilder()
+                .delete()
+                .from(TopGenre)
+                .where('userId = :id', { id })
+                .execute();
+            await saveTopGenres(topGenresRepository, id, mappedGenres);
+
             return res.send({
                 ratings,
-                genres: Object.keys(genres).map((name) => {
-                    const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
-                    return {
-                        name,
-                        ...genres[name],
-                        avg: avg.toFixed(2)
-                    };
-                })
+                genres: mappedGenres
             });
         }
 

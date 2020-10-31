@@ -12,8 +12,17 @@
                     variant="info"
                     class="btn-download"
                     @click="downloadUsersCSV"
+                    :disabled="loading"
                 >
                     Export users and genres as CSV
+                </b-button>
+                <b-button
+                    variant="info"
+                    class="btn-download ml-2"
+                    @click="reloadData"
+                    :disabled="loading"
+                >
+                    Reload data about users top genres in database
                 </b-button>
             </b-col>
         </b-row>
@@ -98,7 +107,8 @@
                 pageTitle: 'Users',
                 breadcrumbs: [
                     { index: 0, name: 'users', path: null }
-                ]
+                ],
+                loading: false,
             };
         },
         async fetch({ store, query }) {
@@ -207,35 +217,52 @@
 
                 return this.getFormattedGenres(name, notRatedGenres);
             },
+            async reloadData() {
+                try {
+                    this.loading = true;
+                    await this.$axios.$get('/data/users-top-genres');
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    this.loading = false;
+                }
+            },
             async downloadUsersCSV() {
-                const data = await this.$axios.$get('/data/users');
-                const formattedData = data.map((item) => {
-                    const mostRated = this.getMostRatedGenres('most_rated', item.genres, 3);
-                    const mostValued = this.getMostValuedGenres('most_valued', item.genres, 3);
-                    const leastRated = this.getLeastRatedGenres('least_rated', item.genres, 3);
-                    const leastValued = this.getLeastValuedGenres('least_valued', item.genres, 3);
-                    const mostRatedAll = this.getMostRatedGenres('most_rated_all', item.genres, 12);
-                    const mostValuedAll = this.getMostRatedGenres('most_valued_all', item.genres, 12);
-                    const leastRatedAll = this.getLeastRatedGenres('least_rated_all', item.genres, 12);
-                    const leastValuedAll = this.getLeastValuedGenres('least_valued_all', item.genres, 12);
+                try {
+                    this.loading = true;
+                    const data = await this.$axios.$get('/data/users');
+                    const formattedData = data.map((item) => {
+                        const mostRated = this.getMostRatedGenres('most_rated', item.genres, 3);
+                        const mostValued = this.getMostValuedGenres('most_valued', item.genres, 3);
+                        const leastRated = this.getLeastRatedGenres('least_rated', item.genres, 3);
+                        const leastValued = this.getLeastValuedGenres('least_valued', item.genres, 3);
+                        const mostRatedAll = this.getMostRatedGenres('most_rated_all', item.genres, 12);
+                        const mostValuedAll = this.getMostRatedGenres('most_valued_all', item.genres, 12);
+                        const leastRatedAll = this.getLeastRatedGenres('least_rated_all', item.genres, 12);
+                        const leastValuedAll = this.getLeastValuedGenres('least_valued_all', item.genres, 12);
 
-                    return {
-                        user: item.user,
-                        ...mostRated,
-                        ...mostValued,
-                        ...leastRated,
-                        ...leastValued,
-                        ...mostRatedAll,
-                        ...mostValuedAll,
-                        ...leastRatedAll,
-                        ...leastValuedAll,
-                    };
-                });
-                const keys = {};
-                formattedData.forEach(el => Object.keys(el).forEach(k => keys[k] = null));
-                formattedData.forEach((el, ix, a) => a[ix] = Object.assign({}, keys, el));
+                        return {
+                            user: item.user,
+                            ...mostRated,
+                            ...mostValued,
+                            ...leastRated,
+                            ...leastValued,
+                            ...mostRatedAll,
+                            ...mostValuedAll,
+                            ...leastRatedAll,
+                            ...leastValuedAll,
+                        };
+                    });
+                    const keys = {};
+                    formattedData.forEach(el => Object.keys(el).forEach(k => keys[k] = null));
+                    formattedData.forEach((el, ix, a) => a[ix] = Object.assign({}, keys, el));
 
-                this.downloadCSV(formattedData, 'users.csv');
+                    this.downloadCSV(formattedData, 'users.csv');
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    this.loading = false;
+                }
             },
         }
     };
