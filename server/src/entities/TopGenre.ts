@@ -31,7 +31,7 @@ export class TopGenre {
         enum: LimitType,
         default: LimitType.TOP_THREE
     })
-    limit: LimitType;
+    genreLimit: LimitType;
 
     @Column()
     value: number;

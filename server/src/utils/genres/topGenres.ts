@@ -73,7 +73,7 @@ export const saveTopGenresToDb = async (repository: Repository<TopGenre>, id: nu
         topGenre.genreId = genre.id;
         topGenre.userId = id;
         topGenre.genreType = type;
-        topGenre.limit = limit;
+        topGenre.genreLimit = limit;
         topGenre.value = genre[key];
 
         await repository.save(topGenre);
