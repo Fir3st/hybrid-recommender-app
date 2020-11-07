@@ -38,7 +38,8 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
 
                     return {
                         ...movie,
-                        predictedRating: originalRec.rating ?? 0
+                        predictedRating: originalRec.rating ?? 0,
+                        similarity: originalRec.similarity ?? 0
                     };
                 });
                 return res.send(_.orderBy(moviesWithData, ['predictedRating'], ['desc']));

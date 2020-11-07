@@ -89,6 +89,7 @@
                     { key: 'id', label: 'ID' },
                     { key: 'title', label: 'Title' },
                     { key: 'predictedRating', label: 'Rating' },
+                    { key: 'similarity', label: 'Similarity' }
                 ],
                 genres: [],
                 movies: []
@@ -218,7 +219,7 @@
                 this.genres = [];
 
                 try {
-                    const url = `/playground/users/${this.userId}`;
+                    const url = `/playground/users/${this.userId}?take=25`;
 
                     const response = await this.$axios.$get(url);
 
