@@ -17,8 +17,13 @@ router.get('/users/:id', [authenticate], async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
     const take: any = req.query.take || 10;
     const skip: any = req.query.skip || 0;
+    const compareTo: any = req.query.compareTo && req.query.compareTo.length ? req.query.compareTo : null;
 
-    const url = `${recommender}/playground/users/${id}/recommendations?take=${take}&skip=${skip}`;
+    let url = `${recommender}/playground/users/${id}/recommendations?take=${take}&skip=${skip}`;
+
+    if (compareTo) {
+        url = `${url}&compareTo=${compareTo}`;
+    }
 
     try {
         const recsResponse = await axios.get(url);

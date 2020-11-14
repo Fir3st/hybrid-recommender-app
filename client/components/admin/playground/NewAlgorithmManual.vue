@@ -3,7 +3,7 @@
         b-col
             b-row
                 b-col
-                    h2 New Algorithm
+                    h2 New Algorithm - manual entries
             b-row
                 b-col
                     b-form
@@ -11,52 +11,15 @@
                         b-form-input(v-model="toTake", type="number", id="toTake", name="toTake", min="1")
                         b-form-group(id="userId", label="User", label-for="userId")
                             b-form-select(id="userId", v-model="userId", :options="options", required, placeholder="Select user to analyze")
-                        b-button(type="button", :disabled="!userId", @click="analyzeUser", variant="primary") Analyze user
-                        b-button(type="button", :disabled="!userId", @click="getRecommendations", variant="secondary", class="ml-2") Get recommended movies
+                        label(for="compare") Compare to these users (IDs, separed with semicolon)
+                        b-form-input(v-model="compareTo", type="text", id="compare", class="mb-2")
+                        b-button(type="button", :disabled="!userId", @click="getRecommendations", variant="secondary") Get recommended movies
             Loading(v-if="loading")
-            b-row(v-if="!loading && favouriteItems.length", class="mt-2 mb-2")
-                b-col
-                    h3 Favourite movies and series
-                    b-table(striped, hover, :items="favouriteItems", :fields="favouriteItemsFields")
-                        template(v-slot:cell(#)="data") {{ data.index + 1 }}
-                        template(v-slot:cell(usersRatings[0].createdAt)="data") {{ moment(data.item.usersRatings[0].createdAt).format('DD. MM. YYYY HH:mm:ss') }}
             b-row(v-if="!loading && movies.length", class="mt-2 mb-2")
                 b-col
                     h3 Recommended movies
                     b-table(striped, hover, :items="movies", :fields="moviesFields")
                         template(v-slot:cell(#)="data") {{ data.index + 1 }}
-            b-row(v-if="!loading && mostRatedGenres.length", class="mt-2 mb-2")
-                b-col
-                    h3 Most rated genres
-                    b-table(striped, hover, :items="mostRatedGenres")
-            b-row(v-if="!loading && mostValuedGenres.length", class="mt-2 mb-2")
-                b-col
-                    h3 Most valued genres
-                    b-table(striped, hover, :items="mostValuedGenres")
-            b-row(v-if="!loading && leastRatedGenres.length", class="mt-2 mb-2")
-                b-col
-                    h3 Least rated genres
-                    b-table(striped, hover, :items="leastRatedGenres")
-            b-row(v-if="!loading && leastValuedGenres.length", class="mt-2 mb-2")
-                b-col
-                    h3 Least valued genres
-                    b-table(striped, hover, :items="leastValuedGenres")
-            b-row(v-if="!loading && mostRatedGenresAll.length", class="mt-2 mb-2")
-                b-col
-                    h3 Most rated genres (12)
-                    b-table(striped, hover, :items="mostRatedGenresAll")
-            b-row(v-if="!loading && mostValuedGenresAll.length", class="mt-2 mb-2")
-                b-col
-                    h3 Most valued genres (12)
-                    b-table(striped, hover, :items="mostValuedGenresAll")
-            b-row(v-if="!loading && leastRatedGenresAll.length", class="mt-2 mb-2")
-                b-col
-                    h3 Least rated genres (12)
-                    b-table(striped, hover, :items="leastRatedGenresAll")
-            b-row(v-if="!loading && leastValuedGenresAll.length", class="mt-2 mb-2")
-                b-col
-                    h3 Least valued genres (12)
-                    b-table(striped, hover, :items="leastValuedGenresAll")
 
 </template>
 
@@ -77,15 +40,6 @@
                     { value: null, text: 'User to analyze' },
                 ],
                 users: [],
-                favouriteItems: [],
-                favouriteItemsFields: [
-                    '#',
-                    { key: 'id', label: 'ID' },
-                    { key: 'imdbId', label: 'IMDB ID' },
-                    { key: 'title', label: 'Title' },
-                    { key: 'usersRatings[0].rating', label: 'Rating value' },
-                    { key: 'usersRatings[0].createdAt', label: 'Rated at' }
-                ],
                 moviesFields: [
                     '#',
                     { key: 'id', label: 'ID' },
@@ -95,7 +49,8 @@
                 ],
                 genres: [],
                 movies: [],
-                toTake: 25
+                toTake: 25,
+                compareTo: ''
             };
         },
         computed: {
@@ -222,7 +177,7 @@
                 this.genres = [];
 
                 try {
-                    const url = `/playground/users/${this.userId}?take=${this.toTake}`;
+                    const url = `/playground/users/${this.userId}?take=${this.toTake}&compareTo=${this.compareTo}`;
 
                     const response = await this.$axios.$get(url);
 
