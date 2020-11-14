@@ -238,7 +238,7 @@
                 try {
                     await this.analyzeUser();
                     this.loading = true;
-                    const url = `/playground/users/${this.userId}?take=${this.toTake}`;
+                    const url = `/playground/users/${this.userId}/new?take=${this.toTake}`;
 
                     const response = await this.$axios.$get(url);
 

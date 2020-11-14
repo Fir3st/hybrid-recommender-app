@@ -193,7 +193,7 @@
                 try {
                     await this.analyzeUser();
                     this.loading = true;
-                    const url = `/playground/users/${this.userId}?take=${this.toTake}&compareTo=${this.compareTo}`;
+                    const url = `/playground/users/${this.userId}/new?take=${this.toTake}&compareTo=${this.compareTo}`;
 
                     const response = await this.$axios.$get(url);
 
