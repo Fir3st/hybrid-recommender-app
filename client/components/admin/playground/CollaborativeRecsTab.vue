@@ -37,76 +37,6 @@
                                 placeholder="Enter number of results"
                             ></b-form-input>
                         </b-form-group>
-                        <b-form-group
-                            id="recommenderType"
-                            label="Recommender algorithm"
-                            label-for="recommenderType"
-                        >
-                            <b-form-select
-                                id="recommenderType"
-                                v-model="recommenderType"
-                                :options="recommenderTypes"
-                                @change="resetSimilarity"
-                            ></b-form-select>
-                        </b-form-group>
-                        <b-form-group
-                            id="similarityType"
-                            label="Similarity function"
-                            label-for="similarityType"
-                        >
-                            <b-form-select
-                                id="similarityType"
-                                v-model="similarityType"
-                                :options="similarityTypes"
-                                :disabled="recommenderType === 'svd'"
-                            ></b-form-select>
-                        </b-form-group>
-                        <b-form-group
-                            id="similaritySource"
-                            label="Algorithm used for similarity with already rated movies"
-                            label-for="similaritySource"
-                        >
-                            <b-form-select
-                                id="similaritySource"
-                                v-model="similaritySource"
-                                :options="similaritySources"
-                            ></b-form-select>
-                        </b-form-group>
-                        <b-form-group
-                            id="genre"
-                            label="Specific genres (optional)"
-                            label-for="genre"
-                        >
-                            <b-form-select
-                                id="genre"
-                                v-model="genre"
-                                :options="genres"
-                                :select-size="4"
-                                multiple
-                            ></b-form-select>
-                        </b-form-group>
-                        <b-form-group
-                            id="movieType"
-                            label="Specific movie type (optional)"
-                            label-for="movieType"
-                        >
-                            <b-form-select
-                                id="movieType"
-                                v-model="movieType"
-                                :options="movieTypes"
-                            ></b-form-select>
-                        </b-form-group>
-                        <b-form-group
-                            id="orderBy"
-                            label="Order by"
-                            label-for="orderBy"
-                        >
-                            <b-form-select
-                                id="orderBy"
-                                v-model="orderBy"
-                                :options="orderByOptions"
-                            ></b-form-select>
-                        </b-form-group>
                         <b-button
                             :disabled="isButtonDisabled"
                             type="submit"
@@ -127,6 +57,13 @@
             <Loading v-if="loading" />
             <b-row v-if="recommendations.length && !loading">
                 <b-col>
+                    <p>Relevant: {{ relevantCount }}</p>
+                    <p>Not relevant: {{ notRelevantCount }}</p>
+                    <p>Precision: {{ precision }}</p>
+                    <p>Recall (TOP 10): {{ recall10 }}</p>
+                    <p>F1-Measure (TOP 10): {{ f1Measure10 }}</p>
+                    <p>Recall (TOP 15): {{ recall15 }}</p>
+                    <p>F1-Measure (TOP 15): {{ f1Measure15 }}</p>
                     <MoviesTable
                         :recommendations="recommendations"
                         :additional-info="true"
@@ -150,60 +87,23 @@
         data() {
             return {
                 loading: false,
-                take: 10,
+                take: 25,
                 userId: 1,
-                recommenderType: null,
-                recommenderTypes: [
-                    { value: null, text: 'Please select an algorithm' },
-                    { value: 'svd', text: 'Single Value Decomposition (default)' },
-                    { value: 'item-based', text: 'Item-based approach' },
-                    { value: 'user-based', text: 'User-based approach' }
-                ],
-                similarityType: null,
-                similarityTypes: [
-                    { value: null, text: 'Please select a similarity function' },
-                    { value: 'cosine', text: 'Cosine' },
-                    { value: 'jaccard', text: 'Jaccard' },
-                    { value: 'euclidean', text: 'Euclidean' }
-                ],
-                similaritySource: null,
-                similaritySources: [
-                    { value: null, text: 'Please select an algorithm' },
-                    { value: 'tf-idf', text: 'TF-IDF (default)' },
-                    { value: 'lda', text: 'LDA' },
-                ],
-                genre: null,
-                movieType: null,
-                movieTypes:  [
-                    { value: null, text: 'Please select a movie type' },
-                    { value: 'movie', text: 'Movie' },
-                    { value: 'series', text: 'Series' },
-                ],
-                orderBy: null,
-                orderByOptions: [
-                    { value: null, text: 'Please select columns for sorting and their order' },
-                    { value: 'rating', text: 'Only predicted rating' },
-                    { value: 'es_score', text: 'Only Expert system score' },
-                    { value: 'rating,es_score', text: 'Predicted rating, Expert system score (default)' },
-                    { value: 'es_score,rating', text: 'Expert system score, Predicted rating' },
-                ],
-                recommendations: []
+                recommenderType: 'svd',
+                similaritySource: 'tf-idf',
+                orderBy: 'rating',
+                recommendations: [],
+                genres: [],
+                relevantCount: null,
+                notRelevantCount: null,
+                precision: null,
+                recall10: null,
+                recall15: null,
+                f1Measure10: null,
+                f1Measure15: null
             };
         },
         computed: {
-            ...mapGetters({
-                allGenres: 'genres/genres'
-            }),
-            genres() {
-                const genres = this.allGenres.filter(item => item.name !== 'N/A');
-                const options = genres.map((item) => {
-                    return { value: item.id, text: item.name };
-                });
-                return [
-                    { value: null, text: 'Please select a genre(s)' },
-                    ...options
-                ];
-            },
             isButtonDisabled() {
                 return (this.take < 1) ||
                     (this.userId < 1) ||
@@ -213,6 +113,24 @@
             }
         },
         methods: {
+            async analyzeUser() {
+                this.loading = true;
+                this.recommendations = [];
+
+                try {
+                    const url = `/users/${this.userId}/analyze`;
+
+                    const response = await this.$axios.$get(url);
+
+                    if (response.genres && response.genres.length) {
+                        this.genres = response.genres;
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                } finally {
+                    this.loading = false;
+                }
+            },
             resetSimilarity() {
                 if (this.recommenderType === 'svd') {
                     this.similarityType = null;
@@ -220,23 +138,16 @@
             },
             async showRecommendations() {
                 this.recommendations = [];
-                this.loading = true;
+
                 try {
+                    await this.analyzeUser();
+                    this.loading = true;
                     let url = `/playground/users/${this.userId}?take=${this.take}`;
                     if (this.recommenderType) {
                         url = `${url}&rec_type=${this.recommenderType}`;
                     }
-                    if (this.similarityType) {
-                        url = `${url}&sim_type=${this.similarityType}`;
-                    }
                     if (this.similaritySource) {
                         url = `${url}&sim_source=${this.similaritySource}`;
-                    }
-                    if (this.movieType) {
-                        url = `${url}&type=${this.movieType}`;
-                    }
-                    if (this.genre) {
-                        url = `${url}&genres=${this.genre.join(',')}`;
                     }
                     if (this.orderBy) {
                         url = `${url}&order_by=${this.orderBy}`;
@@ -244,6 +155,14 @@
                     const response = await this.$axios.$get(url, { timeout: 60 * 40 * 1000 });
                     if (response && response.length > 0) {
                         this.recommendations = response;
+                        const relevance = this.getRelevance(this.recommendations, this.mostRatedGenresAll, this.leastRatedGenresAll);
+                        this.relevantCount = this.getRelevantCount(relevance);
+                        this.notRelevantCount = this.take - this.relevantCount;
+                        this.precision = this.getFinalScore(this.take, this.relevantCount);
+                        this.recall10 = this.getRecallScore(relevance, 10);
+                        this.recall15 = this.getRecallScore(relevance, 15);
+                        this.f1Measure10 = this.getFMeasureScore(relevance, this.take, 10);
+                        this.f1Measure15 = this.getFMeasureScore(relevance, this.take, 15);
                     }
                 } catch (error) {
                     console.log(error.message);
