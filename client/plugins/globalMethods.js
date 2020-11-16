@@ -109,10 +109,13 @@ Vue.mixin({
                 let relevant;
                 if (movieRelevantGenres.length > 0 && movieNotRelevantGenres.length === 0) {
                     relevant = true;
-                } else if (movieRelevantGenres.length === 0 && movieNotRelevantGenres.length > 0) {
+                    // } else if (movieRelevantGenres.length === 0 && movieNotRelevantGenres.length > 0) {
+                    //     relevant = false;
+                    // } else if (movieRelevantGenres.length > 0 && movieNotRelevantGenres.length > 0) {
+                    //     relevant = movieRelevantGenres.length > movieNotRelevantGenres.length;
+                    // }
+                } else {
                     relevant = false;
-                } else if (movieRelevantGenres.length > 0 && movieNotRelevantGenres.length > 0) {
-                    relevant = movieRelevantGenres.length > movieNotRelevantGenres.length;
                 }
 
                 return { id: movie.id, relevant };
