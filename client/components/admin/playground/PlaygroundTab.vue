@@ -17,6 +17,11 @@
             <HybridRecsTab />
         </b-tab>
         <b-tab
+            title="Expert system recommendations"
+        >
+            <ExpertBasedRecsTab />
+        </b-tab>
+        <b-tab
             title="New algorithm"
             active
         >
@@ -36,6 +41,7 @@
     import ContentBasedRecsTab from '~/components/admin/playground/ContentBasedRecsTab';
     import CollaborativeRecsTab from '~/components/admin/playground/CollaborativeRecsTab';
     import HybridRecsTab from '~/components/admin/playground/HybridRecsTab';
+    import ExpertBasedRecsTab from '~/components/admin/playground/ExpertBasedRecsTab';
 
     export default {
         components: {
@@ -44,6 +50,7 @@
             HybridRecsTab,
             NewAlgorithmTab,
             NewAlgorithmTabManual,
+            ExpertBasedRecsTab
         }
     };
 </script>

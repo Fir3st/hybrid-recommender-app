@@ -32,6 +32,7 @@
                     p F1-Measure (TOP 15): {{ f1Measure15 }}
                     b-table(striped, hover, :items="movies", :fields="moviesFields")
                         template(v-slot:cell(#)="data") {{ data.index + 1 }}
+                        template(v-slot:cell(genres)="data") {{ data.item.genres.map(item => item.name).join(', ') }}
             b-row(v-if="!loading && mostRatedGenres.length", class="mt-2 mb-2")
                 b-col
                     h3 Most rated genres
@@ -97,6 +98,7 @@
                     '#',
                     { key: 'id', label: 'ID' },
                     { key: 'title', label: 'Title' },
+                    { key: 'genres', label: 'Genres' },
                     { key: 'predictedRating', label: 'Rating' },
                     { key: 'similarity', label: 'Similarity' },
                     { key: 'relevant', label: 'Relevant' }

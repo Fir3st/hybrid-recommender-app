@@ -8,6 +8,8 @@ import { authenticate } from '../middleware/auth';
 import axios from 'axios';
 import { Movie } from '../entities/Movie';
 import MoviesUtil from '../utils/movies/MoviesUtil';
+import { UserRating } from '../entities/UserRating';
+import { FavGenre } from '../entities/FavGenre';
 const router = Router();
 
 router.get('/users/:id/new', [authenticate], async (req: Request, res: any) => {
@@ -55,6 +57,79 @@ router.get('/users/:id/new', [authenticate], async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest(`No recommendations for user ${id}.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+});
+
+router.get('/users/:id/genres', [authenticate], async (req: Request, res: any) => {
+    req.socket.setTimeout(3600e3);
+    const userId = parseInt(req.params.id, 10);
+    const numOfGenres = 3;
+    const minRatingValue = 2.5;
+    const ratingsRepository = getRepository(UserRating);
+
+    try {
+        const userRatings = await ratingsRepository
+            .createQueryBuilder('ratings')
+            .leftJoinAndSelect('ratings.movie', 'movie')
+            .leftJoinAndSelect('movie.genres', 'genres')
+            .where('ratings.userId = :userId', { userId })
+            .getMany();
+
+        if (userRatings && userRatings.length > 0) {
+            const positiveRatings = userRatings.filter(item => item.rating > minRatingValue);
+            const negativeRatings = userRatings.filter(item => item.rating <= minRatingValue);
+            const positiveGenres = _.flatten(positiveRatings.map(item => item.movie.genres)).map(item => item.id);
+            const negativeGenres = _.flatten(negativeRatings.map(item => item.movie.genres)).map(item => item.id);
+
+            const positiveGenresCount = {};
+            for (const genre of positiveGenres) {
+                if (genre in positiveGenresCount) {
+                    positiveGenresCount[genre] += 1;
+                } else {
+                    positiveGenresCount[genre] = 1;
+                }
+            }
+            for (const genre of negativeGenres) {
+                if (genre in positiveGenresCount && positiveGenresCount[genre] > 0) {
+                    positiveGenresCount[genre] -= 1;
+                }
+            }
+            const topPositiveGenres = _.sortBy(Object.keys(positiveGenresCount).map((key) => {
+                return { key, count: positiveGenresCount[key] };
+            }), 'count')
+                .reverse()
+                .filter(item => item.count > 0)
+                .slice(0, numOfGenres)
+                .map(item => item.key);
+
+            const negativeGenresCount = {};
+            for (const genre of negativeGenres) {
+                if (genre in negativeGenresCount) {
+                    negativeGenresCount[genre] += 1;
+                } else {
+                    negativeGenresCount[genre] = 1;
+                }
+            }
+            for (const genre of positiveGenres) {
+                if (genre in negativeGenresCount && negativeGenresCount[genre] > 0) {
+                    negativeGenresCount[genre] -= 1;
+                }
+            }
+            const topNegativeGenres = _.sortBy(Object.keys(negativeGenresCount).map((key) => {
+                return { key, count: negativeGenresCount[key] };
+            }), 'count')
+                .reverse()
+                .filter(item => item.count > 0)
+                .slice(0, numOfGenres)
+                .map(item => item.key);
+
+            return res.send({ topPositiveGenres, topNegativeGenres });
+        }
+
+        return res.boom.badRequest(`No ratings found for user ${userId}.`);
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

@@ -64,11 +64,10 @@
                     <p>F1-Measure (TOP 10): {{ f1Measure10 }}</p>
                     <p>Recall (TOP 15): {{ recall15 }}</p>
                     <p>F1-Measure (TOP 15): {{ f1Measure15 }}</p>
-                    <MoviesTable
-                        :recommendations="recommendations"
-                        :additional-info="true"
-                        :num-of-dec-places="6"
-                    />
+                    <b-table striped hover :items="recommendations" :fields="moviesFields">
+                        <template v-slot:cell(#)="data">{{ data.index + 1 }}</template>
+                        <template v-slot:cell(genres)="data">{{ data.item.genres.map(item => item.name).join(', ') }}</template>
+                    </b-table>
                 </b-col>
             </b-row>
         </b-col>
@@ -76,12 +75,9 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-    import MoviesTable from '~/components/admin/users/RecommendedMoviesTable';
     import Loading from '~/components/default/search/Loading';
     export default {
         components: {
-            MoviesTable,
             Loading
         },
         data() {
@@ -100,7 +96,16 @@
                 recall10: null,
                 recall15: null,
                 f1Measure10: null,
-                f1Measure15: null
+                f1Measure15: null,
+                moviesFields: [
+                    '#',
+                    { key: 'id', label: 'ID' },
+                    { key: 'title', label: 'Title' },
+                    { key: 'genres', label: 'Genres' },
+                    { key: 'rating', label: 'Rating' },
+                    { key: 'ratedSimilarity', label: 'Similarity' },
+                    { key: 'relevant', label: 'Relevant' }
+                ]
             };
         },
         computed: {
@@ -163,6 +168,11 @@
                         this.recall15 = this.getRecallScore(relevance, 15);
                         this.f1Measure10 = this.getFMeasureScore(relevance, this.take, 10);
                         this.f1Measure15 = this.getFMeasureScore(relevance, this.take, 15);
+                        this.recommendations = this.recommendations.map((movie) => {
+                            const relevanceForItem = relevance.find(item => item.id === movie.id);
+
+                            return { ...movie, relevant: relevanceForItem ? relevanceForItem.relevant : null };
+                        });
                     }
                 } catch (error) {
                     console.log(error.message);

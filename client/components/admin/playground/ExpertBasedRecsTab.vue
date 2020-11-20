@@ -3,7 +3,7 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <h2>Content-Based recommendations</h2>
+                    <h2>Expert system recommendations</h2>
                 </b-col>
             </b-row>
             <b-row>
@@ -44,20 +44,12 @@
                         >
                             Show recommendations
                         </b-button>
-                        <b-button
-                            v-if="recommendations.length"
-                            variant="primary"
-                            @click="downloadRecommendations"
-                        >
-                            Download as CSV
-                        </b-button>
                     </b-form>
                 </b-col>
             </b-row>
             <Loading v-if="loading" />
             <b-row v-if="recommendations.length && !loading">
                 <b-col>
-                    <p class="mt-2 mb-2">Selected movie for content-based recs: {{ selectedMovie.title || '' }} (ID: {{ selectedMovie.id }})</p>
                     <p>Relevant: {{ relevantCount }}</p>
                     <p>Not relevant: {{ notRelevantCount }}</p>
                     <p>Precision: {{ precision }}</p>
@@ -77,8 +69,6 @@
 
 <script>
     import Loading from '~/components/default/search/Loading';
-    import * as _ from 'lodash';
-
     export default {
         components: {
             Loading
@@ -88,10 +78,9 @@
                 loading: false,
                 take: 25,
                 userId: 1,
-                movieId: 1,
-                selectedMovie: null,
-                selectedAlg: 'tf-idf',
-                orderBy: 'similarity',
+                recommenderType: 'svd',
+                similaritySource: 'tf-idf',
+                orderBy: 'augmented_rating',
                 recommendations: [],
                 genres: [],
                 relevantCount: null,
@@ -106,7 +95,8 @@
                     { key: 'id', label: 'ID' },
                     { key: 'title', label: 'Title' },
                     { key: 'genres', label: 'Genres' },
-                    { key: 'similarity', label: 'Similarity' },
+                    { key: 'rating', label: 'Rating' },
+                    { key: 'ratedSimilarity', label: 'Similarity' },
                     { key: 'relevant', label: 'Relevant' }
                 ]
             };
@@ -114,12 +104,18 @@
         computed: {
             isButtonDisabled() {
                 return (this.take < 1) ||
-                    (this.movieId < 1) ||
-                    (this.selectedAlg === null) ||
+                    (this.userId < 1) ||
+                    (this.recommenderType === null) ||
+                    (this.similaritySource === null) ||
                     (this.orderBy === null);
             }
         },
         methods: {
+            resetSimilarity() {
+                if (this.recommenderType === 'svd') {
+                    this.similarityType = null;
+                }
+            },
             async analyzeUser() {
                 this.loading = true;
                 this.recommendations = [];
@@ -143,33 +139,26 @@
 
                 try {
                     await this.analyzeUser();
+                    const genres = await this.$axios.$get(`/playground/users/${this.userId}/genres`, { timeout: 60 * 40 * 1000 });
+
                     this.loading = true;
-                    const user = await this.$axios.$get(`/users/${this.userId}`);
-                    const movies = user.ratings.map((item) => {
-                        return {
-                            ...item.movie,
-                            rating: item.rating
-                        };
-                    });
-
-                    const highestRatedItems = movies.filter(item => item.rating === Math.max(...movies.map(movie => movie.rating)));
-                    if (highestRatedItems.length === 1) {
-                        this.selectedMovie = highestRatedItems[0];
-                        this.movieId = highestRatedItems[0].id;
-                    } else {
-                        const index = _.random(0, highestRatedItems.length - 1);
-                        this.selectedMovie = highestRatedItems[index];
-                        this.movieId = highestRatedItems[index].id;
+                    let url = `/playground/users/${this.userId}?take=${this.take}`;
+                    if (this.recommenderType) {
+                        url = `${url}&rec_type=${this.recommenderType}`;
                     }
-
-                    let url = `/playground/movies/${this.movieId}?take=${this.take}`;
-
-                    if (this.selectedAlg) {
-                        url = `${url}&type=${this.selectedAlg}`;
+                    if (this.similaritySource) {
+                        url = `${url}&sim_source=${this.similaritySource}`;
                     }
-
                     if (this.orderBy) {
                         url = `${url}&order_by=${this.orderBy}`;
+                    }
+
+                    if (genres.topPositiveGenres && genres.topPositiveGenres.length) {
+                        url = `${url}&fav_genres=${genres.topPositiveGenres.join(',')}`;
+                    }
+
+                    if (genres.topNegativeGenres && genres.topNegativeGenres.length) {
+                        url = `${url}&not_fav_genres=${genres.topNegativeGenres.join(',')}`;
                     }
 
                     const response = await this.$axios.$get(url, { timeout: 60 * 40 * 1000 });
@@ -194,20 +183,6 @@
                 } finally {
                     this.loading = false;
                 }
-            },
-            async downloadRecommendations() {
-                const recs = this.recommendations.map((item) => {
-                    return {
-                        id: item.id,
-                        title: item.title,
-                        similarity: item.similarity || 0,
-                        average_rating: item.avgRating,
-                        count: parseInt(item.ratingsCount, 10),
-                        penalized: parseInt(item.penalized, 10)
-                    };
-                });
-
-                this.downloadCSV(recs, `recommendations_movie_${this.movieId}.csv`);
             }
         }
     };
