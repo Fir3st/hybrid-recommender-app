@@ -283,7 +283,7 @@ export const sendResults = async (req: Request, res: any) => {
     const favGenresRepository = getRepository(FavGenre);
     const topGenresRepository = getRepository(TopGenre);
     const results = req.body.results;
-    const { items, id: userId } = req.user;
+    const { items, settings, id: userId } = req.body.user;
 
     try {
         const favGenres = await favGenresRepository.find({ where: { userId }, relations: ['genre'] });
@@ -300,6 +300,7 @@ export const sendResults = async (req: Request, res: any) => {
         result.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
         result.userId = userId;
         const data = {
+            settings,
             favouriteGenres,
             notFavouriteGenres,
             items,

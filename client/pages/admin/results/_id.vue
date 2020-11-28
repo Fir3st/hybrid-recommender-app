@@ -22,8 +22,6 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <p><strong>User's favourite genres: </strong> {{ result.favouriteGenres.map(item => item.name).join(', ') }}</p>
-                        <p><strong>User's not favourite genres: </strong> {{ result.notFavouriteGenres.map(item => item.name).join(', ') }}</p>
                         <h3>Rated items</h3>
                         <ul>
                             <li
@@ -35,52 +33,6 @@
                                 </nuxt-link>(<strong>rating</strong>: {{ item.rating }})
                             </li>
                         </ul>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <h2>Settings</h2>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <h3>General settings</h3>
-                        <p>
-                            <strong>Selected movie for content-based recs:</strong>
-                            <nuxt-link :to="`/admin/movies/${result.settings.general.movieId}`">
-                                {{ result.settings.general.selectedItem.title }}
-                            </nuxt-link>(ID: {{ result.settings.general.movieId }})
-                        </p>
-                        <p><strong>Take:</strong> {{ result.settings.general.take }} items</p>
-
-                        <h3>Content-based settings</h3>
-                        <p><strong>Recommender algorithm:</strong> {{ result.settings.cb.recType }}</p>
-                        <p><strong>Order by:</strong> {{ result.settings.cb.orderBy }}</p>
-
-                        <h3>Collaborative filtering settings</h3>
-                        <p><strong>Recommender algorithm:</strong> {{ result.settings.cbf.recType }}</p>
-                        <p><strong>Similarity function:</strong> {{ result.settings.cbf.similarityType }}</p>
-                        <p><strong>Content-based algorithm used for similarity with rated items:</strong> {{ result.settings.cbf.similaritySource }}</p>
-                        <p><strong>Genre(s):</strong> {{ result.settings.cbf.genre.join(', ') }}</p>
-                        <p><strong>Item type:</strong> {{ result.settings.cbf.movieType }}</p>
-                        <p><strong>Order by:</strong> {{ result.settings.cbf.orderBy }}</p>
-
-                        <h3>Hybrid settings</h3>
-                        <p><strong>Hybrid type:</strong> {{ result.settings.hybrid.hybridType }}</p>
-                        <p><strong>Collaborative algorithm:</strong> {{ result.settings.hybrid.recType }}</p>
-                        <p><strong>Similarity function:</strong> {{ result.settings.hybrid.similarityType }}</p>
-                        <p><strong>Content-based algorithm:</strong> {{ result.settings.hybrid.similaritySource }}</p>
-                        <p><strong>Genre(s):</strong> {{ result.settings.hybrid.genre.join(', ') }}</p>
-                        <p><strong>Item type:</strong> {{ result.settings.hybrid.movieType }}</p>
-                        <p><strong>Order by:</strong> {{ result.settings.hybrid.orderBy }}</p>
-
-                        <h3>Expert system settings</h3>
-                        <p><strong>Recommender algorithm:</strong> {{ result.settings.expert.recType }}</p>
-                        <p><strong>Similarity function:</strong> {{ result.settings.expert.similarityType }}</p>
-                        <p><strong>Content-based algorithm used for similarity with rated items:</strong> {{ result.settings.expert.similaritySource }}</p>
-                        <p><strong>Genre(s):</strong> {{ result.settings.expert.genre.join(', ') }}</p>
-                        <p><strong>Item type:</strong> {{ result.settings.expert.movieType }}</p>
-                        <p><strong>Order by:</strong> {{ result.settings.expert.orderBy }}</p>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -106,6 +58,8 @@
                         <p><strong>Precision:</strong>  {{ getFinalScore(countRelevance('hybridResults', 'relevant')) }}%</p>
 
                         <h3>Hybrid system (expert) results</h3>
+                        <p><strong>User's favourite genres: </strong> {{ result.favouriteGenres.map(item => item.genre.name).join(', ') }}</p>
+                        <p><strong>User's not favourite genres: </strong> {{ result.notFavouriteGenres.map(item => item.genre.name).join(', ') }}</p>
                         <p><strong>Relevant:</strong> {{ countRelevance('expertResults', 'relevant') }}</p>
                         <p><strong>Not relevant:</strong> {{ countRelevance('expertResults', 'notRelevant') }}</p>
                         <p><strong>Precision:</strong> {{ getFinalScore(countRelevance('expertResults', 'relevant')) }}%</p>
@@ -113,6 +67,19 @@
                         <p><strong>F1-Measure (TOP 15):</strong> {{ getFMeasureScore('expertResults', 15) }}%</p>
                         <p><strong>Recall (TOP 10):</strong> {{ getRecallScore('expertResults', 10) }}%</p>
                         <p><strong>F1-Measure (TOP 10):</strong> {{ getFMeasureScore('expertResults', 10) }}%</p>
+
+                        <h3>Cluster system results</h3>
+                        <p><strong>TOP 3 genres: </strong> {{ result.top3.map(item => item.genre.name).join(', ') }}</p>
+                        <p><strong>Least 3 genres: </strong> {{ result.least3.map(item => item.genre.name).join(', ') }}</p>
+                        <p><strong>TOP 12 genres: </strong> {{ result.top12.map(item => item.genre.name).join(', ') }}</p>
+                        <p><strong>Least 12 genres: </strong> {{ result.least12.map(item => item.genre.name).join(', ') }}</p>
+                        <p><strong>Relevant:</strong> {{ countRelevance('clusterResults', 'relevant') }}</p>
+                        <p><strong>Not relevant:</strong> {{ countRelevance('clusterResults', 'notRelevant') }}</p>
+                        <p><strong>Precision:</strong> {{ getFinalScore(countRelevance('clusterResults', 'relevant')) }}%</p>
+                        <p><strong>Recall (TOP 15):</strong> {{ getRecallScore('clusterResults', 15) }}%</p>
+                        <p><strong>F1-Measure (TOP 15):</strong> {{ getFMeasureScore('clusterResults', 15) }}%</p>
+                        <p><strong>Recall (TOP 10):</strong> {{ getRecallScore('clusterResults', 10) }}%</p>
+                        <p><strong>F1-Measure (TOP 10):</strong> {{ getFMeasureScore('clusterResults', 10) }}%</p>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -148,6 +115,12 @@
                             striped
                             hover
                             :items="expertData"
+                        />
+                        <h3>Cluster system results</h3>
+                        <b-table
+                            striped
+                            hover
+                            :items="clusterData"
                         />
                     </b-col>
                 </b-row>
@@ -238,7 +211,18 @@
                         es_score: item.esScore || '-'
                     };
                 });
-            }
+            },
+            clusterData() {
+                return this.result.results.clusterResults.map((item) => {
+                    return {
+                        '#': item.id,
+                        title: item.title,
+                        relevant: item.relevance ? 'yes' : 'no',
+                        genres: item.genres ? item.genres.map(item => item.name).join(', ') : '-',
+                        predicated_rating: item.predictedRating || '-'
+                    };
+                });
+            },
         },
         methods: {
             countRelevance(system, type) {
@@ -256,7 +240,7 @@
                 return moment(date).format('DD. MM. YYYY HH:mm');
             },
             getFinalScore(relevant) {
-                const total = this.result.settings.general.take;
+                const total = this.result.settings.take;
                 return Math.round((relevant / total) * 100);
             },
             getRecallScore(system, n) {

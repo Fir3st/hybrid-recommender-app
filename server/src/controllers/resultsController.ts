@@ -76,6 +76,7 @@ router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
             .createQueryBuilder('results')
             .leftJoinAndSelect('results.user', 'user')
             .select(['results.id', 'results.createdAt', 'user.name', 'user.surname'])
+            .where('resultType = :type', { type: 1 })
             .orderBy('createdAt', 'DESC')
             .getMany();
 
@@ -104,49 +105,20 @@ router.get('/:id', [authenticate, authorize], async (req: Request, res: any) => 
 
         if (result) {
             const data = JSON.parse(result.data);
-            const { settings, favouriteGenres, notFavouriteGenres, items, results } = data;
-            const favGenres = await genresRepository
-                .createQueryBuilder('genres')
-                .where('id IN (:ids)', { ids: favouriteGenres })
-                .getMany();
-            const notFavGenres = await genresRepository
-                .createQueryBuilder('genres')
-                .where('id IN (:ids)', { ids: notFavouriteGenres })
-                .getMany();
+            const { favouriteGenres, notFavouriteGenres, items, results, settings, top3, least3, top12, least12 } = data;
 
             const response = {
+                settings,
+                favouriteGenres,
+                notFavouriteGenres,
                 results,
+                top3,
+                least3,
+                top12,
+                least12,
                 id: result.id,
                 createdAt: result.createdAt,
                 user: _.omit(result.user, ['password', 'admin', 'email']),
-                favouriteGenres: favGenres.length ? favGenres : favouriteGenres,
-                notFavouriteGenres: notFavGenres.length ? notFavGenres : notFavouriteGenres,
-                settings: _.pick(settings, [
-                    'general.movieId',
-                    'general.take',
-                    'general.selectedItem.title',
-                    'cb.recType',
-                    'cb.orderBy',
-                    'cbf.recType',
-                    'cbf.similarityType',
-                    'cbf.similaritySource',
-                    'cbf.genre',
-                    'cbf.movieType',
-                    'cbf.orderBy',
-                    'hybrid.hybridType',
-                    'hybrid.recType',
-                    'hybrid.similarityType',
-                    'hybrid.similaritySource',
-                    'hybrid.genre',
-                    'hybrid.movieType',
-                    'hybrid.orderBy',
-                    'expert.recType',
-                    'expert.similarityType',
-                    'expert.similaritySource',
-                    'expert.genre',
-                    'expert.movieType',
-                    'expert.orderBy'
-                ]),
                 items: items.map(item => _.pick(item, ['id', 'title', 'rating']))
             };
             return res.send(response);

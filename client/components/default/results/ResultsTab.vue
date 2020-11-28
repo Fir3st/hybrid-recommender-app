@@ -253,7 +253,8 @@
                 const data = {
                     user: {
                         id: this.$auth.user.id,
-                        items: this.movies
+                        items: this.movies,
+                        settings: this.settings
                     },
                     results: {
                         cbResults: this.cbResults,
