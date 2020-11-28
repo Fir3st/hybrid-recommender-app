@@ -2,7 +2,7 @@
     <b-row>
         <b-col>
             <h3>Results for individual systems</h3>
-            <b-row v-if="isGeneralSettingsFilled && isCBSettingsFilled && isCBFSettingsFilled && isHybridSettingsFilled && isESSettingsFilled">
+            <b-row v-if="isGeneralSettingsFilled">
                 <b-col class="text-center">
                     <b-button
                         variant="info"
@@ -30,8 +30,17 @@
                 <b-col>
                     <b-tabs class="results">
                         <b-tab
-                            title="Expert system results"
+                            title="Cluster system results"
                             active
+                        >
+                            <Tab
+                                :recommendations="clusterResults"
+                                rec-type="clusterResults"
+                                :set-relevance-handler="setRelevance"
+                            />
+                        </b-tab>
+                        <b-tab
+                            title="Expert system results"
                         >
                             <Tab
                                 :recommendations="expertResults"
@@ -107,45 +116,29 @@
                 cbfResults: [],
                 hybridResults: [],
                 expertResults: [],
+                clusterResults: [],
                 timeout: 60 * 40 * 1000
             };
         },
         computed: {
             isGeneralSettingsFilled() {
-                return this.settings.general.movieId !== null && this.settings.general.take > 0;
-            },
-            isCBSettingsFilled() {
-                return this.settings.cb.recType !== null && this.settings.cb.orderBy !== null;
-            },
-            isCBFSettingsFilled() {
-                return this.settings.cbf.recType !== null
-                    && this.settings.cbf.similaritySource !== null
-                    && this.settings.cb.orderBy !== null;
-            },
-            isHybridSettingsFilled() {
-                return this.settings.hybrid.hybridType !== null
-                    && this.settings.hybrid.recType !== null
-                    && this.settings.hybrid.similaritySource !== null
-                    && this.settings.hybrid.orderBy !== null;
-            },
-            isESSettingsFilled() {
-                return this.settings.expert.recType !== null
-                    && this.settings.expert.similaritySource !== null
-                    && this.settings.expert.orderBy !== null;
+                return this.settings.movieId !== null && this.settings.take > 0;
             },
             hasResults() {
                 return this.cbResults.length > 0
                     && this.cbfResults.length > 0
                     && this.hybridResults.length > 0
-                    && this.expertResults.length > 0;
+                    && this.expertResults.length > 0
+                    && this.clusterResults.length > 0;
             },
             isFilled() {
                 const cbFilled = this.cbResults.every(item => item.relevance !== null);
                 const cbfFilled = this.cbfResults.every(item => item.relevance !== null);
                 const hybridFilled = this.hybridResults.every(item => item.relevance !== null);
                 const expertFilled = this.expertResults.every(item => item.relevance !== null);
+                const clusterFilled = this.clusterResults.every(item => item.relevance !== null);
 
-                return this.hasResults && cbFilled && cbfFilled && hybridFilled && expertFilled;
+                return this.hasResults && cbFilled && cbfFilled && hybridFilled && expertFilled && clusterFilled;
             }
         },
         methods: {
@@ -154,6 +147,7 @@
                 this.cbfResults = [];
                 this.hybridResults = [];
                 this.expertResults = [];
+                this.clusterResults = [];
             },
             async showResults() {
                 this.resetState();
@@ -163,6 +157,7 @@
                     await this.getCBFResults();
                     await this.getHybridResults();
                     await this.getExpertResults();
+                    await this.getClusterResults();
                 } catch (error) {
                     console.log(error.message);
                 } finally {
@@ -170,15 +165,9 @@
                 }
             },
             async getCBResults() {
-                let url = `/playground/movies/${this.settings.general.movieId}?take=${this.settings.general.take}`;
-
-                if (this.settings.cb.recType) {
-                    url = `${url}&type=${this.settings.cb.recType}`;
-                }
-
-                if (this.settings.cb.orderBy) {
-                    url = `${url}&order_by=${this.settings.cb.orderBy}`;
-                }
+                let url = `/playground/movies/${this.settings.movieId}?take=${this.settings.take}`;
+                url = `${url}&type=tf-idf`;
+                url = `${url}&order_by=similarity`;
 
                 const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
@@ -191,27 +180,10 @@
                 }
             },
             async getCBFResults() {
-                let url = `/playground/users/${this.$auth.user.id}?take=${this.settings.general.take}`;
-
-                if (this.settings.cbf.recType) {
-                    url = `${url}&rec_type=${this.settings.cbf.recType}`;
-                }
-                if (this.settings.cbf.similarityType) {
-                    url = `${url}&sim_type=${this.settings.cbf.similarityType}`;
-                }
-                if (this.settings.cbf.similaritySource) {
-                    url = `${url}&sim_source=${this.settings.cbf.similaritySource}`;
-                }
-                if (this.settings.cbf.movieType) {
-                    url = `${url}&type=${this.settings.cbf.movieType}`;
-                }
-                if (this.settings.cbf.genre.length > 0) {
-                    url = `${url}&genres=${this.settings.cbf.genre.join(',')}`;
-                }
-
-                if (this.settings.cbf.orderBy) {
-                    url = `${url}&order_by=${this.settings.cbf.orderBy}`;
-                }
+                let url = `/playground/users/${this.$auth.user.id}?take=${this.settings.take}`;
+                url = `${url}&rec_type=svd`;
+                url = `${url}&sim_source=tf-idf`;
+                url = `${url}&order_by=rating`;
 
                 const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
@@ -224,31 +196,13 @@
                 }
             },
             async getHybridResults() {
-                let url = `/playground/hybrid/${this.$auth.user.id}/${this.settings.general.movieId}?take=${this.settings.general.take}`;
+                let url = `/playground/hybrid/${this.$auth.user.id}/${this.settings.movieId}?take=${this.settings.take}`;
+                url = `${url}&hybrid_type=weighted`;
+                url = `${url}&rec_type=svd`;
+                url = `${url}&sim_type=tf-idf`;
+                url = `${url}&order_by=similarity,rating`;
 
-                if (this.settings.hybrid.hybridType) {
-                    url = `${url}&hybrid_type=${this.settings.hybrid.hybridType}`;
-                }
-                if (this.settings.hybrid.recType) {
-                    url = `${url}&rec_type=${this.settings.hybrid.recType}`;
-                }
-                if (this.settings.hybrid.similarityType) {
-                    url = `${url}&sim_type=${this.settings.hybrid.similarityType}`;
-                }
-                if (this.settings.hybrid.similaritySource) {
-                    url = `${url}&sim_source=${this.settings.hybrid.similaritySource}`;
-                }
-                if (this.settings.hybrid.movieType) {
-                    url = `${url}&type=${this.settings.hybrid.movieType}`;
-                }
-                if (this.settings.hybrid.genre.length > 0) {
-                    url = `${url}&genres=${this.settings.hybrid.genre.join(',')}`;
-                }
-                if (this.settings.hybrid.orderBy) {
-                    url = `${url}&order_by=${this.settings.hybrid.orderBy}`;
-                }
-
-                const response = await this.$axios.$get(url, this.timeout);
+                const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
                     this.hybridResults = response.map((item) => {
                         return {
@@ -259,37 +213,29 @@
                 }
             },
             async getExpertResults() {
-                let url = `/playground/users/${this.$auth.user.id}?take=${this.settings.general.take}`;
+                let url = `/playground/users/${this.$auth.user.id}?take=${this.settings.take}`;
+                url = `${url}&rec_type=svd`;
+                url = `${url}&sim_type=tf-idf`;
+                url = `${url}&order_by=augmented_rating`;
+                url = `${url}&fav_genres=${this.favouriteGenres.join(',')}`;
+                url = `${url}&not_fav_genres=${this.notFavouriteGenres.join(',')}`;
 
-                if (this.settings.expert.recType) {
-                    url = `${url}&rec_type=${this.settings.expert.recType}`;
-                }
-                if (this.settings.expert.similarityType) {
-                    url = `${url}&sim_type=${this.settings.expert.similarityType}`;
-                }
-                if (this.settings.expert.similaritySource) {
-                    url = `${url}&sim_source=${this.settings.expert.similaritySource}`;
-                }
-                if (this.settings.expert.movieType) {
-                    url = `${url}&type=${this.settings.expert.movieType}`;
-                }
-                if (this.settings.expert.genre.length > 0) {
-                    url = `${url}&genres=${this.settings.expert.genre.join(',')}`;
-                }
-
-                if (this.settings.expert.orderBy) {
-                    url = `${url}&order_by=${this.settings.expert.orderBy}`;
-                }
-                if (this.favouriteGenres) {
-                    url = `${url}&fav_genres=${this.favouriteGenres.join(',')}`;
-                }
-                if (this.notFavouriteGenres) {
-                    url = `${url}&not_fav_genres=${this.notFavouriteGenres.join(',')}`;
-                }
-
-                const response = await this.$axios.$get(url, this.timeout);
+                const response = await this.$axios.$get(url, { timeout: this.timeout });
                 if (response && response.length > 0) {
                     this.expertResults = response.map((item) => {
+                        return {
+                            ...item,
+                            relevance: null
+                        };
+                    });
+                }
+            },
+            async getClusterResults() {
+                let url = `/playground/users/${this.$auth.user.id}/new?take=${this.settings.take}`;
+
+                const response = await this.$axios.$get(url, { timeout: this.timeout });
+                if (response && response.length > 0) {
+                    this.clusterResults = response.map((item) => {
                         return {
                             ...item,
                             relevance: null
@@ -307,16 +253,14 @@
                 const data = {
                     user: {
                         id: this.$auth.user.id,
-                        items: this.movies,
-                        favouriteGenres: this.favouriteGenres,
-                        notFavouriteGenres: this.notFavouriteGenres
+                        items: this.movies
                     },
-                    settings: this.settings,
                     results: {
                         cbResults: this.cbResults,
                         cbfResults: this.cbfResults,
                         hybridResults: this.hybridResults,
-                        expertResults: this.expertResults
+                        expertResults: this.expertResults,
+                        clusterResults: this.clusterResults
                     }
                 };
                 try {

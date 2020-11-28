@@ -2,6 +2,10 @@ import * as _ from 'lodash';
 import { getRepository } from 'typeorm';
 import { FavGenre } from '../../entities/FavGenre';
 import { UserRating } from '../../entities/UserRating';
+import { Genre } from '../../entities/Genre';
+import { TopGenre } from '../../entities/TopGenre';
+import { Movie } from '../../entities/Movie';
+import { saveTopGenres } from '../../utils/genres/topGenres';
 
 export default class UsersUtil {
     public static async getUserGenres(userId: number) {
@@ -130,5 +134,73 @@ export default class UsersUtil {
         } catch (error) {
             console.log(error.message);
         }
+    }
+
+    public static async getUserTopGenresAndRatings(userId: number) {
+        const repository = getRepository(Movie);
+        const genresRepository = getRepository(Genre);
+        const topGenresRepository = getRepository(TopGenre);
+
+        const genres = {};
+        const availableGenres = await genresRepository
+            .createQueryBuilder('genres')
+            .where('genres.name <> "N/A"')
+            .getMany();
+
+        for (const genre of availableGenres) {
+            genres[genre.name] = {
+                id: genre.id,
+                count: 0,
+                value: 0
+            };
+        }
+
+        const ratings = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'ratings')
+            .where('ratings.userId = :id', { id: userId })
+            .orderBy({
+                'ratings.rating': 'DESC',
+                'ratings.createdAt': 'DESC'
+            })
+            .limit(20)
+            .getMany();
+
+        const movies = await repository
+            .createQueryBuilder('movie')
+            .leftJoinAndSelect('movie.usersRatings', 'ratings')
+            .leftJoinAndSelect('movie.genres', 'genres')
+            .where('ratings.userId = :id', { id: userId })
+            .getMany();
+
+        if (ratings && ratings.length && movies && movies.length > 0) {
+            for (const movie of movies) {
+                for (const genre of movie.genres) {
+                    genres[genre.name].count += 1;
+                    genres[genre.name].value += movie.usersRatings[0].rating;
+                }
+            }
+
+            const mappedGenres = Object.keys(genres).map((name) => {
+                const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
+                return {
+                    name,
+                    ...genres[name],
+                    avg: avg.toFixed(2)
+                };
+            });
+
+            await topGenresRepository
+                .createQueryBuilder()
+                .delete()
+                .from(TopGenre)
+                .where('userId = :id', { id: userId })
+                .execute();
+            await saveTopGenres(topGenresRepository, userId, mappedGenres);
+
+            return { ratings, genres: mappedGenres };
+        }
+
+        return { genres, ratings: [] };
     }
 }

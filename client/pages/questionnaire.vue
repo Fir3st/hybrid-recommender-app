@@ -17,18 +17,7 @@
                 :change-rating-handler="changeRatingHandler"
                 :penalize-handler="penalizeHandler"
             />
-            <AddGenreForm
-                :favourite-genres="favouriteGenres"
-                :not-favourite-genres="notFavouriteGenres"
-                :add-genre-handler="addGenre"
-                :num-of-genres="numOfGenres"
-            />
-            <SelectedGenresGrid
-                :favourite-genres="favouriteGenres"
-                :not-favourite-genres="notFavouriteGenres"
-                :delete-genre-handler="deleteGenre"
-            />
-            <b-row v-if="!sent">
+            <b-row v-if="!sent" class="mt-4">
                 <b-col>
                     <b-button
                         variant="info"
@@ -43,7 +32,7 @@
                     </b-button>
                 </b-col>
             </b-row>
-            <b-row v-else>
+            <b-row v-else class="mt-4">
                 <b-col>
                     <nuxt-link
                         to="/results"
@@ -61,16 +50,12 @@
     import { mapGetters } from 'vuex';
     import RatedMoviesGrid from '~/components/default/questionnaire/RatedMoviesGrid';
     import AddItemForm from '~/components/default/questionnaire/AddItemForm';
-    import AddGenreForm from "~/components/default/questionnaire/AddGenreForm";
-    import SelectedGenresGrid from "~/components/default/questionnaire/SelectedGenresGrid";
-    import { numOfGenres, numOfItems } from '~/utils/constants';
+    import { numOfItems } from '~/utils/constants';
 
     export default {
         components: {
             RatedMoviesGrid,
-            AddItemForm,
-            AddGenreForm,
-            SelectedGenresGrid
+            AddItemForm
         },
         async asyncData ({ app }) {
             try {
@@ -84,13 +69,9 @@
                             penalized: item.rating === 0
                         };
                     });
-                    const favouriteGenres = user.favouriteGenres.filter(item => item.type === 1).map(item => item.genreId);
-                    const notFavouriteGenres = user.favouriteGenres.filter(item => item.type === -1).map(item => item.genreId);
                     return {
                         movies,
-                        user,
-                        favouriteGenres,
-                        notFavouriteGenres
+                        user
                     };
                 }
             } catch (error) {
@@ -100,9 +81,6 @@
         data() {
             return {
                 pageTitle: 'Questionnaire',
-                favouriteGenres: [],
-                notFavouriteGenres: [],
-                numOfGenres: numOfGenres,
                 numOfItems: numOfItems,
                 sent: false,
                 loading: false
@@ -118,10 +96,7 @@
                 genres: 'genres/genres'
             }),
             isButtonDisabled() {
-                return this.movies.length < this.numOfItems
-                || this.favouriteGenres.length < this.numOfGenres
-                || this.notFavouriteGenres.length < this.numOfGenres
-                || this.loading;
+                return this.movies.length < this.numOfItems || this.loading;
             }
         },
         methods: {
@@ -157,36 +132,6 @@
                     ];
                 }
             },
-            addGenre(id, type) {
-                if (type === 'favourite') {
-                    const index = this.favouriteGenres.findIndex(item => item === id);
-                    const index2 = this.notFavouriteGenres.findIndex(item => item === id);
-                    if (index === -1 && index2 === -1) {
-                        this.favouriteGenres.push(id);
-                    }
-
-                } else {
-                    const index = this.notFavouriteGenres.findIndex(item => item === id);
-                    const index2 = this.favouriteGenres.findIndex(item => item === id);
-                    if (index === -1 && index2 === -1) {
-                        this.notFavouriteGenres.push(id);
-                    }
-                }
-            },
-            deleteGenre(id, type) {
-                if (type === 'favourite') {
-                    const index = this.favouriteGenres.findIndex(item => item === id);
-                    if (index > -1) {
-                        this.favouriteGenres.splice(index, 1);
-                    }
-
-                } else {
-                    const index = this.notFavouriteGenres.findIndex(item => item === id);
-                    if (index > -1) {
-                        this.notFavouriteGenres.splice(index, 1);
-                    }
-                }
-            },
             async submit() {
                 const ratings = this.movies.map((item) => {
                     return {
@@ -197,11 +142,7 @@
                 const userId = this.user.id;
                 this.loading = true;
                 try {
-                    await this.$axios.$post(`/users/${userId}/questionnaire`, {
-                        ratings,
-                        favouriteGenres: this.favouriteGenres,
-                        notFavouriteGenres: this.notFavouriteGenres
-                    });
+                    await this.$axios.$post(`/users/${userId}/questionnaire`, { ratings });
                     setTimeout(async() => {
                         this.$notify({
                             title: 'Success',

@@ -19,9 +19,9 @@
             </b-row>
             <b-row v-else>
                 <b-col>
-                    <p><strong>Item for content-based recs:</strong> {{ settings.general.selectedItem ? settings.general.selectedItem.title : 'Nothing selected' }}</p>
+                    <p><strong>Item for content-based recs:</strong> {{ settings.selectedItem ? settings.selectedItem.title : 'Nothing selected' }}</p>
                     <SearchInput
-                        v-if="!settings.general.movieId"
+                        v-if="!settings.movieId"
                         :search-term="searchTerm"
                         :on-change="search"
                         :suggestions="suggestions"
@@ -56,9 +56,9 @@
         async asyncData ({ app }) {
             try {
                 const user = await app.$axios.$get(`/users/${app.$auth.user.id}`);
-                const settings = await app.$axios.$get('/results/settings');
 
-                if (user && settings) {
+                if (user) {
+                    const settings = { take: 25 };
                     const movies = user.ratings.map((item) => {
                         return {
                             ...item.movie,
@@ -70,12 +70,12 @@
 
                     const highestRatedItems = movies.filter(item => item.rating === Math.max(...movies.map(movie => movie.rating)));
                     if (highestRatedItems.length === 1) {
-                        settings.general.selectedItem = highestRatedItems[0];
-                        settings.general.movieId = highestRatedItems[0].id;
+                        settings.selectedItem = highestRatedItems[0];
+                        settings.movieId = highestRatedItems[0].id;
                     } else {
                         const index = _.random(0, highestRatedItems.length - 1);
-                        settings.general.selectedItem = highestRatedItems[index];
-                        settings.general.movieId = highestRatedItems[index].id;
+                        settings.selectedItem = highestRatedItems[index];
+                        settings.movieId = highestRatedItems[index].id;
                     }
 
                     return {
@@ -122,9 +122,7 @@
                 ];
             },
             hasAllData() {
-                return this.movies && this.movies.length >= this.numOfItems
-                    && this.favouriteGenres && this.favouriteGenres.length >= this.numOfGenres
-                    && this.notFavouriteGenres && this.notFavouriteGenres.length >= this.numOfGenres;
+                return this.movies && this.movies.length >= this.numOfItems;
             }
         },
         methods: {

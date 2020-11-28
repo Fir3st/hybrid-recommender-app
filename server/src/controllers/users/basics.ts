@@ -13,9 +13,8 @@ import { Movie } from '../../entities/Movie';
 import { UserRating } from '../../entities/UserRating';
 import { FavGenre } from '../../entities/FavGenre';
 import { Result } from '../../entities/Result';
-import { Genre } from '../../entities/Genre';
-import { TopGenre } from '../../entities/TopGenre';
-import { saveTopGenres } from '../../utils/genres/topGenres';
+import { LimitType, TopGenre, TopGenreType } from '../../entities/TopGenre';
+import UsersUtil from '../../utils/users/UsersUtil';
 
 export const getUsers = async (req: Request, res: any) => {
     const take: any = req.query.take || 10;
@@ -126,6 +125,7 @@ export const getUserByID = async (req: Request, res: any) => {
             .leftJoinAndSelect('favGenres.genre', 'genre')
             .where('user.id = :id', { id })
             .getOne();
+        console.log(user);
 
         if (user) {
             return res.send({ ..._.omit(user, ['password']) });
@@ -207,75 +207,11 @@ export const getPreferences = async (req: Request, res: any) => {
 
 export const analyzeUser = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);
-    const repository = getRepository(Movie);
-    const genresRepository = getRepository(Genre);
-    const topGenresRepository = getRepository(TopGenre);
 
     try {
-        const genres = {};
-        const availableGenres = await genresRepository
-            .createQueryBuilder('genres')
-            .where('genres.name <> "N/A"')
-            .getMany();
+        const { genres, ratings } = await UsersUtil.getUserTopGenresAndRatings(id);
 
-        for (const genre of availableGenres) {
-            genres[genre.name] = {
-                id: genre.id,
-                count: 0,
-                value: 0
-            };
-        }
-
-        const ratings = await repository
-            .createQueryBuilder('movie')
-            .leftJoinAndSelect('movie.usersRatings', 'ratings')
-            .where('ratings.userId = :id', { id })
-            .orderBy({
-                'ratings.rating': 'DESC',
-                'ratings.createdAt': 'DESC'
-            })
-            .limit(20)
-            .getMany();
-
-        const movies = await repository
-            .createQueryBuilder('movie')
-            .leftJoinAndSelect('movie.usersRatings', 'ratings')
-            .leftJoinAndSelect('movie.genres', 'genres')
-            .where('ratings.userId = :id', { id })
-            .getMany();
-
-        if (ratings && ratings.length && movies && movies.length > 0) {
-            for (const movie of movies) {
-                for (const genre of movie.genres) {
-                    genres[genre.name].count += 1;
-                    genres[genre.name].value += movie.usersRatings[0].rating;
-                }
-            }
-
-            const mappedGenres = Object.keys(genres).map((name) => {
-                const avg: Number = (genres[name].value && genres[name].count) ? genres[name].value / genres[name].count : 0;
-                return {
-                    name,
-                    ...genres[name],
-                    avg: avg.toFixed(2)
-                };
-            });
-
-            await topGenresRepository
-                .createQueryBuilder()
-                .delete()
-                .from(TopGenre)
-                .where('userId = :id', { id })
-                .execute();
-            await saveTopGenres(topGenresRepository, id, mappedGenres);
-
-            return res.send({
-                ratings,
-                genres: mappedGenres
-            });
-        }
-
-        return res.boom.badRequest(`User with id ${id} not found.`);
+        return res.send({ ratings, genres });
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();
@@ -287,12 +223,10 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
     const ratingsRepository = getRepository(UserRating);
     const favGenresRepository = getRepository(FavGenre);
     const userId = parseInt(req.user.id, 10);
-    const favouriteGenres = req.body.favouriteGenres || [];
-    const notFavouriteGenres = req.body.notFavouriteGenres || [];
     const ratedMovies = req.body.ratings || [];
 
     try {
-        if (favouriteGenres.length > 0 && notFavouriteGenres.length > 0 && ratedMovies.length > 0) {
+        if (ratedMovies.length > 0) {
             const userRatings = await ratingsRepository
                 .createQueryBuilder('ratings')
                 .where('ratings.userId = :userId', { userId })
@@ -330,22 +264,8 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
                 await ratingsRepository.save(rating);
             }
 
-            for (const favGenre of favouriteGenres) {
-                const genre = new FavGenre();
-                genre.genreId = favGenre;
-                genre.userId = userId;
-                genre.type = 1;
-                await favGenresRepository.save(genre);
-            }
-
-            for (const favGenre of notFavouriteGenres) {
-                const genre = new FavGenre();
-                genre.genreId = favGenre;
-                genre.userId = userId;
-                genre.type = -1;
-                await favGenresRepository.save(genre);
-            }
-
+            await UsersUtil.computeUserGenres(userId);
+            await UsersUtil.getUserTopGenresAndRatings(userId);
             await axios.put(`${recommender}/train/users/${userId}`);
 
             return res.send({ message: 'Questionnaire sent successfully.' });
@@ -360,22 +280,34 @@ export const sendQuestionnaire = async (req: Request, res: any) => {
 
 export const sendResults = async (req: Request, res: any) => {
     const repository = getRepository(Result);
-    const userId = parseInt(req.user.id, 10);
-    const settings = req.body.settings;
-    const user = req.body.user;
+    const favGenresRepository = getRepository(FavGenre);
+    const topGenresRepository = getRepository(TopGenre);
     const results = req.body.results;
-    const { favouriteGenres, notFavouriteGenres, items } = user;
+    const { items, id: userId } = req.user;
 
     try {
+        const favGenres = await favGenresRepository.find({ where: { userId }, relations: ['genre'] });
+        const favouriteGenres = favGenres.filter(genre => genre.type === 1);
+        const notFavouriteGenres = favGenres.filter(genre => genre.type === -1);
+        const topGenres = await topGenresRepository.find({ where: { userId }, relations: ['genre'] });
+        const top3 = topGenres.filter(genre => genre.genreType === TopGenreType.MOST_RATED && genre.genreLimit === LimitType.TOP_THREE);
+        const least3 = topGenres.filter(genre => genre.genreType === TopGenreType.LEAST_RATED && genre.genreLimit === LimitType.TOP_THREE);
+        const top12 = topGenres.filter(genre => genre.genreType === TopGenreType.MOST_RATED && genre.genreLimit === LimitType.TOP_TWELVE);
+        const least12 = topGenres.filter(genre => genre.genreType === TopGenreType.LEAST_RATED && genre.genreLimit === LimitType.TOP_TWELVE);
+
         const result = new Result();
+        result.resultType = 1;
         result.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
         result.userId = userId;
         const data = {
-            settings,
             favouriteGenres,
             notFavouriteGenres,
             items,
-            results
+            results,
+            top3,
+            least3,
+            top12,
+            least12
         };
         result.data = JSON.stringify(data);
         await repository.save(result);

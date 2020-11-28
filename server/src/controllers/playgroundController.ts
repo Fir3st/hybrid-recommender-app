@@ -9,7 +9,6 @@ import axios from 'axios';
 import { Movie } from '../entities/Movie';
 import MoviesUtil from '../utils/movies/MoviesUtil';
 import { UserRating } from '../entities/UserRating';
-import { FavGenre } from '../entities/FavGenre';
 const router = Router();
 
 router.get('/users/:id/new', [authenticate], async (req: Request, res: any) => {
