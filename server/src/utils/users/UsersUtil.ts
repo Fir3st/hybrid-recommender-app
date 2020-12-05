@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { getRepository } from 'typeorm';
+import {getManager, getRepository} from 'typeorm';
 import { FavGenre } from '../../entities/FavGenre';
 import { UserRating } from '../../entities/UserRating';
 import { Genre } from '../../entities/Genre';
@@ -137,9 +137,12 @@ export default class UsersUtil {
     }
 
     public static async getUserTopGenresAndRatings(userId: number) {
+        const manager = getManager();
         const repository = getRepository(Movie);
         const genresRepository = getRepository(Genre);
         const topGenresRepository = getRepository(TopGenre);
+
+        const counts = await manager.query('SELECT genres.id, COUNT(users_ratings.id) AS cnt FROM users_ratings LEFT JOIN movies ON users_ratings.movieId = movies.id LEFT JOIN movies_genres ON movies_genres.moviesId = movies.id LEFT JOIN genres ON movies_genres.genresId = genres.id GROUP BY genres.id ORDER BY cnt DESC;');
 
         const genres = {};
         const availableGenres = await genresRepository
@@ -148,10 +151,12 @@ export default class UsersUtil {
             .getMany();
 
         for (const genre of availableGenres) {
+            const genreCount = counts.find(cnt => cnt.id === genre.id);
             genres[genre.name] = {
                 id: genre.id,
                 count: 0,
-                value: 0
+                value: 0,
+                allCount: genreCount ? parseInt(genreCount.cnt, 10) : 0
             };
         }
 

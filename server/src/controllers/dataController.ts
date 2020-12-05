@@ -1,6 +1,5 @@
 import { Request, Router } from 'express';
 import { getRepository } from 'typeorm';
-import * as _ from 'lodash';
 import winston from '../utils/winston';
 import { Movie } from '../entities/Movie';
 import { User } from '../entities/User';

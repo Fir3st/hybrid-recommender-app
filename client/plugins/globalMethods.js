@@ -51,8 +51,11 @@ Vue.mixin({
         getMostRatedGenres(num = 3) {
             const ratedGenres = this.genres.filter((genre) => genre.count);
 
-            if (ratedGenres && ratedGenres.length > 0) {
-                return _.orderBy(this.genres, ['count'], ['desc']).slice(0, num);
+            if (ratedGenres && ratedGenres.length >= num) {
+                let genres = _.orderBy(this.genres, ['count'], ['desc']).slice(0, num);
+                genres = _.orderBy(genres, ['count', 'allCount'], ['desc', 'desc']);
+
+                return genres;
             }
 
             return [];
@@ -60,8 +63,11 @@ Vue.mixin({
         getMostValuedGenres(num = 3) {
             const ratedGenres = this.genres.filter((genre) => genre.count);
 
-            if (ratedGenres && ratedGenres.length > 0) {
-                return _.orderBy(this.genres, ['value'], ['desc']).slice(0, num);
+            if (ratedGenres && ratedGenres.length >= num) {
+                let genres = _.orderBy(this.genres, ['value'], ['desc']).slice(0, num);
+                genres = _.orderBy(genres, ['value', 'allCount'], ['desc', 'desc']);
+
+                return genres;
             }
 
             return [];
@@ -75,11 +81,12 @@ Vue.mixin({
                     ..._.orderBy(genres, ['count'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
                     ...notRatedGenres,
                 ];
+                genres = _.orderBy(genres, ['count', 'allCount'], ['desc', 'desc']);
 
                 return genres;
             }
 
-            return notRatedGenres;
+            return _.orderBy(notRatedGenres, ['count', 'allCount'], ['desc', 'desc']);
         },
         getLeastValuedGenres(num = 3) {
             const notRatedGenres = this.genres.filter((genre) => genre.count === 0);
@@ -90,11 +97,12 @@ Vue.mixin({
                     ..._.orderBy(genres, ['value'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
                     ...notRatedGenres,
                 ];
+                genres = _.orderBy(genres, ['value', 'allCount'], ['desc', 'desc']);
 
                 return genres;
             }
 
-            return notRatedGenres;
+            return _.orderBy(notRatedGenres, ['value', 'allCount'], ['desc', 'desc']);
         },
         getRelevance(movies, mostRatedGenresAll, leastRatedGenresAll) {
             const relevantGenres = mostRatedGenresAll.map(genre => genre.id);

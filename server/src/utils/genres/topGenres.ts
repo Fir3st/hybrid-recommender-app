@@ -5,8 +5,11 @@ import { LimitType, TopGenre, TopGenreType } from '../../entities/TopGenre';
 export const getMostRatedGenres = (genres, num = 3) => {
     const ratedGenres = genres.filter(genre => genre.count);
 
-    if (ratedGenres && ratedGenres.length > 0) {
-        return _.orderBy(genres, ['count'], ['desc']).slice(0, num);
+    if (ratedGenres && ratedGenres.length >= num) {
+        let sortedGenres = _.orderBy(genres, ['count'], ['desc']).slice(0, num);
+        sortedGenres = _.orderBy(sortedGenres, ['count', 'allCount'], ['desc', 'desc']);
+
+        return sortedGenres;
     }
 
     return [];
@@ -15,8 +18,11 @@ export const getMostRatedGenres = (genres, num = 3) => {
 export const getMostValuedGenres = (genres, num = 3) => {
     const ratedGenres = genres.filter(genre => genre.count);
 
-    if (ratedGenres && ratedGenres.length > 0) {
-        return _.orderBy(genres, ['value'], ['desc']).slice(0, num);
+    if (ratedGenres && ratedGenres.length >= num) {
+        let sortedGenres = _.orderBy(genres, ['value'], ['desc']).slice(0, num);
+        sortedGenres = _.orderBy(sortedGenres, ['value', 'allCount'], ['desc', 'desc']);
+
+        return sortedGenres;
     }
 
     return [];
@@ -31,11 +37,12 @@ export const getLeastRatedGenres = (allGenres, num = 3) => {
             ..._.orderBy(genres, ['count'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
             ...notRatedGenres
         ];
+        genres = _.orderBy(genres, ['count', 'allCount'], ['desc', 'desc']);
 
         return genres;
     }
 
-    return notRatedGenres;
+    return _.orderBy(notRatedGenres, ['count', 'allCount'], ['desc', 'desc']);
 };
 
 export const getLeastValuedGenres = (allGenres, num = 3) => {
@@ -47,11 +54,12 @@ export const getLeastValuedGenres = (allGenres, num = 3) => {
             ..._.orderBy(genres, ['value'], ['desc']).slice(Math.max(genres.length - (num - notRatedGenres.length), 0)),
             ...notRatedGenres
         ];
+        genres = _.orderBy(genres, ['value', 'allCount'], ['desc', 'desc']);
 
         return genres;
     }
 
-    return notRatedGenres;
+    return _.orderBy(notRatedGenres, ['value', 'allCount'], ['desc', 'desc']);
 };
 
 export const getTopGenres = (genres) => {
