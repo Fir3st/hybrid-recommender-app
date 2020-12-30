@@ -15,6 +15,7 @@ import { FavGenre } from '../../entities/FavGenre';
 import { Result } from '../../entities/Result';
 import { LimitType, TopGenre, TopGenreType } from '../../entities/TopGenre';
 import UsersUtil from '../../utils/users/UsersUtil';
+import { genre } from '../../../tests/helpers';
 
 export const getUsers = async (req: Request, res: any) => {
     const take: any = req.query.take || 10;
@@ -199,6 +200,59 @@ export const getPreferences = async (req: Request, res: any) => {
         }
 
         return res.boom.badRequest(`User with id ${id} not found.`);
+    } catch (error) {
+        winston.error(error.message);
+        return res.boom.internal();
+    }
+};
+
+export const getUserGroup = async (req: Request, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const repository = getRepository(TopGenre);
+    const userRepository = getRepository(User);
+
+    try {
+        const userGenres = await repository
+            .createQueryBuilder('genres')
+            .where('genres.genreType IN (:types)', { types: [TopGenreType.MOST_RATED, TopGenreType.LEAST_RATED] })
+            .andWhere('genres.genreLimit = :limitType', { limitType: LimitType.TOP_THREE })
+            .andWhere('genres.userId = :id', { id })
+            .getMany();
+
+        const userMostGenres = userGenres.filter(genre => genre.genreType === TopGenreType.MOST_RATED).map(genre => genre.genreId);
+        const userLeastGenres = userGenres.filter(genre => genre.genreType === TopGenreType.LEAST_RATED).map(genre => genre.genreId);
+
+        let similarUsersMost = await repository
+            .createQueryBuilder('genres')
+            .select('genres.userId as userId, count(genres.userId) as cnt')
+            .where('genres.genreId IN (:ids)', { ids: userMostGenres })
+            .andWhere('genres.genreType = :genreType', { genreType: TopGenreType.MOST_RATED })
+            .andWhere('genres.genreLimit = :genreLimit', { genreLimit: LimitType.TOP_THREE })
+            .groupBy('genres.userId')
+            .having('cnt = 3')
+            .getRawMany();
+
+        let similarUsersLeast = await repository
+            .createQueryBuilder('genres')
+            .select('genres.userId as userId, count(genres.userId) as cnt')
+            .where('genres.genreId IN (:ids)', { ids: userLeastGenres })
+            .andWhere('genres.genreType = :genreType', { genreType: TopGenreType.LEAST_RATED })
+            .andWhere('genres.genreLimit = :genreLimit', { genreLimit: LimitType.TOP_THREE })
+            .groupBy('genres.userId')
+            .having('cnt >= 2')
+            .getRawMany();
+
+        similarUsersMost = similarUsersMost.map(item => item.userId);
+        similarUsersLeast = similarUsersLeast.map(item => item.userId);
+
+        const similarUsers = _.intersection(similarUsersMost, similarUsersLeast);
+
+        const users = await userRepository
+            .createQueryBuilder('users')
+            .where('users.id IN (:ids)', { ids: similarUsers })
+            .getMany();
+
+        return res.send({ users: users.length ? users.map(user => _.pick(user, ['id', 'name', 'surname'])) : [] });
     } catch (error) {
         winston.error(error.message);
         return res.boom.internal();

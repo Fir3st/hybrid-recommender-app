@@ -14,6 +14,7 @@
                             :user="user"
                             :recommendations="recommendations"
                             :preferences="preferences"
+                            :group="group"
                         />
                     </b-col>
                 </b-row>
@@ -56,7 +57,8 @@
                     { index: 1, name: 'user detail' , path: null }
                 ],
                 recommendations: [],
-                preferences: []
+                preferences: [],
+                group: {}
             };
         },
         computed: {
@@ -69,10 +71,12 @@
                 const promises = [];
                 promises.push(this.$axios.$get(`/users/${this.user.id}/recommendations`));
                 promises.push(this.$axios.$get(`/users/${this.user.id}/preferences`));
+                promises.push(this.$axios.$get(`/users/${this.user.id}/group`));
 
                 Promise.all(promises).then((data) => {
                     this.recommendations = data[0];
                     this.preferences = data[1];
+                    this.group = data[2];
                 });
             }
         }

@@ -25,6 +25,11 @@
                 :user="user"
             />
         </b-tab>
+        <b-tab title="Group">
+            <user-group-tab
+                :group="group"
+            />
+        </b-tab>
     </b-tabs>
 </template>
 
@@ -33,6 +38,7 @@
     import UserRatedMovies from '~/components/admin/users/UserRatedMovies';
     import UserAnalysis from '~/components/admin/users/UserAnalysis';
     import UserAnalysisGenres from '~/components/admin/users/UserAnalysisGenres';
+    import UserGroupTab from '~/components/admin/users/UserGroupTab';
 
     export default {
         components: {
@@ -40,6 +46,7 @@
             UserRatedMovies,
             UserAnalysis,
             UserAnalysisGenres,
+            UserGroupTab,
         },
         props: {
             user: {
@@ -52,6 +59,10 @@
             },
             preferences: {
                 type: Array,
+                required: true
+            },
+            group: {
+                type: Object,
                 required: true
             }
         }
