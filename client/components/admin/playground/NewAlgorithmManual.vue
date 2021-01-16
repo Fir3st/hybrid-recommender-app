@@ -9,6 +9,7 @@
                     b-form
                         label(for="toTake") Number of recommendations
                         b-form-input(v-model="toTake", type="number", id="toTake", name="toTake", min="1")
+                        b-form-checkbox(v-model="boost", :value="true", :unchecked-value="false", class="mt-2") Boosting instead of selecting
                         b-form-group(id="userId", label="User", label-for="userId")
                             b-form-select(id="userId", v-model="userId", :options="options", required, placeholder="Select user to analyze")
                         label(for="compare") Compare to these users (IDs, separed with semicolon)
@@ -44,6 +45,7 @@
             return {
                 loading: false,
                 userId: null,
+                boost: false,
                 options: [
                     { value: null, text: 'User to analyze' },
                 ],
@@ -121,7 +123,11 @@
                 try {
                     await this.analyzeUser();
                     this.loading = true;
-                    const url = `/playground/users/${this.userId}/new?take=${this.toTake}&compareTo=${this.compareTo}`;
+                    let url = `/playground/users/${this.userId}/new?take=${this.toTake}&compareTo=${this.compareTo}`;
+
+                    if (this.boost) {
+                        url = `${url}&boostRatings=${JSON.stringify(this.boost)}`;
+                    }
 
                     const response = await this.$axios.$get(url);
 

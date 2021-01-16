@@ -20,11 +20,15 @@ router.get('/users/:id/new', [authenticate], async (req: Request, res: any) => {
     const take: any = req.query.take || 10;
     const skip: any = req.query.skip || 0;
     const compareTo: any = req.query.compareTo && req.query.compareTo.length ? req.query.compareTo : null;
+    const boostRatings: any = req.query.boostRatings && req.query.boostRatings.length ? req.query.boostRatings : null;
 
     let url = `${recommender}/playground/users/${id}/recommendations?take=${take}&skip=${skip}`;
 
     if (compareTo) {
         url = `${url}&compareTo=${compareTo}`;
+    }
+    if (boostRatings) {
+        url = `${url}&boostRatings=${boostRatings}`;
     }
 
     try {
