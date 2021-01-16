@@ -39,6 +39,12 @@
                     Playground
                 </b-nav-item>
                 <b-nav-item
+                    to="/admin/groups"
+                    exact
+                >
+                    Groups
+                </b-nav-item>
+                <b-nav-item
                     to="/admin/results"
                     exact
                 >

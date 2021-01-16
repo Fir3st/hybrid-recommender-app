@@ -10,6 +10,11 @@ import { User } from '../entities/User';
 
 const router = Router();
 
+Array.prototype.contains = function (array, min) {
+    const filteredArray = this.filter(value => array.includes(value));
+    return filteredArray.length >= min;
+};
+
 function k_combinations(set, k) {
     // tslint:disable-next-line:one-variable-per-declaration
     let i, j, combs, head, tailcombs;
@@ -100,12 +105,12 @@ router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
                     allLeastGenres = new Set([...allLeastGenres, ...sortedByMostGenres[groupId][userId].least]);
                 }
                 allLeastGenres = [...allLeastGenres];
-                const leastGroups = k_combinations([...allLeastGenres], 2);
+                const leastGroups = k_combinations([...allLeastGenres], 3);
                 for (const leastGroup of leastGroups) {
                     const groupKey = leastGroup.sort((a, b) => a - b).join(',');
                     for (const userId of Object.keys(sortedByMostGenres[groupId])) {
                         const userLeast = sortedByMostGenres[groupId][userId].least;
-                        const containsAll = leastGroup.every(i => userLeast.includes(i));
+                        const containsAll = userLeast.contains(leastGroup, 2);
                         if (containsAll) {
                             if (!(groupId in sortedByMostAndLeastGenres)) sortedByMostAndLeastGenres[groupId] = {};
                             if (!(groupKey in sortedByMostAndLeastGenres[groupId])) sortedByMostAndLeastGenres[groupId][groupKey] = {};
@@ -115,24 +120,35 @@ router.get('/', [authenticate, authorize], async (req: Request, res: any) => {
                 }
             }
 
-            const result: any = {};
+            const result: any = {
+                users: {},
+                genres: mappedGenres,
+                groups: {}
+            };
+            for (const user of Object.values(mappedUsers)) {
+                result.users[user.id] = _.pick(user, ['id', 'name', 'surname']);
+            }
             for (const mostGroupId of Object.keys(sortedByMostAndLeastGenres)) {
                 for (const leastGroupId of Object.keys(sortedByMostAndLeastGenres[mostGroupId])) {
                     for (const userId of Object.keys(sortedByMostAndLeastGenres[mostGroupId][leastGroupId])) {
                         const commonKey = `${mostGroupId}-${leastGroupId}`;
-                        if (!(commonKey in result)) {
-                            result[commonKey] = {
+                        if (!(commonKey in result.groups)) {
+                            result.groups[commonKey] = {
                                 users: [],
-                                most: mostGroupId.split(',').map(item => mappedGenres[item]),
-                                least: leastGroupId.split(',').map(item => mappedGenres[item]),
+                                most: mostGroupId.split(','),
+                                least: leastGroupId.split(','),
                                 countMovieLens: 0,
                                 countOthers: 0
                             };
                         }
-                        const user: any = _.pick(mappedUsers[userId], ['id', 'name', 'surname']);
-                        user.most = sortedByMostAndLeastGenres[mostGroupId][leastGroupId][userId].most.map(item => mappedGenres[item]);
-                        user.least = sortedByMostAndLeastGenres[mostGroupId][leastGroupId][userId].least.map(item => mappedGenres[item]);
-                        result[commonKey].users.push(user);
+                        result.groups[commonKey].users.push(parseInt(userId, 10));
+                        result.groups[commonKey].countMovieLens = result.groups[commonKey].users.reduce((curr, item) => {
+                            return curr + ((item < 1500) ? 1 : 0);
+                        }, 0);
+                        result.groups[commonKey].countOthers = result.groups
+                        [commonKey].users.reduce((curr, item) => {
+                            return curr + ((item >= 1500) ? 1 : 0);
+                        }, 0);
                     }
                 }
             }
