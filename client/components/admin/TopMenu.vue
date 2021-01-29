@@ -45,6 +45,12 @@
                     Groups
                 </b-nav-item>
                 <b-nav-item
+                    to="/admin/settings"
+                    exact
+                >
+                    Settings
+                </b-nav-item>
+                <b-nav-item
                     to="/admin/results"
                     exact
                 >

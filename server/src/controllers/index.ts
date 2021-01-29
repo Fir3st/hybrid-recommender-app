@@ -9,6 +9,7 @@ import dataController from './dataController';
 import playgroundController from './playgroundController';
 import resultsController from './resultsController';
 import groupsController from './groupsController';
+import settingsController from './settingsController';
 
 export default (app: Application) => {
     app.use('/auth', authenticationController);
@@ -21,4 +22,5 @@ export default (app: Application) => {
     app.use('/playground', playgroundController);
     app.use('/results', resultsController);
     app.use('/groups', groupsController);
+    app.use('/settings', settingsController);
 };
