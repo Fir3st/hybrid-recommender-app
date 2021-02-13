@@ -15,6 +15,11 @@
                             b-form-select(id="userId", v-model="userId", :options="options", required, placeholder="Select user to analyze")
                         label(for="compare") Compare to these users (IDs, separed with semicolon)
                         b-form-input(v-model="compareTo", type="text", id="compare", class="mb-2")
+                        label(for="compareToGroup") ... or group
+                        v-select(v-model="compareToGroup", id="compareToGroup", class="mb-2", :options="paginatedGroups")
+                            li(slot="list-footer", class="pagination mt-2")
+                                button(@click="offset -= 10", :disabled="!hasPrevPage", type="button", class="btn btn-sm btn-primary ml-2") Prev
+                                button(@click="offset += 10", :disabled="!hasNextPage", type="button", class="btn btn-sm btn-primary ml-2") Next
                         b-button(type="button", :disabled="!userId", @click="analyzeUser", variant="primary") Analyze user
                         b-button(type="button", :disabled="!userId", @click="getRecommendations", variant="secondary", class="ml-2") Get recommended movies
             Loading(v-if="loading")
@@ -115,17 +120,60 @@
                 movies: [],
                 toTake: 25,
                 compareTo: '',
+                compareToGroup: null,
                 relevantCount: null,
                 notRelevantCount: null,
                 precision: null,
                 recall10: null,
                 recall15: null,
                 f1Measure10: null,
-                f1Measure15: null
+                f1Measure15: null,
+                groupUsers: {},
+                groupGenres: {},
+                groups: {},
+                offset: 0,
+                limit: 25,
             };
+        },
+        computed: {
+            mappedGroups() {
+                const groups = [];
+                for (const group of Object.keys(this.groups)) {
+                    const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
+                    const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
+                    groups.push({
+                        code: group,
+                        label: `${mostTitle} - ${leastTitle}`
+                    });
+                }
+
+                return groups;
+            },
+            paginatedGroups() {
+                return this.mappedGroups.slice(this.offset, this.limit + this.offset);
+            },
+            hasNextPage () {
+                const nextOffset = this.offset + 10;
+                return Boolean(this.mappedGroups.slice(nextOffset, this.limit + nextOffset).length);
+            },
+            hasPrevPage () {
+                const prevOffset = this.offset - 10;
+                return Boolean(this.mappedGroups.slice(prevOffset, this.limit + prevOffset).length);
+            }
         },
         async mounted() {
             await this.getUsers();
+            try {
+                const result = await this.$axios.$get('/groups');
+
+                if (result) {
+                    this.groupUsers = result.users;
+                    this.groupGenres = result.genres;
+                    this.groups = result.groups;
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
         },
         methods: {
             moment: function (date = null) {
@@ -175,7 +223,16 @@
                 try {
                     await this.analyzeUser();
                     this.loading = true;
-                    let url = `/playground/users/${this.userId}/new?take=${this.toTake}&compareTo=${this.compareTo}`;
+
+                    let ids = this.compareTo;
+
+                    if (!ids.length && this.compareToGroup && this.compareToGroup.code) {
+                        ids = this.groups[this.compareToGroup.code].users
+                            .filter(item => item !== this.userId)
+                            .join(';');
+                    }
+
+                    let url = `/playground/users/${this.userId}/new?take=${this.toTake}&compareTo=${ids}`;
 
                     if (this.boost) {
                         url = `${url}&boostRatings=${JSON.stringify(this.boost)}`;
