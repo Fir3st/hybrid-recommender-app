@@ -138,29 +138,27 @@
         computed: {
             mappedGroups() {
                 const groups = [];
-                if (this.groups && Object.keys(this.groups).length && this.groupGenres && Object.keys(this.groupGenres).length) {
-                    for (const group of Object.keys(this.groups)) {
-                        const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
-                        const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
-                        groups.push({
-                            code: group,
-                            label: `${mostTitle} - ${leastTitle}`
-                        });
-                    }
+                for (const group of Object.keys(this.groups).slice(this.offset, this.limit + this.offset)) {
+                    const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
+                    const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
+                    groups.push({
+                        code: group,
+                        label: `${mostTitle} - ${leastTitle}`
+                    });
                 }
 
                 return groups;
             },
             paginatedGroups() {
-                return this.mappedGroups.slice(this.offset, this.limit + this.offset);
+                return this.mappedGroups;
             },
             hasNextPage () {
-                const nextOffset = this.offset + 10;
-                return Boolean(this.mappedGroups.slice(nextOffset, this.limit + nextOffset).length);
+                const nextOffset = this.offset + 25;
+                return Boolean(Object.keys(this.groups).slice(nextOffset, this.limit + nextOffset).length);
             },
             hasPrevPage () {
-                const prevOffset = this.offset - 10;
-                return Boolean(this.mappedGroups.slice(prevOffset, this.limit + prevOffset).length);
+                const prevOffset = this.offset - 25;
+                return Boolean(Object.keys(this.groups).slice(prevOffset, this.limit + prevOffset).length);
             }
         },
         async mounted() {
