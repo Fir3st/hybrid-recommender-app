@@ -138,13 +138,15 @@
         computed: {
             mappedGroups() {
                 const groups = [];
-                for (const group of Object.keys(this.groups)) {
-                    const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
-                    const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
-                    groups.push({
-                        code: group,
-                        label: `${mostTitle} - ${leastTitle}`
-                    });
+                if (this.groups && Object.keys(this.groups).length) {
+                    for (const group of Object.keys(this.groups)) {
+                        const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
+                        const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
+                        groups.push({
+                            code: group,
+                            label: `${mostTitle} - ${leastTitle}`
+                        });
+                    }
                 }
 
                 return groups;
