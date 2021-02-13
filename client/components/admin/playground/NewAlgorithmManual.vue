@@ -138,7 +138,7 @@
         computed: {
             mappedGroups() {
                 const groups = [];
-                if (this.groups && Object.keys(this.groups).length) {
+                if (this.groups && Object.keys(this.groups).length && this.groupGenres && Object.keys(this.groupGenres).length) {
                     for (const group of Object.keys(this.groups)) {
                         const mostTitle = `${this.groups[group].most.map(item => this.groupGenres[item].name).join(', ')}`;
                         const leastTitle = `${this.groups[group].least.map(item => this.groupGenres[item].name).join(', ')}`;
