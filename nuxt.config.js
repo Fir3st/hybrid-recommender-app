@@ -70,9 +70,18 @@ module.exports = {
     modules: [
         '@nuxtjs/axios',
         '@nuxtjs/auth',
-        'bootstrap-vue/nuxt'
+        'bootstrap-vue/nuxt',
+        '@nuxtjs/fontawesome'
     ],
-
+    fontawesome: {
+        component: 'fa',
+        imports: [
+            {
+                set: '@fortawesome/free-solid-svg-icons',
+                icons: ['faCheck', 'faTimes']
+            }
+        ],
+    },
     /*
     ** Router configuration
      */

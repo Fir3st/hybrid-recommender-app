@@ -34,9 +34,11 @@
         "recommender:train": "ts-node data/trainRecommender.ts"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.15.2",
         "@hapi/joi": "15",
         "@nuxtjs/auth": "4.9.1",
         "@nuxtjs/axios": "5.12.2",
+        "@nuxtjs/fontawesome": "^1.1.2",
         "apexcharts": "^3.5.0",
         "app-root-path": "^3.0.0",
         "axios": "^0.20.0",
@@ -76,6 +78,9 @@
         "winston-daily-rotate-file": "^4.5.0"
     },
     "devDependencies": {
+        "@fortawesome/free-brands-svg-icons": "^5.15.2",
+        "@fortawesome/free-regular-svg-icons": "^5.15.2",
+        "@fortawesome/free-solid-svg-icons": "^5.15.2",
         "@types/adm-zip": "^0.4.32",
         "@types/cli-progress": "^3.8.0",
         "@types/cors": "^2.8.4",

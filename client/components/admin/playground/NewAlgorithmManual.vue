@@ -36,6 +36,9 @@
                     b-table(striped, hover, :items="movies", :fields="moviesFields")
                         template(v-slot:cell(#)="data") {{ data.index + 1 }}
                         template(v-slot:cell(genres)="data") {{ data.item.genres.map(item => item.name).join(', ') }}
+                        template(v-slot:cell(relevant)="data")
+                            fa(v-if="data.item.relevant", icon="check", class="text-success")
+                            fa(v-else, icon="times", class="text-danger")
             b-row(v-if="!loading && mostRatedGenres.length", class="mt-2 mb-2")
                 b-col
                     h3 Most rated genres
