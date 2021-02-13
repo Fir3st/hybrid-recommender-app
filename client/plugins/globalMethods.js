@@ -4,6 +4,16 @@ import PapaParse from 'papaparse';
 import * as _ from "lodash";
 
 Vue.mixin({
+    data() {
+        return {
+            relevantAlgorithm: null,
+            relevantOptions: [
+                { value: null, text: 'Default' },
+                { value: 1, text: 'Boosting relevancy 1' },
+                { value: 2, text: 'Boosting relevancy 2' }
+            ]
+        };
+    },
     computed: {
         isLogged() {
             return !!this.$auth.user;
@@ -115,15 +125,16 @@ Vue.mixin({
                 const movieNotRelevantGenres = genres.filter(genre => notRelevantGenres.includes(genre));
 
                 let relevant;
-                if (movieRelevantGenres.length > 0 && movieNotRelevantGenres.length === 0) {
-                    relevant = true;
-                    // } else if (movieRelevantGenres.length === 0 && movieNotRelevantGenres.length > 0) {
-                    //     relevant = false;
-                    // } else if (movieRelevantGenres.length > 0 && movieNotRelevantGenres.length > 0) {
-                    //     relevant = movieRelevantGenres.length > movieNotRelevantGenres.length;
-                    // }
+                if (this.relevantAlgorithm) {
+                    if (this.relevantAlgorithm === 1) {
+                        relevant = movieRelevantGenres.length > 0 && movieRelevantGenres.length > movieNotRelevantGenres.length;
+                    } else if (this.relevantAlgorithm === 2) {
+                        relevant = movieRelevantGenres.length > 0 && movieRelevantGenres.length >= movieNotRelevantGenres.length;
+                    } else {
+                        relevant = false;
+                    }
                 } else {
-                    relevant = false;
+                    relevant = movieRelevantGenres.length > 0 && movieNotRelevantGenres.length === 0;
                 }
 
                 return { id: movie.id, relevant };
