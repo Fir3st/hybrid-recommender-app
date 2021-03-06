@@ -30,6 +30,9 @@ export class User {
     @Column({ default: false })
     admin: boolean;
 
+    @Column('text')
+    massResult: string;
+
     @OneToMany(type => UserRating, rating => rating.user, {
         cascade: true
     })

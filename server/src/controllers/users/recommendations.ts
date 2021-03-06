@@ -8,7 +8,6 @@ import { Movie } from '../../entities/Movie';
 import MoviesUtil from '../../utils/movies/MoviesUtil';
 import UsersUtil from '../../utils/users/UsersUtil';
 import winston from '../../utils/winston';
-import {not} from "joi";
 
 export const getRecommendations = async (req: Request, res: any) => {
     const id = parseInt(req.params.id, 10);

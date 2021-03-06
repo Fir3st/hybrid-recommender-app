@@ -21,6 +21,17 @@ module.exports = {
                 COMMON_VARIABLE: 'true',
                 NODE_ENV: 'production'
             }
+        },
+        {
+            name: 'Queue',
+            instances: '1',
+            exec_mode: 'cluster',
+            script: 'npm',
+            args: 'run queue:start',
+            env: {
+                COMMON_VARIABLE: 'true',
+                NODE_ENV: 'production'
+            }
         }
     ]
 };

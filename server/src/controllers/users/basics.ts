@@ -67,6 +67,7 @@ export const createUser = async (req: Request, res: any) => {
         user.email = validated.email;
         user.admin = false;
         user.password = await bcrypt.hash(validated.password, 10);
+        user.massResult = '';
 
         const createdUser = await userRepository.save(user);
         return res.send(_.omit(createdUser, ['password']));

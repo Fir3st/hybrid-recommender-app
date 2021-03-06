@@ -17,5 +17,30 @@
     "recommenderUrl": "http://localhost:3002",
     "defaultUserPassword": "secret",
     "CFOrderBy": "augmented_rating",
-    "includeGenres": true
+    "includeGenres": true,
+    "queueUser": "queue",
+    "queueMail": "queue@predictory.dev",
+    "queuePassword": "secret",
+    "redisQueue": {
+        "namespace": "recommender_mass_action_queue",
+        "redis": {
+            "driver": "redis",
+            "options": {
+                "host": "127.0.0.1",
+                "port": 32768,
+                "connect_timeout": 3600000
+            }
+        },
+        "log": {
+            "enabled": 0,
+            "options": {
+                "level": "trace"
+            }
+        },
+        "monitor": {
+            "enabled": true,
+            "host": "127.0.0.1",
+            "port": 3666
+        }
+    }
 }
