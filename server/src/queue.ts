@@ -6,6 +6,7 @@ import { createConnection, getRepository } from 'typeorm';
 import { ConfigInterface } from 'redis-smq/types/config';
 import { ConsumerConstructorOptionsInterface } from 'redis-smq/types/consumer';
 import { User } from './entities/User';
+import { Setting } from './entities/Setting';
 const redisSmq = require('redis-smq');
 
 class QueueConsumer extends redisSmq.Consumer {
@@ -30,6 +31,7 @@ class QueueConsumer extends redisSmq.Consumer {
 
     async consume(message: any, cb: any) {
         const usersRepository = getRepository(User);
+        const settingsRepository = getRepository(Setting);
         const serverUrl = config.get('baseUrl');
 
         try {
@@ -63,11 +65,17 @@ class QueueConsumer extends redisSmq.Consumer {
                 if (response.data && response.data.token) {
                     this.token = response.data.token;
                 }
+
+                const massGenerateSetting = await settingsRepository.findOne({ name: 'mass_generate' });
+                if (massGenerateSetting) {
+                    massGenerateSetting.value = '1';
+                    await settingsRepository.save(massGenerateSetting);
+                }
             } else if (message.id) {
                 const numOfRatings = 25;
                 const results: any = {
-                    cbf: { movies: [], stats: {} },
-                    cb: { selected: null, movies: [], stats: {} }
+                    cbf: { movies: [] },
+                    cb: { selected: null, movies: [] }
                 };
                 const config = {
                     headers: {
@@ -91,10 +99,10 @@ class QueueConsumer extends redisSmq.Consumer {
                 });
                 const highestRatedItems = cbMovies.filter(item => item.rating === Math.max(...cbMovies.map(movie => movie.rating)));
                 if (highestRatedItems.length === 1) {
-                    results.cb.selected = highestRatedItems[0];
+                    results.cb.selected = _.pick(highestRatedItems[0], ['id', 'title']);
                 } else {
                     const index = _.random(0, highestRatedItems.length - 1);
-                    results.cb.selected = highestRatedItems[index];
+                    results.cb.selected = _.pick(highestRatedItems[index], ['id', 'title']);
                 }
                 url = `${serverUrl}/playground/movies/${results.cb.selected.id}?take=${numOfRatings}&type=tf-idf&order_by=similarity`;
                 const cbResponse = await axios.get(url, config);
@@ -105,6 +113,12 @@ class QueueConsumer extends redisSmq.Consumer {
             } else {
                 await usersRepository.delete(this.userId);
                 this.token = '';
+
+                const massGenerateSetting = await settingsRepository.findOne({ name: 'mass_generate' });
+                if (massGenerateSetting) {
+                    massGenerateSetting.value = '0';
+                    await settingsRepository.save(massGenerateSetting);
+                }
             }
         } catch (e) {
             console.log(e);
