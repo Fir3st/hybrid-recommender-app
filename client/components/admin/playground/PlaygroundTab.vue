@@ -85,28 +85,6 @@
                 this.isGenerating = true;
                 setInterval(this.getStatus, 15000);
             },
-            // async getMassData() {
-            //     const response = await this.$axios.get('/mass/data');
-            //     if (response.data.data && response.data.data.length) {
-            //         const recs = response.data.data.map((item) => {
-            //             const data = {
-            //                 id: item.id,
-            //                 name: `${item.name} ${item.surname}`
-            //             };
-            //             let counter = 0;
-            //
-            //             for (const movie of item.massResult.cbf.movies) {
-            //                 counter += 1;
-            //                 data[`CBF_${counter}_id`] = movie.id;
-            //                 data[`CBF_${counter}_title`] = movie.title;
-            //             }
-            //
-            //             return data;
-            //         });
-            //
-            //         this.downloadCSV(recs, `mass_data.csv`);
-            //     }
-            // }
         }
     };
 </script>

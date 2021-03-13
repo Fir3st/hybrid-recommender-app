@@ -55,7 +55,7 @@ router.post('/run', [authenticate, authorize], async (req: Request, res: any) =>
     const usersRepository = getRepository(User);
 
     try {
-        const users = await usersRepository.find({ take: 1 });
+        const users = await usersRepository.find({ take: 2 });
 
         let msg = new redisSmq.Message();
         msg.setBody({ action: 'prepare' });

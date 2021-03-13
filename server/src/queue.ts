@@ -74,6 +74,7 @@ class QueueConsumer extends redisSmq.Consumer {
             } else if (message.id) {
                 const numOfRatings = 25;
                 const results: any = {
+                    analyze: {},
                     cbf: { movies: [] },
                     cb: { selected: null, movies: [] }
                 };
@@ -84,6 +85,10 @@ class QueueConsumer extends redisSmq.Consumer {
                 };
                 const user = await usersRepository.findOne(message.id);
                 let url = `${serverUrl}/playground/users/${message.id}?take=${numOfRatings}&rec_type=svd&sim_source=tf-idf&order_by=rating`;
+
+                /* Analyze */
+                const analyzeResponse = await axios.get(`${serverUrl}/users/${message.id}/analyze`, config);
+                results.analyze = analyzeResponse.data;
 
                 /* CBF */
                 const cbfResponse = await axios.get(url, config);

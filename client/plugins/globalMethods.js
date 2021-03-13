@@ -11,7 +11,17 @@ Vue.mixin({
                 { value: null, text: 'Default' },
                 { value: 1, text: 'Boosting relevancy 1' },
                 { value: 2, text: 'Boosting relevancy 2' }
-            ]
+            ],
+            currentTab: null,
+            genres: [],
+            relevantCount: null,
+            notRelevantCount: null,
+            precision: null,
+            recall10: null,
+            recall15: null,
+            f1Measure10: null,
+            f1Measure15: null,
+            take: 25,
         };
     },
     computed: {
@@ -51,6 +61,71 @@ Vue.mixin({
         }
     },
     methods: {
+        async getMassData() {
+            const relevances = [null, 1, 2];
+
+            const response = await this.$axios.get('/mass/data');
+            if (this.currentTab && response.data.data && response.data.data.length) {
+                const results = [];
+                for (const relevanceType of relevances) {
+                    this.relevantAlgorithm = relevanceType;
+                    const relevanceName = this.relevantAlgorithm ? `Boosting relevancy ${this.relevantAlgorithm}` : 'Default';
+
+                    const recs = response.data.data.map((item) => {
+                        if (item.massResult.analyze.genres && item.massResult.analyze.genres.length) {
+                            this.genres = item.massResult.analyze.genres;
+                        }
+
+                        const relevance = this.getRelevance(item.massResult[this.currentTab].movies, this.mostRatedGenresAll, this.leastRatedGenresAll);
+                        this.relevantCount = this.getRelevantCount(relevance);
+                        this.notRelevantCount = this.take - this.relevantCount;
+                        this.precision = this.getFinalScore(this.take, this.relevantCount);
+                        this.recall10 = this.getRecallScore(relevance, 10);
+                        this.recall15 = this.getRecallScore(relevance, 15);
+                        this.f1Measure10 = this.getFMeasureScore(relevance, this.take, 10);
+                        this.f1Measure15 = this.getFMeasureScore(relevance, this.take, 15);
+                        const recommendations = item.massResult[this.currentTab].movies.map((movie) => {
+                            const relevanceForItem = relevance.find(item => item.id === movie.id);
+
+                            return { ...movie, relevant: relevanceForItem ? relevanceForItem.relevant : null };
+                        });
+
+                        const data = {
+                            id: item.id,
+                            name: `${item.name} ${item.surname}`,
+                            relevance: relevanceName,
+                            relevant: this.relevantCount,
+                            not_relevant: this.notRelevantCount,
+                            precision: this.precision,
+                            recall_10: this.recall10,
+                            recall_15: this.recall15,
+                            f1_measure_10: this.f1Measure10,
+                            f1_measure_15: this.f1Measure15,
+                        };
+
+                        if (this.currentTab === 'cb') {
+                            data['selected_id'] = item.massResult[this.currentTab].selected.id;
+                            data['selected_name'] = item.massResult[this.currentTab].selected.title;
+                        }
+
+                        let counter = 0;
+
+                        for (const movie of recommendations) {
+                            counter += 1;
+                            data[`${counter}_id`] = movie.id;
+                            data[`${counter}_title`] = movie.title;
+                            data[`${counter}_relevant`] = movie.relevant;
+                        }
+
+                        return data;
+                    });
+
+                    results.push(...recs);
+                }
+
+                this.downloadCSV(_.orderBy(results, ['id'], ['asc']), `${this.currentTab}.csv`);
+            }
+        },
         downloadCSV(data, name) {
             const parsedData = PapaParse.unparse(data, {
                 delimiter: ';',
