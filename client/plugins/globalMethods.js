@@ -25,6 +25,9 @@ Vue.mixin({
         };
     },
     computed: {
+        isGenerating () {
+            return this.$store.state.generator.isGenerating;
+        },
         isLogged() {
             return !!this.$auth.user;
         },
@@ -122,6 +125,8 @@ Vue.mixin({
 
                     results.push(...recs);
                 }
+
+                this.relevantAlgorithm = null;
 
                 this.downloadCSV(_.orderBy(results, ['id'], ['asc']), `${this.currentTab}.csv`);
             }

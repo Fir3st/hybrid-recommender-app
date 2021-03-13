@@ -51,6 +51,7 @@
     import CollaborativeRecsTab from '~/components/admin/playground/CollaborativeRecsTab';
     import HybridRecsTab from '~/components/admin/playground/HybridRecsTab';
     import ExpertBasedRecsTab from '~/components/admin/playground/ExpertBasedRecsTab';
+    import { mapMutations } from 'vuex';
 
     export default {
         components: {
@@ -63,7 +64,6 @@
         },
         data() {
             return {
-                isGenerating: null,
                 timer: null,
             };
         },
@@ -71,10 +71,13 @@
             await this.getStatus();
         },
         methods: {
+            ...mapMutations({
+                setIsGenerating: 'generator/setIsGenerating'
+            }),
             async getStatus() {
                 const status = await this.$axios.get('/mass/status');
                 if (status.data.status) {
-                    this.isGenerating = status.data.status == 1;
+                    this.setIsGenerating(status.data.status == 1);
                     if (!this.isGenerating) {
                         clearInterval(this.timer);
                     }
@@ -82,7 +85,7 @@
             },
             async runMassGenerating() {
                 await this.$axios.post('/mass/run');
-                this.isGenerating = true;
+                this.setIsGenerating(true);
                 setInterval(this.getStatus, 15000);
             },
         }

@@ -3,7 +3,7 @@
         <b-col>
             <b-row class="mt-2">
                 <b-col>
-                    <b-button @click="getMassData">
+                    <b-button @click="getMassData" :disabled="isGenerating">
                         Get mass generated data
                     </b-button>
                 </b-col>
