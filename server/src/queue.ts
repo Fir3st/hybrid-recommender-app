@@ -76,7 +76,8 @@ class QueueConsumer extends redisSmq.Consumer {
                 const results: any = {
                     analyze: {},
                     cbf: { movies: [] },
-                    cb: { selected: null, movies: [] }
+                    cb: { selected: null, movies: [] },
+                    hybrid: { selected: null, movies: [] }
                 };
                 const config = {
                     headers: {
@@ -112,6 +113,17 @@ class QueueConsumer extends redisSmq.Consumer {
                 url = `${serverUrl}/playground/movies/${results.cb.selected.id}?take=${numOfRatings}&type=tf-idf&order_by=similarity`;
                 const cbResponse = await axios.get(url, config);
                 results.cb.movies = this.cleanResponse(cbResponse.data);
+
+                /* Hybrid */
+                if (highestRatedItems.length === 1) {
+                    results.hybrid.selected = _.pick(highestRatedItems[0], ['id', 'title']);
+                } else {
+                    const index = _.random(0, highestRatedItems.length - 1);
+                    results.hybrid.selected = _.pick(highestRatedItems[index], ['id', 'title']);
+                }
+                url = `${serverUrl}/playground/hybrid/${message.id}/${results.hybrid.selected.id}?take=${numOfRatings}&hybrid_type=weighted&rec_type=svd&order_by=similarity,rating`;
+                const hybridResponse = await axios.get(url, config);
+                results.hybrid.movies = this.cleanResponse(hybridResponse.data);
 
                 user.massResult = JSON.stringify(results);
                 await usersRepository.save(user);

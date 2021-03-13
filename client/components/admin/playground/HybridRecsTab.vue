@@ -1,6 +1,13 @@
 <template>
     <b-row>
         <b-col>
+            <b-row class="mt-2">
+                <b-col>
+                    <b-button @click="getMassData" :disabled="isGenerating">
+                        Get mass generated data
+                    </b-button>
+                </b-col>
+            </b-row>
             <b-row>
                 <b-col>
                     <h2>Hybrid recommendations</h2>
@@ -37,6 +44,11 @@
                                 placeholder="Enter number of results"
                             ></b-form-input>
                         </b-form-group>
+                        <b-form-select
+                            v-model="relevantAlgorithm"
+                            :options="relevantOptions"
+                            class="mt-2 mb-2"
+                        />
                         <b-button
                             :disabled="isButtonDisabled"
                             type="submit"
@@ -86,7 +98,6 @@
         data() {
             return {
                 loading: false,
-                take: 25,
                 userId: 1,
                 movieId: 1,
                 hybridType: 'weighted',
@@ -95,14 +106,6 @@
                 orderBy: 'similarity,rating',
                 recommendations: [],
                 selectedMovie: null,
-                genres: [],
-                relevantCount: null,
-                notRelevantCount: null,
-                precision: null,
-                recall10: null,
-                recall15: null,
-                f1Measure10: null,
-                f1Measure15: null,
                 moviesFields: [
                     '#',
                     { key: 'id', label: 'ID' },
@@ -111,7 +114,8 @@
                     { key: 'rating', label: 'Rating' },
                     { key: 'ratedSimilarity', label: 'Similarity' },
                     { key: 'relevant', label: 'Relevant' }
-                ]
+                ],
+                currentTab: 'hybrid',
             };
         },
         computed: {
