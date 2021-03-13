@@ -77,9 +77,11 @@ class QueueConsumer extends redisSmq.Consumer {
                     analyze: {},
                     cbf: { movies: [] },
                     cb: { selected: null, movies: [] },
-                    hybrid: { selected: null, movies: [] }
+                    hybrid: { selected: null, movies: [] },
+                    expert: { movies: [] }
                 };
                 const config = {
+                    timeout: 60 * 40 * 1000,
                     headers: {
                         Authorization: `Bearer ${this.token}`
                     }
@@ -124,6 +126,21 @@ class QueueConsumer extends redisSmq.Consumer {
                 url = `${serverUrl}/playground/hybrid/${message.id}/${results.hybrid.selected.id}?take=${numOfRatings}&hybrid_type=weighted&rec_type=svd&order_by=similarity,rating`;
                 const hybridResponse = await axios.get(url, config);
                 results.hybrid.movies = this.cleanResponse(hybridResponse.data);
+
+                /* Expert */
+                const expertGenres = await axios.get(`${serverUrl}/playground/users/${message.id}/genres`, config);
+                url = `${serverUrl}/playground/users/${message.id}?take=${numOfRatings}&rec_type=svd&sim_source=tf-idf&order_by=augmented_rating`;
+
+                if (expertGenres.data.topPositiveGenres && expertGenres.data.topPositiveGenres.length) {
+                    url = `${url}&fav_genres=${expertGenres.data.topPositiveGenres.join(',')}`;
+                }
+
+                if (expertGenres.data.topNegativeGenres && expertGenres.data.topNegativeGenres.length) {
+                    url = `${url}&not_fav_genres=${expertGenres.data.topNegativeGenres.join(',')}`;
+                }
+
+                const expertResponse = await axios.get(url, config);
+                results.expert.movies = this.cleanResponse(expertResponse.data);
 
                 user.massResult = JSON.stringify(results);
                 await usersRepository.save(user);
