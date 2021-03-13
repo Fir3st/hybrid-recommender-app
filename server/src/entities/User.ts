@@ -3,6 +3,7 @@ import { UserRating } from './UserRating';
 import { FavGenre } from './FavGenre';
 import { Result } from './Result';
 import { TopGenre } from './TopGenre';
+import { MassResult } from './MassResult';
 
 @Entity({ name: 'users' })
 export class User {
@@ -30,9 +31,6 @@ export class User {
     @Column({ default: false })
     admin: boolean;
 
-    @Column('text')
-    massResult: string;
-
     @OneToMany(type => UserRating, rating => rating.user, {
         cascade: true
     })
@@ -52,4 +50,9 @@ export class User {
         cascade: true
     })
     results: Result[];
+
+    @OneToMany(type => MassResult, result => result.user, {
+        cascade: true
+    })
+    massResults: MassResult[];
 }

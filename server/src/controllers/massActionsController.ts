@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import * as BeeQueue from 'bee-queue';
 import { User } from '../entities/User';
+import { MassResult } from '../entities/MassResult';
 import { Setting } from '../entities/Setting';
 import winston from '../utils/winston';
 const router = Router();
@@ -22,6 +23,7 @@ const cleanResponse = (data: any) => {
 
 retrainQueue.process(async (job, done) => {
     const usersRepository = getRepository(User);
+    const massResultsRepository = getRepository(MassResult);
     const settingsRepository = getRepository(Setting);
     const serverUrl = config.get('baseUrl');
     const userId: number = 12345;
@@ -29,10 +31,7 @@ retrainQueue.process(async (job, done) => {
     try {
         if (job.data.action && job.data.action === 'prepare') {
             winston.info('Preparing');
-            await usersRepository.createQueryBuilder()
-                .update(User)
-                .set({ massResult: '' })
-                .execute();
+            await massResultsRepository.delete({});
 
             const dbUser = await usersRepository.findOne(userId);
 
@@ -44,7 +43,6 @@ retrainQueue.process(async (job, done) => {
                 user.email = config.get('queueMail');
                 user.password = await bcrypt.hash(config.get('queuePassword'), 10);
                 user.admin = true;
-                user.massResult = '';
 
                 await usersRepository.save(user);
             }
@@ -64,7 +62,7 @@ retrainQueue.process(async (job, done) => {
                 await settingsRepository.save(massGenerateSetting);
             }
             return done();
-        } else if (job.data.id) {
+        }  if (job.data.id) {
             const userId = job.data.id;
             winston.info(`User ${userId}`);
             const numOfRatings = 25;
@@ -83,12 +81,11 @@ retrainQueue.process(async (job, done) => {
                     Authorization: `Bearer ${token}`
                 }
             };
-            const user = await usersRepository.findOne(userId);
             let url = `${serverUrl}/playground/users/${userId}?take=${numOfRatings}&rec_type=svd&sim_source=tf-idf&order_by=rating`;
 
             /* Analyze */
             const analyzeResponse = await axios.get(`${serverUrl}/users/${userId}/analyze`, config);
-            results.analyze = analyzeResponse.data;
+            results.analyze = _.pick(analyzeResponse.data, ['genres']);
 
             /* CBF */
             const cbfResponse = await axios.get(url, config);
@@ -150,8 +147,15 @@ retrainQueue.process(async (job, done) => {
             const newBoostingResponse = await axios.get(url, config);
             results.newBoosting.movies = cleanResponse(newBoostingResponse.data);
 
-            user.massResult = JSON.stringify(results);
-            await usersRepository.save(user);
+            for (const type of Object.keys(results)) {
+                const massResult = new MassResult;
+                massResult.user = userId;
+                massResult.type = type;
+                massResult.data = JSON.stringify(results[type]);
+
+                await massResultsRepository.save(massResult);
+            }
+
             return done();
         } else if (job.data.action && job.data.action === 'clean') {
             winston.info('Cleaning');
@@ -188,17 +192,28 @@ router.get('/status', [authenticate, authorize], async (req: Request, res: any) 
 
 router.get('/data', [authenticate, authorize], async (req: Request, res: any) => {
     const usersRepository = getRepository(User);
+    const resultsType = req.query.type || 'new';
 
     try {
         const data = await usersRepository
-            .createQueryBuilder()
-            .where('massResult <> :massResult', { massResult: '' })
+            .createQueryBuilder('users')
+            .leftJoinAndSelect('users.massResults', 'massResults')
+            .where('massResults.type IN (:types)', { types: ['analyze', resultsType] })
             .getMany();
         if (data && data.length) {
             return res.send({
-                data: data
-                    .map(item => _.pick(item, ['id', 'name', 'surname', 'massResult']))
-                    .map(item => ({ ...item, massResult: JSON.parse(item.massResult) }))
+                data: data.map((item) => {
+                    const results = {};
+
+                    for (const result of item.massResults) {
+                        results[result.type] = JSON.parse(result.data);
+                    }
+
+                    return {
+                        ..._.pick(item, ['id', 'name', 'surname']),
+                        results
+                    };
+                })
             });
         }
 

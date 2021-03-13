@@ -67,7 +67,7 @@ Vue.mixin({
         async getMassData() {
             const relevances = [null, 1, 2];
 
-            const response = await this.$axios.get('/mass/data');
+            const response = await this.$axios.get(`/mass/data?type=${this.currentTab}`);
             if (this.currentTab && response.data.data && response.data.data.length) {
                 const results = [];
                 for (const relevanceType of relevances) {
@@ -75,11 +75,11 @@ Vue.mixin({
                     const relevanceName = this.relevantAlgorithm ? `Boosting relevancy ${this.relevantAlgorithm}` : 'Default';
 
                     const recs = response.data.data.map((item) => {
-                        if (item.massResult.analyze.genres && item.massResult.analyze.genres.length) {
-                            this.genres = item.massResult.analyze.genres;
+                        if (item.results.analyze.genres && item.results.analyze.genres.length) {
+                            this.genres = item.results.analyze.genres;
                         }
 
-                        const relevance = this.getRelevance(item.massResult[this.currentTab].movies, this.mostRatedGenresAll, this.leastRatedGenresAll);
+                        const relevance = this.getRelevance(item.results[this.currentTab].movies, this.mostRatedGenresAll, this.leastRatedGenresAll);
                         this.relevantCount = this.getRelevantCount(relevance);
                         this.notRelevantCount = this.take - this.relevantCount;
                         this.precision = this.getFinalScore(this.take, this.relevantCount);
@@ -87,7 +87,7 @@ Vue.mixin({
                         this.recall15 = this.getRecallScore(relevance, 15);
                         this.f1Measure10 = this.getFMeasureScore(relevance, this.take, 10);
                         this.f1Measure15 = this.getFMeasureScore(relevance, this.take, 15);
-                        const recommendations = item.massResult[this.currentTab].movies.map((movie) => {
+                        const recommendations = item.results[this.currentTab].movies.map((movie) => {
                             const relevanceForItem = relevance.find(item => item.id === movie.id);
 
                             return { ...movie, relevant: relevanceForItem ? relevanceForItem.relevant : null };
@@ -107,8 +107,8 @@ Vue.mixin({
                         };
 
                         if (this.currentTab === 'cb') {
-                            data['selected_id'] = item.massResult[this.currentTab].selected.id;
-                            data['selected_name'] = item.massResult[this.currentTab].selected.title;
+                            data['selected_id'] = item.results[this.currentTab].selected.id;
+                            data['selected_name'] = item.results[this.currentTab].selected.title;
                         }
 
                         let counter = 0;
