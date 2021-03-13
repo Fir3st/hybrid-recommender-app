@@ -127,7 +127,6 @@ export const getUserByID = async (req: Request, res: any) => {
             .leftJoinAndSelect('favGenres.genre', 'genre')
             .where('user.id = :id', { id })
             .getOne();
-        console.log(user);
 
         if (user) {
             return res.send({ ..._.omit(user, ['password']) });

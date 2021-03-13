@@ -1,14 +1,18 @@
 <template lang="pug">
     b-row
         b-col
+            b-row.mt-2
+                b-col
+                    b-button(@click="getMassDataDefault", :disabled="isGenerating") Get mass generated data default
+                    b-button(@click="getMassDataBoosting", :disabled="isGenerating", class="ml-2") Get mass generated data - boosting instead of selecting
             b-row
                 b-col
                     h2 New Algorithm
             b-row
                 b-col
                     b-form
-                        label(for="toTake") Number of recommendations
-                        b-form-input(v-model="toTake", type="number", id="toTake", name="toTake", min="1")
+                        label(for="take") Number of recommendations
+                        b-form-input(v-model="take", type="number", id="take", name="take", min="1")
                         b-form-checkbox(v-model="boost", :value="true", :unchecked-value="false", class="mt-2") Boosting instead of selecting
                         b-form-select(v-model="relevantAlgorithm", :options="relevantOptions", class="mt-2")
                         b-form-group(id="userId", label="User", label-for="userId")
@@ -108,22 +112,22 @@
                     { key: 'similarity', label: 'Similarity' },
                     { key: 'relevant', label: 'Relevant' }
                 ],
-                genres: [],
                 movies: [],
-                toTake: 25,
-                relevantCount: null,
-                notRelevantCount: null,
-                precision: null,
-                recall10: null,
-                recall15: null,
-                f1Measure10: null,
-                f1Measure15: null
+                currentTab: 'new',
             };
         },
         async mounted() {
             await this.getUsers();
         },
         methods: {
+            async getMassDataDefault() {
+                this.currentTab = 'new';
+                await this.getMassData();
+            },
+            async getMassDataBoosting() {
+                this.currentTab = 'newBoosting';
+                await this.getMassData();
+            },
             moment: function (date = null) {
                 return moment(date);
             },
@@ -171,7 +175,7 @@
                 try {
                     await this.analyzeUser();
                     this.loading = true;
-                    let url = `/playground/users/${this.userId}/new?take=${this.toTake}`;
+                    let url = `/playground/users/${this.userId}/new?take=${this.take}`;
 
                     if (this.boost) {
                         url = `${url}&boostRatings=${JSON.stringify(this.boost)}`;
@@ -183,12 +187,12 @@
                         this.movies = response;
                         const relevance = this.getRelevance(this.movies, this.mostRatedGenresAll, this.leastRatedGenresAll);
                         this.relevantCount = this.getRelevantCount(relevance);
-                        this.notRelevantCount = this.toTake - this.relevantCount;
-                        this.precision = this.getFinalScore(this.toTake, this.relevantCount);
+                        this.notRelevantCount = this.take - this.relevantCount;
+                        this.precision = this.getFinalScore(this.take, this.relevantCount);
                         this.recall10 = this.getRecallScore(relevance, 10);
                         this.recall15 = this.getRecallScore(relevance, 15);
-                        this.f1Measure10 = this.getFMeasureScore(relevance, this.toTake, 10);
-                        this.f1Measure15 = this.getFMeasureScore(relevance, this.toTake, 15);
+                        this.f1Measure10 = this.getFMeasureScore(relevance, this.take, 10);
+                        this.f1Measure15 = this.getFMeasureScore(relevance, this.take, 15);
                         this.movies = this.movies.map((movie) => {
                             const relevanceForItem = relevance.find(item => item.id === movie.id);
 

@@ -56,8 +56,9 @@ router.post('/run', [authenticate, authorize], async (req: Request, res: any) =>
 
     try {
         const users = await usersRepository.find({ take: 2 });
+        const ttl = 7 * 60 * 40 * 1000;
 
-        let msg = new redisSmq.Message();
+        let msg = new redisSmq.Message().setTTL(ttl);
         msg.setBody({ action: 'prepare' });
 
         producer.produceMessage(msg, (err) => {
@@ -65,7 +66,7 @@ router.post('/run', [authenticate, authorize], async (req: Request, res: any) =>
         });
 
         for (const user of users) {
-            msg = new redisSmq.Message();
+            msg = new redisSmq.Message().setTTL(ttl);
             msg.setBody({ id: user.id });
 
             producer.produceMessage(msg, (err) => {
@@ -73,7 +74,7 @@ router.post('/run', [authenticate, authorize], async (req: Request, res: any) =>
             });
         }
 
-        msg = new redisSmq.Message();
+        msg = new redisSmq.Message().setTTL(ttl);
         msg.setBody({ action: 'clean' });
 
         producer.produceMessage(msg, (err) => {

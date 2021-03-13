@@ -36,6 +36,7 @@ class QueueConsumer extends redisSmq.Consumer {
 
         try {
             if (message.action && message.action === 'prepare') {
+                console.log('Preparing');
                 // Cleaning
                 await usersRepository.createQueryBuilder()
                     .update(User)
@@ -71,14 +72,18 @@ class QueueConsumer extends redisSmq.Consumer {
                     massGenerateSetting.value = '1';
                     await settingsRepository.save(massGenerateSetting);
                 }
+                cb();
             } else if (message.id) {
+                console.log(`User ${message.id}`);
                 const numOfRatings = 25;
                 const results: any = {
                     analyze: {},
                     cbf: { movies: [] },
                     cb: { selected: null, movies: [] },
                     hybrid: { selected: null, movies: [] },
-                    expert: { movies: [] }
+                    expert: { movies: [] },
+                    new: { movies: [] },
+                    newBoosting: { movies: [] }
                 };
                 const config = {
                     timeout: 60 * 40 * 1000,
@@ -116,46 +121,59 @@ class QueueConsumer extends redisSmq.Consumer {
                 const cbResponse = await axios.get(url, config);
                 results.cb.movies = this.cleanResponse(cbResponse.data);
 
-                /* Hybrid */
-                if (highestRatedItems.length === 1) {
-                    results.hybrid.selected = _.pick(highestRatedItems[0], ['id', 'title']);
-                } else {
-                    const index = _.random(0, highestRatedItems.length - 1);
-                    results.hybrid.selected = _.pick(highestRatedItems[index], ['id', 'title']);
-                }
-                url = `${serverUrl}/playground/hybrid/${message.id}/${results.hybrid.selected.id}?take=${numOfRatings}&hybrid_type=weighted&rec_type=svd&order_by=similarity,rating`;
-                const hybridResponse = await axios.get(url, config);
-                results.hybrid.movies = this.cleanResponse(hybridResponse.data);
-
-                /* Expert */
-                const expertGenres = await axios.get(`${serverUrl}/playground/users/${message.id}/genres`, config);
-                url = `${serverUrl}/playground/users/${message.id}?take=${numOfRatings}&rec_type=svd&sim_source=tf-idf&order_by=augmented_rating`;
-
-                if (expertGenres.data.topPositiveGenres && expertGenres.data.topPositiveGenres.length) {
-                    url = `${url}&fav_genres=${expertGenres.data.topPositiveGenres.join(',')}`;
-                }
-
-                if (expertGenres.data.topNegativeGenres && expertGenres.data.topNegativeGenres.length) {
-                    url = `${url}&not_fav_genres=${expertGenres.data.topNegativeGenres.join(',')}`;
-                }
-
-                const expertResponse = await axios.get(url, config);
-                results.expert.movies = this.cleanResponse(expertResponse.data);
+                // /* Hybrid */
+                // if (highestRatedItems.length === 1) {
+                //     results.hybrid.selected = _.pick(highestRatedItems[0], ['id', 'title']);
+                // } else {
+                //     const index = _.random(0, highestRatedItems.length - 1);
+                //     results.hybrid.selected = _.pick(highestRatedItems[index], ['id', 'title']);
+                // }
+                // url = `${serverUrl}/playground/hybrid/${message.id}/${results.hybrid.selected.id}?take=${numOfRatings}&hybrid_type=weighted&rec_type=svd&order_by=similarity,rating`;
+                // const hybridResponse = await axios.get(url, config);
+                // results.hybrid.movies = this.cleanResponse(hybridResponse.data);
+                //
+                // /* Expert */
+                // const expertGenres = await axios.get(`${serverUrl}/playground/users/${message.id}/genres`, config);
+                // url = `${serverUrl}/playground/users/${message.id}?take=${numOfRatings}&rec_type=svd&sim_source=tf-idf&order_by=augmented_rating`;
+                //
+                // if (expertGenres.data.topPositiveGenres && expertGenres.data.topPositiveGenres.length) {
+                //     url = `${url}&fav_genres=${expertGenres.data.topPositiveGenres.join(',')}`;
+                // }
+                //
+                // if (expertGenres.data.topNegativeGenres && expertGenres.data.topNegativeGenres.length) {
+                //     url = `${url}&not_fav_genres=${expertGenres.data.topNegativeGenres.join(',')}`;
+                // }
+                //
+                // const expertResponse = await axios.get(url, config);
+                // results.expert.movies = this.cleanResponse(expertResponse.data);
+                //
+                // /* New */
+                // url = `${serverUrl}/playground/users/${message.id}/new?take=${numOfRatings}`;
+                //
+                // const newResponse = await axios.get(url, config);
+                // results.new.movies = this.cleanResponse(newResponse.data);
+                //
+                // url = `${url}&boostRatings=true`;
+                //
+                // const newBoostingResponse = await axios.get(url, config);
+                // results.newBoosting.movies = this.cleanResponse(newBoostingResponse.data);
 
                 user.massResult = JSON.stringify(results);
                 await usersRepository.save(user);
+                cb();
             } else {
+                console.log('Finishing');
                 await usersRepository.delete(this.userId);
-                this.token = '';
 
                 const massGenerateSetting = await settingsRepository.findOne({ name: 'mass_generate' });
                 if (massGenerateSetting) {
                     massGenerateSetting.value = '0';
                     await settingsRepository.save(massGenerateSetting);
                 }
+                cb();
             }
         } catch (e) {
-            console.log(e);
+            console.log(e.message);
         }
     }
 }
