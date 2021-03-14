@@ -79,14 +79,16 @@
                 if (status.data.status) {
                     this.setIsGenerating(status.data.status == 1);
                     if (!this.isGenerating) {
-                        clearInterval(this.timer);
+                        clearTimeout(this.timer);
+                    } else {
+                        this.timer = setTimeout(this.getStatus, 20000);
                     }
                 }
             },
             async runMassGenerating() {
                 await this.$axios.post('/mass/run');
                 this.setIsGenerating(true);
-                setInterval(this.getStatus, 20000);
+                this.timer = setTimeout(this.getStatus, 20000);
             },
         }
     };
