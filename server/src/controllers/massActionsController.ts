@@ -5,14 +5,14 @@ import * as config from 'config';
 import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import * as BeeQueue from 'bee-queue';
+import * as Queue from 'bull';
 import { User } from '../entities/User';
 import { MassResult } from '../entities/MassResult';
 import { Setting } from '../entities/Setting';
 import winston from '../utils/winston';
 const router = Router();
 
-const retrainQueue = new BeeQueue('retrain', { redis: config.get('redis') });
+const retrainQueue = new Queue('retrain', { redis: config.get('redis') });
 let token: string = '';
 
 const cleanResponse = (data: any) => {
@@ -61,7 +61,7 @@ retrainQueue.process(async (job, done) => {
                 massGenerateSetting.value = '1';
                 await settingsRepository.save(massGenerateSetting);
             }
-            return done();
+            done();
         }  if (job.data.id) {
             const userId = job.data.id;
             winston.info(`User ${userId}`);
@@ -156,7 +156,7 @@ retrainQueue.process(async (job, done) => {
                 await massResultsRepository.save(massResult);
             }
 
-            return done();
+            done();
         } else if (job.data.action && job.data.action === 'clean') {
             winston.info('Cleaning');
             await usersRepository.delete(userId);
@@ -166,11 +166,11 @@ retrainQueue.process(async (job, done) => {
                 massGenerateSetting.value = '0';
                 await settingsRepository.save(massGenerateSetting);
             }
-            return done();
+            done();
         }
     } catch (e) {
         winston.error(e.message);
-        return done();
+        done();
     }
 });
 
@@ -230,13 +230,13 @@ router.post('/run', [authenticate, authorize], async (req: Request, res: any) =>
     try {
         const users = await usersRepository.find();
 
-        retrainQueue.createJob({ action: 'prepare' }).save();
+        retrainQueue.add({ action: 'prepare' });
 
         for (const user of users) {
-            retrainQueue.createJob({ id: user.id }).save();
+            retrainQueue.add({ id: user.id });
         }
 
-        retrainQueue.createJob({ action: 'clean' }).save();
+        retrainQueue.add({ action: 'clean' });
 
         return res.send({ status: 'OK' });
     } catch (error) {
