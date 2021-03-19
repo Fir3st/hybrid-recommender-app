@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Download from 'downloadjs';
 import PapaParse from 'papaparse';
-import * as _ from "lodash";
+import * as _ from 'lodash';
+import * as cleanTextUtils from 'clean-text-utils';
 
 Vue.mixin({
     data() {
@@ -97,13 +98,13 @@ Vue.mixin({
                             id: item.id,
                             name: `${item.name} ${item.surname}`,
                             relevance: relevanceName,
-                            relevant: this.relevantCount,
-                            not_relevant: this.notRelevantCount,
-                            precision: this.precision,
-                            recall_10: this.recall10,
-                            recall_15: this.recall15,
-                            f1_measure_10: this.f1Measure10,
-                            f1_measure_15: this.f1Measure15,
+                            relevant: Object.is(this.relevantCount, NaN) ? 0 : this.relevantCount,
+                            not_relevant: Object.is(this.notRelevantCount, NaN) ? 0 : this.notRelevantCount,
+                            precision: Object.is(this.precision, NaN) ? 0 : this.precision,
+                            recall_10: Object.is(this.recall10, NaN) ? 0 : this.recall10,
+                            recall_15: Object.is(this.recall15, NaN) ? 0 : this.recall15,
+                            f1_measure_10: Object.is(this.f1Measure10, NaN) ? 0 : this.f1Measure10,
+                            f1_measure_15: Object.is(this.f1Measure15, NaN) ? 0 : this.f1Measure15,
                         };
 
                         if (this.currentTab === 'cb') {
@@ -136,7 +137,10 @@ Vue.mixin({
                 delimiter: ';',
                 encoding: 'utf8'
             });
-            Download(parsedData, name, 'application/csv');
+            let txt = cleanTextUtils.strip.emoji(parsedData);
+            txt = cleanTextUtils.replace.diacritics(txt);
+            txt = cleanTextUtils.replace.smartChars(txt);
+            Download(txt, name, 'text/csv');
         },
         getMostRatedGenres(num = 3) {
             const ratedGenres = this.genres.filter((genre) => genre.count);
