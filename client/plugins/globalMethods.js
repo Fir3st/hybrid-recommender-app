@@ -107,7 +107,7 @@ Vue.mixin({
                             f1_measure_15: Object.is(this.f1Measure15, NaN) ? 0 : this.f1Measure15,
                         };
 
-                        if (this.currentTab === 'cb') {
+                        if (this.currentTab === 'cb' || this.currentTab === 'hybrid') {
                             data['selected_id'] = item.results[this.currentTab].selected.id;
                             data['selected_name'] = item.results[this.currentTab].selected.title;
                         }
